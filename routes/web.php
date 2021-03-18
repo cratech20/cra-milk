@@ -2,12 +2,17 @@
 
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\MessageController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', function () {
         return redirect()->route('devices.index');
+    });
+
+    Route::get('/test', function () {
+        DB::connection('pgsql')->table('iot_events')->get();
     });
 
     // Devices
