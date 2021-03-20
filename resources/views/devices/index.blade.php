@@ -36,7 +36,7 @@
                                         <td>{{ $device->created_at }}</td>
                                         <td>
                                             <ul class="ul-links">
-                                                <li><a href="{{ route('messages', $device) }}">Смотреть
+                                                <li><a href="{{ route('devices.messages', $device) }}">Смотреть
                                                         сообщения</a></li>
                                                 <li><a href="#">Показать пароль</a></li>
                                                 <li><a href="#">Редактировать</a></li>
