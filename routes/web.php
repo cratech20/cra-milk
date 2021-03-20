@@ -12,7 +12,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/test', function () {
-        DB::connection('pgsql')->table('iot_events')->get();
+        dd(DB::connection('pgsql')->table('iot_events')->get());
     });
 
     // Devices

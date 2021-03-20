@@ -13,8 +13,10 @@ use Carbon\Carbon;
                     <div class="card-header">Сообщения устройства {{ $device->name }}</div>
 
                     <div class="card-body">
-                        @foreach ($decoded as $row)
-                            {{ Carbon::parse($row['t'])->format('H:i:s d.m.Y') }}: {{ print_r($row['d'], 1) }}<br>
+                        @foreach ($json as $row)
+                            {{ Carbon::parse($row->event_datetime)->format('H:i:s d.m.Y') }}
+                            : {{ print_r($row->payload, 1) }}<br>
+                            {{--                            {{ Carbon::parse($row['t'])->format('H:i:s d.m.Y') }}: {{ print_r($row['d'], 1) }}<br>--}}
                         @endforeach
                     </div>
                 </div>
