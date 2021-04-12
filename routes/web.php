@@ -13,7 +13,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/test', [\App\Http\Controllers\HomeController::class, 'test']);
 
-    // Devices
+    // Device
 
     Route::resource('devices', DeviceController::class);
 

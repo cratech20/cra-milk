@@ -30,4 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'ya_cloud' => [
+        'account_id' => env('YA_CLOUD_ID'),
+        'key_id' => env('YA_CLOUD_KEY_ID'),
+        'private_pem' => env('YA_CLOUD_PRIVATE_PEM'),
+    ]
+
 ];

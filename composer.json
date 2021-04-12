@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "ext-curl": "*",
         "ext-json": "*",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -16,11 +17,11 @@
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.2",
+        "qcod/laravel-settings": "^1.0",
         "spatie/laravel-permission": "^4.0",
         "web-token/jwt-easy": "^2.2",
         "web-token/jwt-framework": "^2.2",
-        "web-token/jwt-signature-algorithm-rsa": "^2.2",
-        "ext-curl": "*"
+        "web-token/jwt-signature-algorithm-rsa": "^2.2"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
