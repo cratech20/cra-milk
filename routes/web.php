@@ -11,9 +11,7 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('devices.index');
     });
 
-    Route::get('/test', function () {
-        dd(DB::connection('pgsql')->table('iot_events')->get());
-    });
+    Route::get('/test', [\App\Http\Controllers\HomeController::class, 'test']);
 
     // Devices
 
