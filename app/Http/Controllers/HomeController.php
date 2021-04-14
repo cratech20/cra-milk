@@ -25,11 +25,21 @@ class HomeController extends Controller
      */
     public function test(YaCloud $yaCloud)
     {
+        // $data = [
+        //     'registryId' => 'arerbdnuk54prrjanos2',
+        // ];
+        //
+        // $device = new Device($yaCloud);
+        // dd($device->list($data));
+
         $data = [
             'registryId' => 'arerbdnuk54prrjanos2',
+            "name" => "obj_id_2",
+            "description" => "auto register from milk.cra",
+            // "password" => "Obj_id_1_Obj_id_1_Obj_id_1_Obj_id_1_",
         ];
 
         $device = new Device($yaCloud);
-        dd($device->list($data));
+        dd($device->create($data));
     }
 }

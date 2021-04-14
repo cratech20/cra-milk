@@ -4,26 +4,17 @@
 namespace App\Services\YaCloud;
 
 
-use App\Services\DI\YaCloud;
-
-class Device
+class Device extends YaCloudEntity
 {
-    private $yaCloud;
-
-    public function __construct(YaCloud $yaCloud)
-    {
-        $this->yaCloud = $yaCloud;
-    }
-
     public function list($data)
     {
         $url = 'https://iot-devices.api.cloud.yandex.net/iot-devices/v1/devices';
-        return $this->yaCloud->request($url, $data);
+        return $this->client->call($url, $data);
     }
 
     public function create($data)
     {
         $url = 'https://iot-devices.api.cloud.yandex.net/iot-devices/v1/devices';
-        return $this->yaCloud->request($url, $data);
+        return $this->client->call($url, $data, 'POST');
     }
 }

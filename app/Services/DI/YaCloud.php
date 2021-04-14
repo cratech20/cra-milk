@@ -19,12 +19,12 @@ class YaCloud
 {
     private $token;
 
-    private function auth()
+    private function auth(): void
     {
         $this->saveToken($this->getToken($this->getJWT()));
     }
 
-    private function getJWT()
+    private function getJWT(): string
     {
         $config = config('services.ya_cloud');
         $serviceAccountId = $config['account_id'];
@@ -55,7 +55,7 @@ class YaCloud
 
         $key = JWKFactory::createFromKeyFile($file);
 
-        $payload = json_encode($claims);
+        $payload = json_encode($claims, JSON_THROW_ON_ERROR);
 
         // Формирование подписи.
         $jws = $jwsBuilder
@@ -89,17 +89,17 @@ class YaCloud
 
         curl_close($ch);
 
-        return json_decode($result, true);
+        return json_decode($result, true, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function saveToken($result)
+    private function saveToken($result): void
     {
         settings()->set('ya_cloud_iam_token', $result['iamToken']);
         settings()->set('ya_cloud_expires', Carbon::parse($result['expiresAt'])->timestamp);
         $this->token = $result['iamToken'];
     }
 
-    public function registerServiceProvider()
+    public function registerServiceProvider(): void
     {
         $log = new Logger('ya.cloud');
         $log->pushHandler(new StreamHandler(storage_path() . '/logs/ya-cloud.log', Logger::DEBUG));
@@ -162,7 +162,7 @@ class YaCloud
         dd($result);
     }
 
-    public function request($url, $data, $method = 'GET')
+    public function call($url, $data, $method = 'GET')
     {
 
         $ch = curl_init();
