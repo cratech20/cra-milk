@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25e98d9ad99c24e04abc82b680f16578",
+    "content-hash": "8ed5dfea414b9e30b412df081b088f9c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1608,6 +1608,83 @@
                 }
             ],
             "time": "2020-12-14T13:15:25+00:00"
+        },
+        {
+            "name": "movemoveapp/laravel-dadata",
+            "version": "1.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/movemoveapp/laravel-dadata.git",
+                "reference": "f09048fbda6ddd169b1e6a27b856a365ffd3075a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/movemoveapp/laravel-dadata/zipball/f09048fbda6ddd169b1e6a27b856a365ffd3075a",
+                "reference": "f09048fbda6ddd169b1e6a27b856a365ffd3075a",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.0",
+                "php": "^7.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.2.0",
+                "phpunit/phpunit": "^9.4.0"
+            },
+            "type": "laravel-package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "MoveMoveIo\\DaData\\DaDataServiceProvider"
+                    ],
+                    "aliases": {
+                        "DaDataAddress": "MoveMoveIo\\DaData\\Facades\\DaDataAddress",
+                        "DaDataName": "MoveMoveIo\\DaData\\Facades\\DaDataName",
+                        "DaDataEmail": "MoveMoveIo\\DaData\\Facades\\DaDataEmail",
+                        "DaDataPhone": "MoveMoveIo\\DaData\\Facades\\DaDataPhone",
+                        "DaDataCompany": "MoveMoveIo\\DaData\\Facades\\DaDataCompany",
+                        "DaDataBank": "MoveMoveIo\\DaData\\Facades\\DaDataBank",
+                        "DaDataPassport": "MoveMoveIo\\DaData\\Facades\\DaDataPassport"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MoveMoveIo\\DaData\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dmitry Kovalev aka Pipisco",
+                    "email": "d.kovalev@movemove.io",
+                    "homepage": "https://movemove.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel SDK for working with the DaData.RU service API",
+            "keywords": [
+                "Bank",
+                "DaData",
+                "address",
+                "email",
+                "laravel",
+                "movemoveapp",
+                "name",
+                "passport",
+                "patronymic",
+                "pipisco",
+                "sdk",
+                "surname"
+            ],
+            "support": {
+                "issues": "https://github.com/movemoveapp/laravel-dadata/issues",
+                "source": "https://github.com/movemoveapp/laravel-dadata/tree/v1.0.8"
+            },
+            "time": "2021-01-18T13:00:22+00:00"
         },
         {
             "name": "nesbot/carbon",

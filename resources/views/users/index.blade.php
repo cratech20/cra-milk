@@ -11,8 +11,10 @@
 
                         <p class="float-right">
                             <a href="{{ route('users.roles.index') }}" class="btn btn-primary">Назначить роли</a>
-                            <a href="{{ route('users.create') }}" class="btn btn-success">Зарегистрировать
+                            <a href="{{ route('users.registration.create') }}" class="btn btn-success">Зарегистрировать
                                 пользователя</a>
+                            <a href="{{ route('users.registration.inn') }}" class="btn btn-success">Зарегистрировать
+                                клиента</a>
                         </p>
                         @if(@isset($users))
 

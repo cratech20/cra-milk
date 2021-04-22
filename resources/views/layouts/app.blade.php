@@ -21,9 +21,9 @@
 </head>
 <body>
 <div id="app">
-    @include('layouts.components.topmenu')
-
+    @include('layouts.components.topmenu.main')
     <main class="py-4">
+        @include('layouts.components.alert')
         @yield('content')
     </main>
 </div>

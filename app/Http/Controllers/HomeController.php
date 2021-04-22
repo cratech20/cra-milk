@@ -15,6 +15,9 @@ use Jose\Easy\Build;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Serializer\CompactSerializer;
+use MoveMoveIo\DaData\Enums\BranchType;
+use MoveMoveIo\DaData\Enums\CompanyType;
+use MoveMoveIo\DaData\Facades\DaDataCompany;
 
 class HomeController extends Controller
 {
@@ -44,6 +47,27 @@ class HomeController extends Controller
         dd($device->create($data));
     }
 
+    public function testINN()
+    {
+        $dadata = DaDataCompany::id('4312145337', 1, null, BranchType::MAIN, CompanyType::LEGAL);
+
+        $result = $dadata['suggestions'][0]['data'] ?? null;
+        dd($result);
+        /**
+         * [
+         * 'inn' => $data['inn'],
+         * 'district_id' => $data['district_id'],
+         * 'phone' => $data['phone'],
+         * 'name' => $innInfo['value'],
+         * 'kpp' => $innInfo['data']['kpp'] ?? 0,
+         * 'ogrn' => $innInfo['data']['ogrn'],
+         * 'full_with_opf' => $innInfo['data']['name']['full_with_opf'],
+         * 'management_name' => $innInfo['data']['management']['name'] ?? '',
+         * 'management_post' => $innInfo['data']['management']['post'] ?? '',
+         * ]
+         */
+    }
+
     public function testJSON()
     {
         $data = [];
@@ -54,13 +78,13 @@ class HomeController extends Controller
             $devices[] = substr(str_shuffle(MD5(microtime())), 0, 20);
         }
 
-        $now = Carbon::now();
         for ($j = 0; $j < 2; $j++) {
             for ($i = 0; $i < 30; $i++) {
                 foreach ($devices as $device) {
-                    $date = $now->add($i, 'day')->add($j * 6, 'hour')->add(random_int(0, 59), 'second');
+                    $date = Carbon::now()->add($i, 'day')->add($j * 6, 'hour')->add(random_int(0, 59), 'second');
                     $milk = random_int(50, 400) / 10;
-                    $data[] = ['l' => $device, 'd' => $date->format('Y-m-d H:i:s'), 'y' => $milk];
+                    $data[] = ['l' => $device, 'd' => $date->timestamp, 'y' => $milk];
+                    // $data[] = ['l' => $device, 'd' => $date->format('Y-m-d H:i:s'), 'y' => $milk];
                 }
             }
         }

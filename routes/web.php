@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +11,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', function () {
-        return redirect()->route('devices.index');
+        $user = auth()->user();
+        if ($user->hasRole('client')) {
+            return view('clients.index');
+        } else if ($user->hasRole('employee')) {
+            return redirect()->route('devices.index');
+        } else {
+
+        }
     });
 
     Route::get('/test', [\App\Http\Controllers\HomeController::class, 'testJSON']);
@@ -29,13 +37,22 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
+    Route::prefix('reports')->group(function () {
+
+        Route::get('/', [ReportController::class, 'index'])
+            ->name('reports.index');
+    });
+
     Route::prefix('users')->group(function () {
 
         Route::get('/', [UserController::class, 'index'])
             ->name('users.index');
 
-        Route::get('/create', [UserController::class, 'create'])
-            ->name('users.create');
+        Route::get('/create/inn', [UserController::class, 'inn'])
+            ->name('users.registration.inn');
+
+        Route::get('/create/form', [UserController::class, 'create'])
+            ->name('users.registration.create');
 
         Route::post('/', [UserController::class, 'store'])
             ->name('users.store');

@@ -16,6 +16,9 @@
                     <a class="nav-link" href="{{ route('users.index') }}">Пользователи</a>
                 </li>
                 @endrole
+                @role('client')
+                @include('layouts.components.topmenu.client')
+                @endrole
             </ul>
 
             <!-- Right Side Of Navbar -->
