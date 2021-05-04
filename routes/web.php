@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
@@ -13,7 +15,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', function () {
         $user = auth()->user();
         if ($user->hasRole('client')) {
-            return view('clients.index');
+            return view('cabinet.clients');
         } else if ($user->hasRole('employee')) {
             return redirect()->route('devices.index');
         } else {
@@ -27,12 +29,15 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('devices', DeviceController::class);
 
+    Route::get('/devices/client/{client?}', [DeviceController::class, 'index'])
+        ->name('devices.index');
+
     Route::get('/devices/destroy/{device}', [DeviceController::class, 'destroy'])
         ->name('devices.destroy');
 
     Route::prefix('devices')->group(function () {
 
-        Route::get('/messages/{device}', [MessageController::class, 'show'])
+        Route::get('{device}/messages', [MessageController::class, 'show'])
             ->name('devices.messages');
 
     });
@@ -65,6 +70,14 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
+    Route::prefix('clients')->group(function () {
+
+        Route::get('/', [ClientController::class, 'index'])
+            ->name('clients.index');
+
+        Route::get('{client}/divisions', [DivisionController::class, 'index'])
+            ->name('clients.divisions.index');
+    });
 });
 
 Auth::routes(['register' => false]);

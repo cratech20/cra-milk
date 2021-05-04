@@ -5,13 +5,15 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">Список устройств</div>
+                    <div class="card-header">{{ $title }}</div>
 
                     <div class="card-body">
 
+                        @role('admin')
                         <p>
                             <a href="{{ route('devices.create') }}" class="btn btn-success">Добавить устройство</a>
                         </p>
+                        @endrole
 
                         @if(!$devices->isEmpty())
 

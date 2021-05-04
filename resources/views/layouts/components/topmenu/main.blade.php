@@ -15,6 +15,10 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('users.index') }}">Пользователи</a>
                 </li>
+                <!-- TODO another role -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('clients.index') }}">Клиенты</a>
+                </li>
                 @endrole
                 @role('client')
                 @include('layouts.components.topmenu.client')

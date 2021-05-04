@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Device;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
@@ -12,11 +13,17 @@ class DeviceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $client = null)
     {
-        $devices = Device::all();
+        if ($client === null) {
+            $devices = Device::all();
+            $title = 'Список устройств';
+        } else {
+            $devices = Device::where('user_id', $client->id)->get();
+            $title = 'Список устройств клиента ' . $client->name;
+        }
 
-        return view('devices.index', ['devices' => $devices]);
+        return view('devices.index', ['devices' => $devices, 'title' => $title]);
     }
 
     /**

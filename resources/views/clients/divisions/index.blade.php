@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">Список клиентов</div>
+                    <div class="card-header">Список подразделений компании {{ $client->name }}</div>
 
                     <div class="card-body">
                         <table class="table table-striped table-bordered">
@@ -17,23 +17,21 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @forelse($clients as $client)
+                            @forelse($divisions as $division)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>
-                                        {{ $client->name }}
+                                        {{ $division->name }}
                                     </td>
                                     <td>
-                                        <a href="{{ route('devices.index', $client) }}">Перейти к
-                                            устройствам</a><br>
-                                        <a href="{{ route('clients.divisions.index', $client) }}">Перейти к
-                                            подразделениям</a>
+                                        <a href="{{ route('devices.index', ['clientId' => $client]) }}">Перейти к
+                                            фермам</a><br>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="3">
-                                        Клиентов не найдено. Возможно, вы забыли дать им права "Клиент" на странице.
+                                        Подразделений не найдено. Создайте их.
                                     </td>
                                 </tr>
                             @endforelse

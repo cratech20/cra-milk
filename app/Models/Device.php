@@ -12,4 +12,13 @@ class Device extends Model
     use SoftDeletes;
 
     protected $guarded = ['id'];
+
+    /**
+     * Relations
+     */
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

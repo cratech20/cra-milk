@@ -53,4 +53,13 @@ class User extends Authenticatable
 
         return $result['suggestions'][0] ?? null;
     }
+
+    /**
+     * Relations
+     */
+
+    public function devices()
+    {
+        return $this->hasMany(Device::class);
+    }
 }
