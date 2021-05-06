@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Division;
 use App\Models\Farm;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class FarmController extends Controller
@@ -12,9 +14,11 @@ class FarmController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $client, Division $division)
     {
-        //
+        $divisions = Farm::where('division_id', $division->id)->get();
+
+        return view('clients.farms.index', ['divisions' => $divisions, 'client' => $client]);
     }
 
     /**
@@ -30,7 +34,7 @@ class FarmController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -41,7 +45,7 @@ class FarmController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Farm  $farm
+     * @param \App\Models\Farm $farm
      * @return \Illuminate\Http\Response
      */
     public function show(Farm $farm)
@@ -52,7 +56,7 @@ class FarmController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Farm  $farm
+     * @param \App\Models\Farm $farm
      * @return \Illuminate\Http\Response
      */
     public function edit(Farm $farm)
@@ -63,8 +67,8 @@ class FarmController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Farm  $farm
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Farm $farm
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Farm $farm)
@@ -75,7 +79,7 @@ class FarmController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Farm  $farm
+     * @param \App\Models\Farm $farm
      * @return \Illuminate\Http\Response
      */
     public function destroy(Farm $farm)

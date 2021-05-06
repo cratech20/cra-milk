@@ -26,6 +26,14 @@ class DeviceController extends Controller
         return view('devices.index', ['devices' => $devices, 'title' => $title]);
     }
 
+    public function summaryTable(User $client = null)
+    {
+        $title = 'Итоговая таблица по устройствам клиента ' . $client->name;
+        $devices = $client->devices;
+
+        return view('devices.summary', ['devices' => $devices, 'title' => $title]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

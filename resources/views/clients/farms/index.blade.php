@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">Список подразделений компании {{ $client->name }}</div>
+                    <div class="card-header">Список ферм компании {{ $client->name }}</div>
 
                     <div class="card-body">
                         <table class="table table-striped table-bordered">
@@ -25,13 +25,13 @@
                                     </td>
                                     <td>
                                         <a href="{{ route('clients.farm.index', [$client, $division]) }}">Перейти к
-                                            фермам</a><br>
+                                            устройствам</a><br>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="3">
-                                        Подразделений не найдено. Создайте их.
+                                        Ферм не найдено. Создайте их.
                                     </td>
                                 </tr>
                             @endforelse

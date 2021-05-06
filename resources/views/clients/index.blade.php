@@ -24,10 +24,10 @@
                                         {{ $client->name }}
                                     </td>
                                     <td>
-                                        <a href="{{ route('devices.index', $client) }}">Перейти к
-                                            устройствам</a><br>
                                         <a href="{{ route('clients.divisions.index', $client) }}">Перейти к
-                                            подразделениям</a>
+                                            подразделениям</a><br>
+                                        <a href="{{ route('devices.summary_table', $client) }}">Перейти к
+                                            итоговой таблице по устройствам</a>
                                     </td>
                                 </tr>
                             @empty

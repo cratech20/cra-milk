@@ -21,4 +21,9 @@ class Device extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function farm()
+    {
+        return $this->belongsTo(Farm::class);
+    }
 }

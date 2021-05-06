@@ -47,9 +47,14 @@ class ReportController extends Controller
         }
 
         $result = array_values($result);
-        
+
         $result = json_encode($result, JSON_THROW_ON_ERROR);
 
         return view('reports.index', ['data' => $result]);
+    }
+
+    public function bi()
+    {
+        echo 'bi';
     }
 }
