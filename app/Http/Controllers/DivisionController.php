@@ -26,9 +26,9 @@ class DivisionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public
-    function create()
+    function create(User $client)
     {
-        //
+        return view('clients.divisions.create', ['client' => $client]);
     }
 
     /**
@@ -40,7 +40,13 @@ class DivisionController extends Controller
     public
     function store(Request $request)
     {
-        //
+        $division = Division::create($request->input());
+
+        return back()
+            ->with([
+                'message' => 'Подразделение ' . $division->name . ' успешно создано',
+                'alert-class' => 'alert-success'
+            ]);
     }
 
     /**

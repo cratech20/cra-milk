@@ -12,7 +12,7 @@
             @endif
 
             @if(Session::has('message'))
-                <p class="alert {{ Session::get('alert-class') }}">{{ Session::get('message') }}</p>
+                <p class="alert {{ Session::get('alert-class') ?? 'alert-primary' }}">{{ Session::get('message') }}</p>
             @endif
         </div>
     </div>

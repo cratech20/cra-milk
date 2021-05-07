@@ -10,7 +10,9 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $data = json_decode(Storage::get('milk.json'), true, 512, JSON_THROW_ON_ERROR);
+        $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
+        // $json = Storage::get('milk.json');
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         $result = [];
 
         $dates = [];
@@ -55,6 +57,61 @@ class ReportController extends Controller
 
     public function bi()
     {
-        echo 'bi';
+        // TODO Postgres
+        // $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
+        $json = Storage::get('milk-bi.json');
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $result = [];
+
+        $result['head'] = ['Устройство', 'Корова'];
+
+        // Начало и конец периода
+
+        $startPeriod = Carbon::now()->startOfMonth();
+        $endPeriod = Carbon::now()->endOfMonth();
+
+        $currentDay = clone $startPeriod;
+
+        // заполняются даты для шапки
+        $dates = [];
+        while ($currentDay->lessThanOrEqualTo($endPeriod)) {
+            $date = $currentDay->format('d.m.y');
+            $dateKey = $currentDay->format('Ymd');
+            $dates[$dateKey] = $date;
+            $result['head'][] = $date;
+            $currentDay = $currentDay->addDay();
+        }
+
+        // заполняются литры в день по коровам!
+
+        $litresByDay = [];
+        foreach ($data as $rowDirty) {
+            $row = $rowDirty[3];
+
+            if (!isset($row['y'])) {
+                continue;
+            }
+
+            $date = Carbon::parse((int)$row['t'])->format('Ymd');
+            $deviceId = $row['l'];
+            $cowId = $row['c'];
+            $litresByDay[$deviceId][$cowId][$date] = ($litresByDay[$deviceId][$cowId][$date] ?? 0) + $row['y'];
+        }
+
+        $body = [];
+
+        foreach ($litresByDay as $deviceId => $cows) {
+            foreach ($cows as $cowId => $volumes) {
+                $body[$cowId] = [$deviceId, $cowId];
+
+                foreach ($dates as $dateKey => $trash) {
+                    $body[$cowId][] = $volumes[$dateKey] ?? 0;
+                }
+            }
+
+            $result['body'] = $body;
+        }
+
+        return view('reports.bi', ['data' => $result]);
     }
 }

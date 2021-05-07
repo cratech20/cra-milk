@@ -2,12 +2,16 @@
 
 @section('content')
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">Список подразделений компании {{ $client->name }}</div>
 
                     <div class="card-body">
+                        <p>
+                            <a href="{{ route('clients.divisions.create', $client) }}" class="btn btn-success">Добавить
+                                подразделение</a>
+                        </p>
                         <table class="table table-striped table-bordered">
                             <thead>
                             <tr>
@@ -37,6 +41,19 @@
                             @endforelse
                             </tbody>
                         </table>
+
+                        <h3>Создать подразделение</h3>
+                        <div class="col-md-6">
+                            <form action="{{ route('clients.divisions.store') }}" method="POST">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="x">Название</label>
+                                    <input type="text" class="form-control" name="name" value="">
+                                    <input type="hidden" name="user_id" value="{{ $client->id }}">
+                                </div>
+                                <button type="submit" class="btn btn-success">Добавить</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

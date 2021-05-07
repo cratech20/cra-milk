@@ -85,6 +85,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('{client}/divisions', [DivisionController::class, 'index'])
             ->name('clients.divisions.index');
 
+        Route::get('{client}/divisions/create', [DivisionController::class, 'create'])
+            ->name('clients.divisions.create');
+
+        Route::post('divisions', [DivisionController::class, 'store'])
+            ->name('clients.divisions.store');
+
         Route::get('{client}/divisions/{division}', [FarmController::class, 'index'])
             ->name('clients.farm.index');
     });
