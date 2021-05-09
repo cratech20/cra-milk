@@ -62,4 +62,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Device::class);
     }
+
+    public function divisions()
+    {
+        return $this->hasMany(Division::class);
+    }
+
+    public function farms()
+    {
+        return $this->hasMany(Farm::class);
+    }
 }

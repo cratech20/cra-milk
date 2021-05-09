@@ -15,6 +15,8 @@ class AddUserIdToDevicesTable extends Migration
     {
         Schema::table('devices', function (Blueprint $table) {
             $table->bigInteger('user_id')->nullable();
+            $table->bigInteger('farm_id')->nullable();
+            $table->bigInteger('division_id')->nullable();
         });
     }
 
@@ -27,6 +29,8 @@ class AddUserIdToDevicesTable extends Migration
     {
         Schema::table('devices', function (Blueprint $table) {
             $table->dropColumn('user_id');
+            $table->dropColumn('farm_id');
+            $table->dropColumn('division_id');
         });
     }
 }

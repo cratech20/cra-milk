@@ -8,10 +8,6 @@
                     <div class="card-header">Список подразделений компании {{ $client->name }}</div>
 
                     <div class="card-body">
-                        <p>
-                            <a href="{{ route('clients.divisions.create', $client) }}" class="btn btn-success">Добавить
-                                подразделение</a>
-                        </p>
                         <table class="table table-striped table-bordered">
                             <thead>
                             <tr>
@@ -28,8 +24,7 @@
                                         {{ $division->name }}
                                     </td>
                                     <td>
-                                        <a href="{{ route('clients.farm.index', [$client, $division]) }}">Перейти к
-                                            фермам</a><br>
+                                        <a href="{{ route('clients.farms.index', $client) }}">Удалить</a><br>
                                     </td>
                                 </tr>
                             @empty

@@ -26,6 +26,8 @@
                                     <td>
                                         <a href="{{ route('clients.divisions.index', $client) }}">Перейти к
                                             подразделениям</a><br>
+                                        <a href="{{ route('clients.farms.index', $client) }}">Перейти к
+                                            фермам</a><br>
                                         <a href="{{ route('devices.summary_table', $client) }}">Перейти к
                                             итоговой таблице по устройствам</a>
                                     </td>

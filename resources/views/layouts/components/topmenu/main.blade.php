@@ -19,6 +19,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('clients.index') }}">Клиенты</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('devices.index') }}">Устройства</a>
+                </li>
                 @endrole
                 @role('client')
                 @include('layouts.components.topmenu.client')

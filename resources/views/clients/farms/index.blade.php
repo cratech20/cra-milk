@@ -17,15 +17,14 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @forelse($divisions as $division)
+                            @forelse($farms as $farm)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>
-                                        {{ $division->name }}
+                                        {{ $farm->name }}
                                     </td>
                                     <td>
-                                        <a href="{{ route('clients.farm.index', [$client, $division]) }}">Перейти к
-                                            устройствам</a><br>
+                                        <a href="{{ route('clients.farms.index', $client) }}">Удалить</a><br>
                                     </td>
                                 </tr>
                             @empty
@@ -37,6 +36,19 @@
                             @endforelse
                             </tbody>
                         </table>
+
+                        <h3>Создать ферму</h3>
+                        <div class="col-md-6">
+                            <form action="{{ route('clients.farms.store') }}" method="POST">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="x">Название</label>
+                                    <input type="text" class="form-control" name="name" value="">
+                                    <input type="hidden" name="user_id" value="{{ $client->id }}">
+                                </div>
+                                <button type="submit" class="btn btn-success">Добавить</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

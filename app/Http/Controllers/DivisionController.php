@@ -25,11 +25,6 @@ class DivisionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public
-    function create(User $client)
-    {
-        return view('clients.divisions.create', ['client' => $client]);
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -37,8 +32,7 @@ class DivisionController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public
-    function store(Request $request)
+    public function store(Request $request)
     {
         $division = Division::create($request->input());
 
@@ -55,8 +49,7 @@ class DivisionController extends Controller
      * @param \App\Models\Division $division
      * @return \Illuminate\Http\Response
      */
-    public
-    function show(Division $division)
+    public function show(Division $division)
     {
         //
     }
@@ -67,8 +60,7 @@ class DivisionController extends Controller
      * @param \App\Models\Division $division
      * @return \Illuminate\Http\Response
      */
-    public
-    function edit(Division $division)
+    public function edit(Division $division)
     {
         //
     }
@@ -80,8 +72,7 @@ class DivisionController extends Controller
      * @param \App\Models\Division $division
      * @return \Illuminate\Http\Response
      */
-    public
-    function update(Request $request, Division $division)
+    public function update(Request $request, Division $division)
     {
         //
     }
@@ -92,8 +83,7 @@ class DivisionController extends Controller
      * @param \App\Models\Division $division
      * @return \Illuminate\Http\Response
      */
-    public
-    function destroy(Division $division)
+    public function destroy(Division $division)
     {
         //
     }

@@ -30,13 +30,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('devices', DeviceController::class);
 
-    Route::get('/devices/client/{client?}', [DeviceController::class, 'index'])
-        ->name('devices.index');
-
     Route::get('/devices/destroy/{device}', [DeviceController::class, 'destroy'])
         ->name('devices.destroy');
 
-    Route::get('/devices/client/{client?}/summary', [DeviceController::class, 'summaryTable'])
+    Route::post('/devices/clients/change', [DeviceController::class, 'clientChange'])
+        ->name('devices.clients.change');
+
+    Route::get('/devices/client/summary/{client?}', [DeviceController::class, 'summaryTable'])
         ->name('devices.summary_table');
 
     Route::prefix('devices')->group(function () {
@@ -85,14 +85,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('{client}/divisions', [DivisionController::class, 'index'])
             ->name('clients.divisions.index');
 
-        Route::get('{client}/divisions/create', [DivisionController::class, 'create'])
-            ->name('clients.divisions.create');
-
         Route::post('divisions', [DivisionController::class, 'store'])
             ->name('clients.divisions.store');
 
-        Route::get('{client}/divisions/{division}', [FarmController::class, 'index'])
-            ->name('clients.farm.index');
+        Route::get('{client}/farms', [FarmController::class, 'index'])
+            ->name('clients.farms.index');
+
+        Route::post('farms', [FarmController::class, 'store'])
+            ->name('clients.farms.store');
     });
 });
 

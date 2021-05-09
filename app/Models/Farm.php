@@ -9,6 +9,8 @@ class Farm extends Model
 {
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     /**
      * Relations
      */

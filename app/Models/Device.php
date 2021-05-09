@@ -26,4 +26,9 @@ class Device extends Model
     {
         return $this->belongsTo(Farm::class);
     }
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class);
+    }
 }

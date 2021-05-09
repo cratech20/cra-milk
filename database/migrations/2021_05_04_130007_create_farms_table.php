@@ -15,7 +15,8 @@ class CreateFarmsTable extends Migration
     {
         Schema::create('farms', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('division_id');
+            $table->bigInteger('user_id');
+            $table->bigInteger('division_id')->nullable();
             $table->string('name');
             $table->timestamps();
             $table->softDeletes();

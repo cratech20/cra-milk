@@ -14,11 +14,11 @@ class FarmController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $client, Division $division)
+    public function index(User $client)
     {
-        $divisions = Farm::where('division_id', $division->id)->get();
+        $farm = Farm::where('user_id', $client->id)->get();
 
-        return view('clients.farms.index', ['divisions' => $divisions, 'client' => $client]);
+        return view('clients.farms.index', ['farms' => $farm, 'client' => $client]);
     }
 
     /**
@@ -39,7 +39,13 @@ class FarmController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $item = Farm::create($request->input());
+
+        return back()
+            ->with([
+                'message' => 'Ферма ' . $item->name . ' успешно создана',
+                'alert-class' => 'alert-success'
+            ]);
     }
 
     /**
