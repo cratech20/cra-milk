@@ -24,5 +24,6 @@ class AdminSeeder extends Seeder
         ]);
 
         $user->assignRole('admin');
+        $user->assignRole('employee');
     }
 }

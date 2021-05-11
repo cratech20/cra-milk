@@ -8,7 +8,7 @@
                     <div class="card-header">Отчеты</div>
                     <div class="card-body">
                         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
-                        <table id="example" class="display" style="width:100%">
+                        <table id="example" class="display bg-white" style="width:100%">
                             <thead>
                             <tr>
                                 @foreach($data['head'] as $th)

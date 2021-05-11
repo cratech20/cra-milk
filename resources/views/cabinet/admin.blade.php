@@ -8,7 +8,8 @@
                     <div class="card-header">Личный кабинет</div>
 
                     <div class="card-body">
-
+                        <a href="{{ route('reports.liters') }}">Отчёт PowerBI литры</a><br>
+                        <a href="{{ route('reports.impulse') }}">Отчёт PowerBI импульсы</a>
                     </div>
                 </div>
             </div>
