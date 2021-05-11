@@ -8,6 +8,12 @@
                     <div class="card-header">Список клиентов</div>
 
                     <div class="card-body">
+
+                        <p class="float-right">
+                            <a href="{{ route('users.registration.inn') }}" class="btn btn-success">Зарегистрировать
+                                клиента</a>
+                        </p>
+
                         <table class="table table-striped table-bordered">
                             <thead>
                             <tr>

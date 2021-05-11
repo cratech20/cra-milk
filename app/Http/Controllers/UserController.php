@@ -39,12 +39,18 @@ class UserController extends Controller
     {
         $data = $request->input();
 
-        User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'inn' => $data['inn'],
+            'inn' => !empty($data['inn']) ? $data['inn'] : null,
         ]);
+
+        if (!empty($data['inn'])) {
+            $user->assignRole('client');
+        } else {
+            $user->assignRole('employee');
+        }
 
         return redirect()->route('users.roles.index');
     }

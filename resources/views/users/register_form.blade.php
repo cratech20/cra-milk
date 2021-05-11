@@ -10,11 +10,14 @@
                     <div class="card-body">
                         <form action="{{ route('users.store') }}" method="POST">
                             {{ csrf_field() }}
-                            ИНН
-                            <p>
-                                <input type="number" class="form-control" name="inn"
-                                       autocomplete="off" value="{{ $data['data']['inn'] ?? '' }}">
-                            </p>
+                            @if (isset($data['data']['inn']))
+                                ИНН
+                                <p>
+                                    <input type="number" class="form-control" name="inn"
+                                           autocomplete="off" readonly="readonly"
+                                           value="{{ $data['data']['inn'] ?? '' }}">
+                                </p>
+                            @endif
                             Название
                             <p>
                                 <input type="text" class="form-control" name="name" required="required"
