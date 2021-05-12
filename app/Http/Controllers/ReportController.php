@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Device;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -61,6 +62,14 @@ class ReportController extends Controller
 
     public function liters()
     {
+        $devices = Device::get(['name', 'device_id']);
+
+        $deviceNames = [];
+
+        foreach ($devices as $device) {
+            $deviceNames[$device->device_id] = $device->name;
+        }
+
         // TODO Postgres
         $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
         // $json = Storage::get('milk-bi.json');
@@ -71,19 +80,21 @@ class ReportController extends Controller
 
         // Начало и конец периода
 
-        $startPeriod = Carbon::now()->startOfMonth();
-        $endPeriod = Carbon::now()->endOfMonth();
+        // $startPeriod = Carbon::now()->startOfMonth();
+        // $endPeriod = Carbon::now()->endOfMonth();
+        $startPeriod = Carbon::now();
+        $endPeriod = Carbon::now()->subDays(30);
 
         $currentDay = clone $startPeriod;
 
         // заполняются даты для шапки
         $dates = [];
-        while ($currentDay->lessThanOrEqualTo($endPeriod)) {
+        while ($endPeriod->lessThanOrEqualTo($currentDay)) {
             $date = $currentDay->format('d.m.y');
             $dateKey = $currentDay->format('Ymd');
             $dates[$dateKey] = $date;
             $result['head'][] = $date;
-            $currentDay = $currentDay->addDay();
+            $currentDay = $currentDay->subDay();
         }
 
         // заполняются литры в день по коровам!
@@ -106,7 +117,7 @@ class ReportController extends Controller
 
         foreach ($litresByDay as $deviceId => $cows) {
             foreach ($cows as $cowId => $volumes) {
-                $body[$cowId] = [$deviceId, $cowId];
+                $body[$cowId] = [$deviceNames[$deviceId] ?? $deviceId, $cowId];
 
                 foreach ($dates as $dateKey => $trash) {
                     $body[$cowId][] = $volumes[$dateKey] ?? 0;
