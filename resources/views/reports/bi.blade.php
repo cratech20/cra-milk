@@ -50,7 +50,7 @@
 
                                 var groupColumn = 2;
 
-                                $('#example').DataTable({
+                                var table = $('#example').DataTable({
                                     "columnDefs": [
                                         {"visible": false, "targets": groupColumn}
                                     ],
@@ -70,6 +70,16 @@
                                                 last = group;
                                             }
                                         });
+                                    }
+                                });
+
+                                // Order by the grouping
+                                $('#example tbody').on('click', 'tr.group', function () {
+                                    var currentOrder = table.order()[0];
+                                    if (currentOrder[0] === groupColumn && currentOrder[1] === 'asc') {
+                                        table.order([groupColumn, 'desc']).draw();
+                                    } else {
+                                        table.order([groupColumn, 'asc']).draw();
                                     }
                                 });
                             });

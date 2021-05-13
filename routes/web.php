@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CowController;
+use App\Http\Controllers\CowGroupController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\FarmController;
@@ -103,6 +104,15 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/cows/linking', [CowController::class, 'linking'])
             ->name('clients.cows.linking');
+
+        Route::get('{client}/cows/groups', [CowGroupController::class, 'index'])
+            ->name('clients.cows.groups.index');
+
+        Route::post('cows/groups', [CowGroupController::class, 'store'])
+            ->name('clients.cows.groups.store');
+
+        Route::post('cows/groups/change', [CowGroupController::class, 'change'])
+            ->name('clients.cows.groups.change');
     });
 });
 

@@ -34,7 +34,7 @@
                                             подразделениям</a><br>
                                         <a href="{{ route('clients.farms.index', $client) }}">Перейти к
                                             фермам</a><br>
-                                        <a href="{{ route('clients.farms.index', $client) }}">Перейти к
+                                        <a href="{{ route('clients.cows.groups.index', $client) }}">Перейти к
                                             группам коров</a><br>
                                         <a href="{{ route('clients.cows.index', $client) }}">Перейти к
                                             коровам</a><br>

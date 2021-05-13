@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cow;
 use App\Models\CowGroup;
+use App\Models\Division;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CowGroupController extends Controller
@@ -12,9 +15,11 @@ class CowGroupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $client)
     {
-        //
+        $cowGroups = CowGroup::where('user_id', $client->id)->get();
+
+        return view('clients.cows.groups.index', ['cowGroups' => $cowGroups, 'client' => $client]);
     }
 
     /**
@@ -30,18 +35,24 @@ class CowGroupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $item = CowGroup::create($request->input());
+
+        return back()
+            ->with([
+                'message' => 'Группа коров ' . $item->name . ' успешно создана',
+                'alert-class' => 'alert-success'
+            ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\CowGroup  $cowGroup
+     * @param \App\Models\CowGroup $cowGroup
      * @return \Illuminate\Http\Response
      */
     public function show(CowGroup $cowGroup)
@@ -52,7 +63,7 @@ class CowGroupController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\CowGroup  $cowGroup
+     * @param \App\Models\CowGroup $cowGroup
      * @return \Illuminate\Http\Response
      */
     public function edit(CowGroup $cowGroup)
@@ -63,8 +74,8 @@ class CowGroupController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\CowGroup  $cowGroup
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\CowGroup $cowGroup
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, CowGroup $cowGroup)
@@ -75,11 +86,26 @@ class CowGroupController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\CowGroup  $cowGroup
+     * @param \App\Models\CowGroup $cowGroup
      * @return \Illuminate\Http\Response
      */
     public function destroy(CowGroup $cowGroup)
     {
         //
+    }
+
+    public function change(Request $request)
+    {
+        $data = $request->input();
+
+        foreach ($data['devices'] as $deviceId) {
+            Cow::where('id', $deviceId)->update(['group_id' => $data['item_id']]);
+        }
+
+        return back()
+            ->with([
+                'message' => 'Группа у коров успешно обновлена',
+                'alert-class' => 'alert-success'
+            ]);
     }
 }

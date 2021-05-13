@@ -14,4 +14,13 @@ class Cow extends Model
     {
         return $this->name ?? 'Корова ID ' . $this->id . ' (' . $this->cow_id . ')';
     }
+
+    /**
+     * Relations
+     */
+
+    public function group()
+    {
+        return $this->belongsTo(CowGroup::class);
+    }
 }

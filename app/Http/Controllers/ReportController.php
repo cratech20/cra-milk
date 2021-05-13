@@ -64,7 +64,7 @@ class ReportController extends Controller
     public function liters()
     {
         $deviceNames = Device::get(['name', 'device_id'])->pluck('name', 'device_id');
-        $cowNames = Cow::all()->pluck('calculated_name', 'cow_id');
+        $allCows = Cow::all()->keyBy('cow_id');
 
         // TODO Postgres
         $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
@@ -114,8 +114,9 @@ class ReportController extends Controller
         foreach ($litresByDay as $deviceId => $cows) {
             foreach ($cows as $cowId => $volumes) {
                 $deviceName = $deviceNames[$deviceId] ?? $deviceId;
-                $cowName = $cowNames[$cowId] ?? $cowId;
-                $body[$cowId] = [$deviceName, $cowName, 'Группа 2' ?? 'Нет группы'];
+                $cowName = $allCows[$cowId]->calculated_name ?? $cowId;
+                $group = $allCows[$cowId]->group->calculated_name ?? 'Неизвестно';
+                $body[$cowId] = [$deviceName, $cowName, $group];
 
                 foreach ($dates as $dateKey => $trash) {
                     $body[$cowId][] = $volumes[$dateKey] ?? 0;
