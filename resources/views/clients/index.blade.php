@@ -34,6 +34,10 @@
                                             подразделениям</a><br>
                                         <a href="{{ route('clients.farms.index', $client) }}">Перейти к
                                             фермам</a><br>
+                                        <a href="{{ route('clients.farms.index', $client) }}">Перейти к
+                                            группам коров</a><br>
+                                        <a href="{{ route('clients.cows.index', $client) }}">Перейти к
+                                            коровам</a><br>
                                         <a href="{{ route('devices.summary_table', $client) }}">Перейти к
                                             итоговой таблице по устройствам</a>
                                     </td>

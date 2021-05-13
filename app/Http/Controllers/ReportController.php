@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cow;
 use App\Models\Device;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -62,13 +63,8 @@ class ReportController extends Controller
 
     public function liters()
     {
-        $devices = Device::get(['name', 'device_id']);
-
-        $deviceNames = [];
-
-        foreach ($devices as $device) {
-            $deviceNames[$device->device_id] = $device->name;
-        }
+        $deviceNames = Device::get(['name', 'device_id'])->pluck('name', 'device_id');
+        $cowNames = Cow::all()->pluck('calculated_name', 'cow_id');
 
         // TODO Postgres
         $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
@@ -76,7 +72,7 @@ class ReportController extends Controller
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         $result = [];
 
-        $result['head'] = ['Устройство', 'Корова'];
+        $result['head'] = ['Устройство', 'Корова', 'Группа'];
 
         // Начало и конец периода
 
@@ -117,7 +113,9 @@ class ReportController extends Controller
 
         foreach ($litresByDay as $deviceId => $cows) {
             foreach ($cows as $cowId => $volumes) {
-                $body[$cowId] = [$deviceNames[$deviceId] ?? $deviceId, $cowId];
+                $deviceName = $deviceNames[$deviceId] ?? $deviceId;
+                $cowName = $cowNames[$cowId] ?? $cowId;
+                $body[$cowId] = [$deviceName, $cowName, 'Группа 2' ?? 'Нет группы'];
 
                 foreach ($dates as $dateKey => $trash) {
                     $body[$cowId][] = $volumes[$dateKey] ?? 0;

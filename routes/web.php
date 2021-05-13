@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CowController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\FarmController;
@@ -96,6 +97,12 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('farms', [FarmController::class, 'store'])
             ->name('clients.farms.store');
+
+        Route::get('{client}/cows', [CowController::class, 'index'])
+            ->name('clients.cows.index');
+
+        Route::get('/cows/linking', [CowController::class, 'linking'])
+            ->name('clients.cows.linking');
     });
 });
 
