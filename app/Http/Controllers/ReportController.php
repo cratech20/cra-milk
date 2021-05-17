@@ -70,6 +70,7 @@ class ReportController extends Controller
         $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
         // $json = Storage::get('milk-bi.json');
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $deviceByCow = [];
         $result = [];
 
         $result['head'] = ['Устройство', 'Корова', 'Группа'];
@@ -99,28 +100,28 @@ class ReportController extends Controller
         foreach ($data as $rowDirty) {
             $row = $rowDirty[3];
 
-            if (!isset($row['y'])) {
+            if (!isset($row['y'], $row['c'])) {
                 continue;
             }
 
             $date = Carbon::parse((int)$row['t'])->format('Ymd');
             $deviceId = $row['l'];
             $cowId = $row['c'];
-            $litresByDay[$deviceId][$cowId][$date] = ($litresByDay[$deviceId][$cowId][$date] ?? 0) + $row['y'];
+            $litresByDay[$cowId][$date] = ($litresByDay[$cowId][$date] ?? 0) + $row['y'];
+            $deviceByCow[$cowId] = $deviceId;
         }
 
         $body = [];
 
-        foreach ($litresByDay as $deviceId => $cows) {
-            foreach ($cows as $cowId => $volumes) {
-                $deviceName = $deviceNames[$deviceId] ?? $deviceId;
-                $cowName = $allCows[$cowId]->calculated_name ?? $cowId;
-                $group = $allCows[$cowId]->group->calculated_name ?? 'Неизвестно';
-                $body[$cowId] = [$deviceName, $cowName, $group];
+        foreach ($litresByDay as $cowId => $volumes) {
+            $deviceId = $deviceByCow[$cowId];
+            $deviceName = $deviceNames[$deviceId] ?? $deviceId;
+            $cowName = $allCows[$cowId]->calculated_name ?? $cowId;
+            $group = $allCows[$cowId]->group->calculated_name ?? 'Неизвестно';
+            $body[$cowId] = [$deviceName, $cowName, $group];
 
-                foreach ($dates as $dateKey => $trash) {
-                    $body[$cowId][] = $volumes[$dateKey] ?? 0;
-                }
+            foreach ($dates as $dateKey => $trash) {
+                $body[$cowId][] = $volumes[$dateKey] ?? 0;
             }
 
             $result['body'] = $body;
