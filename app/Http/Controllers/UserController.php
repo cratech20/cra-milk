@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportBasic;
+use App\Exports\ExportBladeBasic;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -53,5 +56,15 @@ class UserController extends Controller
         }
 
         return redirect()->route('users.roles.index');
+    }
+
+    public function exportBasic()
+    {
+        return Excel::download(new ExportBasic, 'users-' . __FUNCTION__ . '.xlsx');
+    }
+
+    public function exportBladeBasic()
+    {
+        return Excel::download(new ExportBladeBasic, 'users-' . __FUNCTION__ . '.xlsx');
     }
 }

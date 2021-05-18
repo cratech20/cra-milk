@@ -17,6 +17,7 @@
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.2",
+        "maatwebsite/excel": "^3.1",
         "movemoveapp/laravel-dadata": "^1.0",
         "qcod/laravel-settings": "^1.0",
         "spatie/laravel-permission": "^4.0",

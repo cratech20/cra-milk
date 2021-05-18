@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportBladeBasic;
 use App\Models\Cow;
 use App\Models\Device;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -130,31 +132,36 @@ class ReportController extends Controller
         return view('reports.bi', ['data' => $result]);
     }
 
-    public function impulse()
+    public function litersByDevice()
     {
+        $deviceNames = Device::get(['name', 'device_id'])->pluck('name', 'device_id');
+        $allCows = Cow::all()->keyBy('cow_id');
+
         // TODO Postgres
         $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
         // $json = Storage::get('milk-bi.json');
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         $result = [];
 
-        $result['head'] = ['Устройство', 'Корова'];
+        $result['head'] = ['Устройство'];
 
         // Начало и конец периода
 
-        $startPeriod = Carbon::now()->startOfMonth();
-        $endPeriod = Carbon::now()->endOfMonth();
+        // $startPeriod = Carbon::now()->startOfMonth();
+        // $endPeriod = Carbon::now()->endOfMonth();
+        $startPeriod = Carbon::now();
+        $endPeriod = Carbon::now()->subDays(30);
 
         $currentDay = clone $startPeriod;
 
         // заполняются даты для шапки
         $dates = [];
-        while ($currentDay->lessThanOrEqualTo($endPeriod)) {
+        while ($endPeriod->lessThanOrEqualTo($currentDay)) {
             $date = $currentDay->format('d.m.y');
             $dateKey = $currentDay->format('Ymd');
             $dates[$dateKey] = $date;
             $result['head'][] = $date;
-            $currentDay = $currentDay->addDay();
+            $currentDay = $currentDay->subDay();
         }
 
         // заполняются литры в день по коровам!
@@ -163,30 +170,167 @@ class ReportController extends Controller
         foreach ($data as $rowDirty) {
             $row = $rowDirty[3];
 
-            if (!isset($row['i'])) {
+            if (!isset($row['y'], $row['c'])) {
                 continue;
             }
 
             $date = Carbon::parse((int)$row['t'])->format('Ymd');
             $deviceId = $row['l'];
-            $cowId = $row['c'];
-            $litresByDay[$deviceId][$cowId][$date] = ($litresByDay[$deviceId][$cowId][$date] ?? 0) + $row['i'];
+            $litresByDay[$deviceId][$date] = ($litresByDay[$deviceId][$date] ?? 0) + $row['y'];
         }
 
         $body = [];
 
-        foreach ($litresByDay as $deviceId => $cows) {
-            foreach ($cows as $cowId => $volumes) {
-                $body[$cowId] = [$deviceId, $cowId];
+        foreach ($litresByDay as $deviceId => $volumes) {
+            $deviceName = $deviceNames[$deviceId] ?? $deviceId;
+            $body[$deviceId] = [$deviceName];
 
-                foreach ($dates as $dateKey => $trash) {
-                    $body[$cowId][] = $volumes[$dateKey] ?? 0;
-                }
+            foreach ($dates as $dateKey => $trash) {
+                $body[$deviceId][] = $volumes[$dateKey] ?? 0;
             }
 
             $result['body'] = $body;
         }
 
         return view('reports.bi', ['data' => $result]);
+    }
+
+    public function impulse()
+    {
+        $deviceNames = Device::get(['name', 'device_id'])->pluck('name', 'device_id');
+        $allCows = Cow::all()->keyBy('cow_id');
+
+        // TODO Postgres
+        $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
+        // $json = Storage::get('milk-bi.json');
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $deviceByCow = [];
+        $result = [];
+
+        $result['head'] = ['Устройство', 'Корова', 'Группа'];
+
+        // Начало и конец периода
+
+        // $startPeriod = Carbon::now()->startOfMonth();
+        // $endPeriod = Carbon::now()->endOfMonth();
+        $startPeriod = Carbon::now();
+        $endPeriod = Carbon::now()->subDays(30);
+
+        $currentDay = clone $startPeriod;
+
+        // заполняются даты для шапки
+        $dates = [];
+        while ($endPeriod->lessThanOrEqualTo($currentDay)) {
+            $date = $currentDay->format('d.m.y');
+            $dateKey = $currentDay->format('Ymd');
+            $dates[$dateKey] = $date;
+            $result['head'][] = $date;
+            $currentDay = $currentDay->subDay();
+        }
+
+        // заполняются литры в день по коровам!
+
+        $litresByDay = [];
+        foreach ($data as $rowDirty) {
+            $row = $rowDirty[3];
+
+            if (!isset($row['y'], $row['c'])) {
+                continue;
+            }
+
+            $date = Carbon::parse((int)$row['t'])->format('Ymd');
+            $deviceId = $row['l'];
+            $cowId = $row['c'];
+            $litresByDay[$cowId][$date] = ($litresByDay[$cowId][$date] ?? 0) + $row['i'];
+            $deviceByCow[$cowId] = $deviceId;
+        }
+
+        $body = [];
+
+        foreach ($litresByDay as $cowId => $volumes) {
+            $deviceId = $deviceByCow[$cowId];
+            $deviceName = $deviceNames[$deviceId] ?? $deviceId;
+            $cowName = $allCows[$cowId]->calculated_name ?? $cowId;
+            $group = $allCows[$cowId]->group->calculated_name ?? 'Неизвестно';
+            $body[$cowId] = [$deviceName, $cowName, $group];
+
+            foreach ($dates as $dateKey => $trash) {
+                $body[$cowId][] = $volumes[$dateKey] ?? 0;
+            }
+
+            $result['body'] = $body;
+        }
+
+        return view('reports.bi', ['data' => $result]);
+    }
+
+    public static function getLiters()
+    {
+        $deviceNames = Device::get(['name', 'device_id'])->pluck('name', 'device_id');
+        $allCows = Cow::all()->keyBy('cow_id');
+
+        // TODO Postgres
+        $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
+        // $json = Storage::get('milk-bi.json');
+        $json = preg_replace('|\\\\u0003|', '', $json);
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $deviceByCow = [];
+        $result = [];
+
+        $result['head'] = ['Устройство', 'Корова', 'Группа'];
+
+        // Начало и конец периода
+
+        // $startPeriod = Carbon::now()->startOfMonth();
+        // $endPeriod = Carbon::now()->endOfMonth();
+        $startPeriod = Carbon::now();
+        $endPeriod = Carbon::now()->subDays(30);
+
+        $currentDay = clone $startPeriod;
+
+        // заполняются даты для шапки
+        $dates = [];
+        while ($endPeriod->lessThanOrEqualTo($currentDay)) {
+            $date = $currentDay->format('d.m.y');
+            $dateKey = $currentDay->format('Ymd');
+            $dates[$dateKey] = $date;
+            $result['head'][] = $date;
+            $currentDay = $currentDay->subDay();
+        }
+
+        // заполняются литры в день по коровам!
+
+        $litresByDay = [];
+        foreach ($data as $rowDirty) {
+            $row = $rowDirty[3];
+
+            if (!isset($row['y'], $row['c'])) {
+                continue;
+            }
+
+            $date = Carbon::parse((int)$row['t'])->format('Ymd');
+            $deviceId = $row['l'];
+            $cowId = (string)$row['c'];
+            $litresByDay[$cowId][$date] = ($litresByDay[$cowId][$date] ?? 0) + $row['y'];
+            $deviceByCow[$cowId] = $deviceId;
+        }
+
+        $body = [];
+
+        foreach ($litresByDay as $cowId => $volumes) {
+            $deviceId = $deviceByCow[$cowId];
+            $deviceName = $deviceNames[$deviceId] ?? $deviceId;
+            $cowName = $allCows[$cowId]->calculated_name ?? $cowId;
+            $group = $allCows[$cowId]->group->calculated_name ?? 'Неизвестно';
+            $body[$cowId] = [$deviceName, $cowName, $group];
+
+            foreach ($dates as $dateKey => $trash) {
+                $body[$cowId][] = $volumes[$dateKey] ?? 0;
+            }
+
+            $result['body'] = $body;
+        }
+
+        return $result;
     }
 }
