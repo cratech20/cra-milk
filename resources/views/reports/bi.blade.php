@@ -48,18 +48,20 @@
                             $(document).ready(function () {
                                 $.noConflict();
 
-                                var groupColumn = 2;
+                                var groupColumn = {!! $groupColumn ?? 'false' !!};
+                                var orderColumn = groupColumn ? groupColumn : 0;
 
-                                var table = $('#example').DataTable({
-                                    "columnDefs": [
-                                        {"visible": false, "targets": groupColumn}
-                                    ],
-                                    "order": [[groupColumn, 'asc']],
+                                var settings = {
+                                    "order": [[orderColumn, 'asc']],
                                     "displayLength": 50,
                                     "drawCallback": function (settings) {
                                         var api = this.api();
                                         var rows = api.rows({page: 'current'}).nodes();
                                         var last = null;
+
+                                        if (!groupColumn) {
+                                            return 0;
+                                        }
 
                                         api.column(groupColumn, {page: 'current'}).data().each(function (group, i) {
                                             if (last !== group) {
@@ -71,7 +73,15 @@
                                             }
                                         });
                                     }
-                                });
+                                };
+
+                                if (groupColumn) {
+                                    settings.columnDefs = [
+                                        {"visible": false, "targets": groupColumn}
+                                    ];
+                                }
+
+                                var table = $('#example').DataTable(settings);
 
                                 // Order by the grouping
                                 $('#example tbody').on('click', 'tr.group', function () {

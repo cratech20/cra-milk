@@ -12,8 +12,8 @@ class ReportGenerator
 {
     private $startPeriod;
     private $endPeriod;
-    private $deviceNames;
-    private $allCows;
+    private $devices;
+    private $cows;
     private $data;
     private $deviceByCow;
     private $result;
@@ -35,14 +35,15 @@ class ReportGenerator
 
     public function fillDevicesAndCows()
     {
-        $this->deviceNames = Device::get(['name', 'device_id'])->pluck('name', 'device_id');
-        $this->allCows = Cow::all()->keyBy('cow_id');
+        $this->devices = Device::get(['name', 'device_id'])->pluck('name', 'device_id');
+        $this->cows = Cow::all()->keyBy('cow_id');
     }
 
     public function getAndParseJSON()
     {
         $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
         // $json = Storage::get('milk-bi.json');
+        $json = preg_replace('|\\\\u0003|', '', $json);
         $this->data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
     }
 
@@ -66,34 +67,55 @@ class ReportGenerator
         $this->datesForHead = $datesForHead;
     }
 
-    // public static function fillResultHeadDates()
-    // {
-    //
-    // }
-
     /**
      * Алгоритмы для получения отчета
      */
 
-    public static function getDataByLiters()
+    public static function getLitersByCow()
     {
         $generator = new self();
         $generator->fillDefaultPeriod();
         $generator->fillDevicesAndCows();
         $generator->getAndParseJSON();
         $generator->fillDatesAndDatesForHead();
-        // $generator->fillResultHeadDates();
-        $generator->getDataByLitersBody();
+        $generator->getLitersByCowBody();
 
         return $generator->result;
     }
 
-    public function getDataByLitersBody()
+    public static function getLitersByDevice()
     {
+        $generator = new self();
+        $generator->fillDefaultPeriod();
+        $generator->fillDevicesAndCows();
+        $generator->getAndParseJSON();
+        $generator->fillDatesAndDatesForHead();
+        $generator->getLitersByDeviceBody();
+
+        return $generator->result;
+    }
+
+    public static function getImpulsesByCow()
+    {
+        $generator = new self();
+        $generator->fillDefaultPeriod();
+        $generator->fillDevicesAndCows();
+        $generator->getAndParseJSON();
+        $generator->fillDatesAndDatesForHead();
+        $generator->getLitersByDeviceBody();
+
+        return $generator->result;
+    }
+
+    public function getLitersByCowBody()
+    {
+        $cows = $this->cows;
+        $devices = $this->devices;
         $this->deviceByCow = [];
         $result = [];
 
-        $result['head'] = array_merge(['Устройство', 'Корова', 'Группа'], $this->datesForHead);
+        $head = ['Устройство', 'Корова', 'Группа'];
+        $result['head'] = array_merge($head, $this->datesForHead);
 
         // заполняются литры в день по коровам!
 
@@ -116,9 +138,9 @@ class ReportGenerator
 
         foreach ($litresByDay as $cowId => $volumes) {
             $deviceId = $deviceByCow[$cowId];
-            $deviceName = $deviceNames[$deviceId] ?? $deviceId;
-            $cowName = $allCows[$cowId]->calculated_name ?? $cowId;
-            $group = $allCows[$cowId]->group->calculated_name ?? 'Неизвестно';
+            $deviceName = $devices[$deviceId] ?? $deviceId;
+            $cowName = $cows[$cowId]->calculated_name ?? $cowId;
+            $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
             $body[$cowId] = [$deviceName, $cowName, $group];
 
             foreach ($this->dates as $dateKey => $trash) {
@@ -130,4 +152,93 @@ class ReportGenerator
 
         $this->result = $result;
     }
+
+    public function getLitersByDeviceBody()
+    {
+        $cows = $this->cows;
+        $devices = $this->devices;
+        $this->deviceByCow = [];
+        $result = [];
+
+        $head = ['Устройство'];
+
+        $result['head'] = array_merge($head, $this->datesForHead);
+
+        // заполняются литры в день по коровам!
+
+        $litresByDay = [];
+        foreach ($this->data as $rowDirty) {
+            $row = $rowDirty[3];
+
+            if (!isset($row['y'], $row['c'])) {
+                continue;
+            }
+
+            $date = Carbon::parse((int)$row['t'])->format('Ymd');
+            $deviceId = $row['l'];
+            $litresByDay[$deviceId][$date] = ($litresByDay[$deviceId][$date] ?? 0) + $row['y'];
+        }
+
+        $body = [];
+
+        foreach ($litresByDay as $deviceId => $volumes) {
+            $deviceName = $devices[$deviceId] ?? $deviceId;
+            $body[$deviceId] = [$deviceName];
+
+            foreach ($this->dates as $dateKey => $trash) {
+                $body[$deviceId][] = $volumes[$dateKey] ?? 0;
+            }
+
+            $result['body'] = $body;
+        }
+
+        $this->result = $result;
+    }
+
+    public function getImpulsesByCowBody()
+    {
+        $cows = $this->cows;
+        $devices = $this->devices;
+        $this->deviceByCow = [];
+        $result = [];
+
+        $head = ['Устройство', 'Корова', 'Группа'];
+        $result['head'] = array_merge($head, $this->datesForHead);
+
+        // заполняются литры в день по коровам!
+
+        $litresByDay = [];
+        foreach ($this->data as $rowDirty) {
+            $row = $rowDirty[3];
+
+            if (!isset($row['y'], $row['c'])) {
+                continue;
+            }
+
+            $date = Carbon::parse((int)$row['t'])->format('Ymd');
+            $deviceId = $row['l'];
+            $cowId = $row['c'];
+            $litresByDay[$cowId][$date] = ($litresByDay[$cowId][$date] ?? 0) + $row['i'];
+            $deviceByCow[$cowId] = $deviceId;
+        }
+
+        $body = [];
+
+        foreach ($litresByDay as $cowId => $volumes) {
+            $deviceId = $deviceByCow[$cowId];
+            $deviceName = $devices[$deviceId] ?? $deviceId;
+            $cowName = $cows[$cowId]->calculated_name ?? $cowId;
+            $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
+            $body[$cowId] = [$deviceName, $cowName, $group];
+
+            foreach ($this->dates as $dateKey => $trash) {
+                $body[$cowId][] = $volumes[$dateKey] ?? 0;
+            }
+
+            $result['body'] = $body;
+        }
+
+        $this->result = $result;
+    }
+
 }
