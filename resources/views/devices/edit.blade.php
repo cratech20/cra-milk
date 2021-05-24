@@ -35,7 +35,7 @@
                                        value="{{ $device->weight }}">
                             </div>
                             <div class="form-group">
-                                <label for="x">Дата применения веса импульса</label>
+                                <label for="x">Дата применения веса импульса по МСК (+3:00)</label>
                                 <input type="date" class="form-control" name="weight_set_at"
                                        value="{{ \Carbon\Carbon::parse($device->weight_set_at)->format('Y-m-d') }}">
                             </div>

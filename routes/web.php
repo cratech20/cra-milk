@@ -56,14 +56,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/liters', [ReportController::class, 'liters'])
             ->name('reports.liters');
 
-        Route::get('/liters/export', [ReportController::class, 'litersExport'])
-            ->name('reports.liters.export');
-
         Route::get('/liters-device', [ReportController::class, 'litersByDevice'])
             ->name('reports.liters.device');
 
         Route::get('/impulse', [ReportController::class, 'impulse'])
             ->name('reports.impulse');
+
+        Route::get('/impulse-device', [ReportController::class, 'impulseByDevice'])
+            ->name('reports.impulse.device');
     });
 
     Route::prefix('users')->group(function () {

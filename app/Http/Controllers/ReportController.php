@@ -94,4 +94,15 @@ class ReportController extends Controller
 
         return view('reports.bi', ['data' => $result, 'groupColumn' => 3, 'downloadRoute' => 'reports.impulse']);
     }
+
+    public function impulseByDevice(Request $request)
+    {
+        $result = ReportGenerator::getImpulsesByDevice();
+
+        if ($request->input('download')) {
+            return Excel::download(new ExportReport($result), 'report-impulse-device-' . date('H-i_d-m-y') . '.xlsx');
+        }
+
+        return view('reports.bi', ['data' => $result, 'downloadRoute' => 'reports.impulse.device']);
+    }
 }

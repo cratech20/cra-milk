@@ -72,6 +72,22 @@ class ReportGenerator
         $this->datesForHead = $datesForHead;
     }
 
+    private function getCalculatedLiters($deviceId, $liters, $impulses)
+    {
+        if ($impulses === 0 || !isset($this->devices[$deviceId])) {
+            return $liters;
+        }
+
+        $weight = $this->devices[$deviceId]->weight;
+        $weightSetDate = Carbon::parse($this->devices[$deviceId]->weight_set_at);
+
+        if ($weight === null || $weightSetDate === null || Carbon::now()->lt($weightSetDate)) {
+            return $liters;
+        }
+
+        return $impulses * $weight;
+    }
+
     /**
      * Алгоритмы для получения отчета
      */
@@ -112,6 +128,18 @@ class ReportGenerator
         return $generator->result;
     }
 
+    public static function getImpulsesByDevice()
+    {
+        $generator = new self();
+        $generator->fillDefaultPeriod();
+        $generator->fillDevicesAndCows();
+        $generator->getAndParseJSON();
+        $generator->fillDatesAndDatesForHead();
+        $generator->getImpulsesByDeviceBody();
+
+        return $generator->result;
+    }
+
     public function getLitersByCowBody()
     {
         $cows = $this->cows;
@@ -128,14 +156,14 @@ class ReportGenerator
         foreach ($this->data as $rowDirty) {
             $row = $rowDirty[3];
 
-            if (!isset($row['y'], $row['c'])) {
+            if (!isset($row['y'], $row['c'], $row['i'])) {
                 continue;
             }
 
             $date = Carbon::parse((int)$row['t'])->format('Ymd');
             $deviceId = $row['l'];
             $cowId = $row['c'];
-            $liters = $this->getCalculatedLiters($deviceId, $row['y']);
+            $liters = $this->getCalculatedLiters($deviceId, $row['y'], $row['i']);
             $litersByDay[$cowId][$date] = ($litersByDay[$cowId][$date] ?? 0) + $liters;
             $deviceByCow[$cowId] = $deviceId;
         }
@@ -144,7 +172,7 @@ class ReportGenerator
 
         foreach ($litersByDay as $cowId => $volumes) {
             $deviceId = $deviceByCow[$cowId];
-            $deviceName = $devices[$deviceId] ?? $deviceId;
+            $deviceName = $devices[$deviceId]->name ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
             $body[$cowId] = [$deviceName, $cowName, $group];
@@ -176,19 +204,20 @@ class ReportGenerator
         foreach ($this->data as $rowDirty) {
             $row = $rowDirty[3];
 
-            if (!isset($row['y'], $row['c'])) {
+            if (!isset($row['y'], $row['c'], $row['i'])) {
                 continue;
             }
 
             $date = Carbon::parse((int)$row['t'])->format('Ymd');
             $deviceId = $row['l'];
-            $litersByDay[$deviceId][$date] = ($litersByDay[$deviceId][$date] ?? 0) + $row['y'];
+            $liters = $this->getCalculatedLiters($deviceId, $row['y'], $row['i']);
+            $litersByDay[$deviceId][$date] = ($litersByDay[$deviceId][$date] ?? 0) + $liters;
         }
 
         $body = [];
 
         foreach ($litersByDay as $deviceId => $volumes) {
-            $deviceName = $devices[$deviceId] ?? $deviceId;
+            $deviceName = $devices[$deviceId]->name ?? $deviceId;
             $body[$deviceId] = [$deviceName];
 
             foreach ($this->dates as $dateKey => $trash) {
@@ -232,13 +261,55 @@ class ReportGenerator
 
         foreach ($litersByDay as $cowId => $volumes) {
             $deviceId = $deviceByCow[$cowId];
-            $deviceName = $devices[$deviceId] ?? $deviceId;
+            $deviceName = $devices[$deviceId]->name ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
             $body[$cowId] = [$deviceName, $cowName, $group];
 
             foreach ($this->dates as $dateKey => $trash) {
                 $body[$cowId][] = $volumes[$dateKey] ?? 0;
+            }
+
+            $result['body'] = $body;
+        }
+
+        $this->result = $result;
+    }
+
+    public function getImpulsesByDeviceBody()
+    {
+        $cows = $this->cows;
+        $devices = $this->devices;
+        $this->deviceByCow = [];
+        $result = [];
+
+        $head = ['Устройство'];
+
+        $result['head'] = array_merge($head, $this->datesForHead);
+
+        // заполняются литры в день по коровам!
+
+        $litersByDay = [];
+        foreach ($this->data as $rowDirty) {
+            $row = $rowDirty[3];
+
+            if (!isset($row['c'], $row['i'])) {
+                continue;
+            }
+
+            $date = Carbon::parse((int)$row['t'])->format('Ymd');
+            $deviceId = $row['l'];
+            $litersByDay[$deviceId][$date] = ($litersByDay[$deviceId][$date] ?? 0) + $row['i'];
+        }
+
+        $body = [];
+
+        foreach ($litersByDay as $deviceId => $volumes) {
+            $deviceName = $devices[$deviceId]->name ?? $deviceId;
+            $body[$deviceId] = [$deviceName];
+
+            foreach ($this->dates as $dateKey => $trash) {
+                $body[$deviceId][] = $volumes[$dateKey] ?? 0;
             }
 
             $result['body'] = $body;
