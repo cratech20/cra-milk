@@ -72,7 +72,7 @@ class ReportGenerator
         $this->datesForHead = $datesForHead;
     }
 
-    private function getCalculatedLiters($deviceId, $liters, $impulses)
+    private function getCalculatedLiters($deviceId, $liters, $impulses, $date)
     {
         if ($impulses === 0 || !isset($this->devices[$deviceId])) {
             return $liters;
@@ -81,7 +81,7 @@ class ReportGenerator
         $weight = $this->devices[$deviceId]->weight;
         $weightSetDate = Carbon::parse($this->devices[$deviceId]->weight_set_at);
 
-        if ($weight === null || $weightSetDate === null || Carbon::now()->lt($weightSetDate)) {
+        if ($weight === null || $weightSetDate === null || $date->lte($weightSetDate)) {
             return $liters;
         }
 
@@ -156,14 +156,15 @@ class ReportGenerator
         foreach ($this->data as $rowDirty) {
             $row = $rowDirty[3];
 
-            if (!isset($row['y'], $row['c'], $row['i'])) {
+            if (!isset($row['y'], $row['c'], $row['i'], $row['t'])) {
                 continue;
             }
 
-            $date = Carbon::parse((int)$row['t'])->format('Ymd');
+            $carbonDate = Carbon::parse((int)$row['t']);
+            $date = $carbonDate->format('Ymd');
             $deviceId = $row['l'];
             $cowId = $row['c'];
-            $liters = $this->getCalculatedLiters($deviceId, $row['y'], $row['i']);
+            $liters = $this->getCalculatedLiters($deviceId, $row['y'], $row['i'], $carbonDate);
             $litersByDay[$cowId][$date] = ($litersByDay[$cowId][$date] ?? 0) + $liters;
             $deviceByCow[$cowId] = $deviceId;
         }
@@ -204,13 +205,14 @@ class ReportGenerator
         foreach ($this->data as $rowDirty) {
             $row = $rowDirty[3];
 
-            if (!isset($row['y'], $row['c'], $row['i'])) {
+            if (!isset($row['y'], $row['c'], $row['i'], $row['t'])) {
                 continue;
             }
 
-            $date = Carbon::parse((int)$row['t'])->format('Ymd');
+            $carbonDate = Carbon::parse((int)$row['t']);
+            $date = $carbonDate->format('Ymd');
             $deviceId = $row['l'];
-            $liters = $this->getCalculatedLiters($deviceId, $row['y'], $row['i']);
+            $liters = $this->getCalculatedLiters($deviceId, $row['y'], $row['i'], $carbonDate);
             $litersByDay[$deviceId][$date] = ($litersByDay[$deviceId][$date] ?? 0) + $liters;
         }
 
@@ -246,7 +248,7 @@ class ReportGenerator
         foreach ($this->data as $rowDirty) {
             $row = $rowDirty[3];
 
-            if (!isset($row['y'], $row['c'])) {
+            if (!isset($row['y'], $row['c'], $row['t'])) {
                 continue;
             }
 
@@ -293,7 +295,7 @@ class ReportGenerator
         foreach ($this->data as $rowDirty) {
             $row = $rowDirty[3];
 
-            if (!isset($row['c'], $row['i'])) {
+            if (!isset($row['c'], $row['i'], $row['t'])) {
                 continue;
             }
 
