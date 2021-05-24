@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ExportBladeBasic;
+use App\Exports\ExportReport;
 use App\Models\Cow;
 use App\Models\Device;
 use App\Services\ReportGenerator;
@@ -64,15 +65,21 @@ class ReportController extends Controller
         return view('reports.index', ['data' => $result]);
     }
 
-    public function liters()
+    public function liters(Request $request)
     {
         $result = ReportGenerator::getLitersByCow();
-        return view('reports.bi', ['data' => $result, 'groupColumn' => 2]);
+
+        if ($request->input('download')) {
+            return Excel::download(new ExportReport($result), 'report-liters-' . date('H-i_d-m-y') . '.xlsx');
+        }
+
+        return view('reports.bi', ['data' => $result, 'groupColumn' => 2, 'downloadRoute' => 'reports.liters']);
     }
 
     public function litersByDevice()
     {
         $result = ReportGenerator::getLitersByDevice();
+
         return view('reports.bi', ['data' => $result]);
     }
 
@@ -80,10 +87,5 @@ class ReportController extends Controller
     {
         $result = ReportGenerator::getImpulsesByCow();
         return view('reports.bi', ['data' => $result]);
-    }
-
-    public static function getLiters()
-    {
-        return ReportGenerator::getLitersByCow();
     }
 }

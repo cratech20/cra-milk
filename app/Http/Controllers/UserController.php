@@ -57,14 +57,4 @@ class UserController extends Controller
 
         return redirect()->route('users.roles.index');
     }
-
-    public function exportBasic()
-    {
-        return Excel::download(new ExportBasic, 'users-' . __FUNCTION__ . '.xlsx');
-    }
-
-    public function exportBladeBasic()
-    {
-        return Excel::download(new ExportBladeBasic, 'users-' . __FUNCTION__ . '.xlsx');
-    }
 }

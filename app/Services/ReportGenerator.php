@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Cow;
 use App\Models\Device;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class ReportGenerator
 {
@@ -41,8 +42,12 @@ class ReportGenerator
 
     public function getAndParseJSON()
     {
-        $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
-        // $json = Storage::get('milk-bi.json');
+        if (env('APP_ENV') === 'local') {
+            $json = Storage::get('milk-bi.json');
+        } else {
+            $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
+        }
+
         $json = preg_replace('|\\\\u0003|', '', $json);
         $this->data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
     }

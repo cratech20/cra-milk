@@ -20,6 +20,9 @@
                             <a href="{{ route('clients.cows.linking') }}" class="btn btn-success">Обновить
                                 группировку и
                                 наименование коров</a>
+
+                            <a href="{{ route($downloadRoute, ['download' => true]) }}" class="btn btn-success">Скачать
+                                отчет</a>
                         </p>
 
                         <table id="example" class="display bg-white" style="width:100%">

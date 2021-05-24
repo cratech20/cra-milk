@@ -68,9 +68,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('users')->group(function () {
 
-        Route::get('exportBasic', [UserController::class, 'exportBasic']);
-        Route::get('exportBladeBasic', [UserController::class, 'exportBladeBasic'])->name('exportBladeBasic');
-
         Route::get('/', [UserController::class, 'index'])
             ->name('users.index');
 
