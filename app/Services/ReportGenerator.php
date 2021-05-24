@@ -36,7 +36,7 @@ class ReportGenerator
 
     public function fillDevicesAndCows()
     {
-        $this->devices = Device::get(['name', 'device_id'])->pluck('name', 'device_id');
+        $this->devices = Device::all()->keyBy('device_id');
         $this->cows = Cow::all()->keyBy('cow_id');
     }
 
@@ -124,7 +124,7 @@ class ReportGenerator
 
         // заполняются литры в день по коровам!
 
-        $litresByDay = [];
+        $litersByDay = [];
         foreach ($this->data as $rowDirty) {
             $row = $rowDirty[3];
 
@@ -135,13 +135,14 @@ class ReportGenerator
             $date = Carbon::parse((int)$row['t'])->format('Ymd');
             $deviceId = $row['l'];
             $cowId = $row['c'];
-            $litresByDay[$cowId][$date] = ($litresByDay[$cowId][$date] ?? 0) + $row['y'];
+            $liters = $this->getCalculatedLiters($deviceId, $row['y']);
+            $litersByDay[$cowId][$date] = ($litersByDay[$cowId][$date] ?? 0) + $liters;
             $deviceByCow[$cowId] = $deviceId;
         }
 
         $body = [];
 
-        foreach ($litresByDay as $cowId => $volumes) {
+        foreach ($litersByDay as $cowId => $volumes) {
             $deviceId = $deviceByCow[$cowId];
             $deviceName = $devices[$deviceId] ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;
@@ -171,7 +172,7 @@ class ReportGenerator
 
         // заполняются литры в день по коровам!
 
-        $litresByDay = [];
+        $litersByDay = [];
         foreach ($this->data as $rowDirty) {
             $row = $rowDirty[3];
 
@@ -181,12 +182,12 @@ class ReportGenerator
 
             $date = Carbon::parse((int)$row['t'])->format('Ymd');
             $deviceId = $row['l'];
-            $litresByDay[$deviceId][$date] = ($litresByDay[$deviceId][$date] ?? 0) + $row['y'];
+            $litersByDay[$deviceId][$date] = ($litersByDay[$deviceId][$date] ?? 0) + $row['y'];
         }
 
         $body = [];
 
-        foreach ($litresByDay as $deviceId => $volumes) {
+        foreach ($litersByDay as $deviceId => $volumes) {
             $deviceName = $devices[$deviceId] ?? $deviceId;
             $body[$deviceId] = [$deviceName];
 
@@ -212,7 +213,7 @@ class ReportGenerator
 
         // заполняются литры в день по коровам!
 
-        $litresByDay = [];
+        $litersByDay = [];
         foreach ($this->data as $rowDirty) {
             $row = $rowDirty[3];
 
@@ -223,13 +224,13 @@ class ReportGenerator
             $date = Carbon::parse((int)$row['t'])->format('Ymd');
             $deviceId = $row['l'];
             $cowId = $row['c'];
-            $litresByDay[$cowId][$date] = ($litresByDay[$cowId][$date] ?? 0) + $row['i'];
+            $litersByDay[$cowId][$date] = ($litersByDay[$cowId][$date] ?? 0) + $row['i'];
             $deviceByCow[$cowId] = $deviceId;
         }
 
         $body = [];
 
-        foreach ($litresByDay as $cowId => $volumes) {
+        foreach ($litersByDay as $cowId => $volumes) {
             $deviceId = $deviceByCow[$cowId];
             $deviceName = $devices[$deviceId] ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;

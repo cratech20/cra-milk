@@ -31,8 +31,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="x">Вес импульса</label>
-                                <input type="text" class="form-control" name="weight"
+                                <input type="number" class="form-control" name="weight" step="0.0001"
                                        value="{{ $device->weight }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="x">Дата применения веса импульса</label>
+                                <input type="date" class="form-control" name="weight_set_at"
+                                       value="{{ \Carbon\Carbon::parse($device->weight_set_at)->format('Y-m-d') }}">
                             </div>
                             <button type="submit" class="btn btn-success">Добавить</button>
                         </form>

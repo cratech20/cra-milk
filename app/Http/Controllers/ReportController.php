@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\ExportBladeBasic;
 use App\Exports\ExportReport;
-use App\Models\Cow;
-use App\Models\Device;
 use App\Services\ReportGenerator;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -36,19 +33,19 @@ class ReportController extends Controller
             $header[$date] = $carbonDate->format('d.m.y');
         }
 
-        $litresByDay = [];
+        $litersByDay = [];
         foreach ($data as $row) {
             $id = $row['l'];
             $date = Carbon::parse($row['d'])->format('Ymd');
-            $litresByDay[$id][$date] = ($litresByDay[$id][$date] ?? 0) + $row['y'];
+            $litersByDay[$id][$date] = ($litersByDay[$id][$date] ?? 0) + $row['y'];
         }
 
         foreach ($data as $row) {
             $id = $row['l'];
             $date = Carbon::parse($row['d'])->format('Ymd');
-            $litres = $litresByDay[$id][$date] ?? 0;
+            $liters = $litersByDay[$id][$date] ?? 0;
             $result[$id] = $result[$id] ?? [$id];
-            $result[$id][$date] = $litres;
+            $result[$id][$date] = $liters;
 
         }
 
