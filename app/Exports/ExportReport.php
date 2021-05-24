@@ -21,6 +21,6 @@ class ExportReport implements FromView, ShouldAutoSize
 
     public function view(): View
     {
-        return view('reports.table', ['data' => $this->data]);
+        return view('exports.report', ['data' => $this->data]);
     }
 }

@@ -13,7 +13,6 @@
                         <a href="{{ route('reports.impulse') }}">Отчёт PowerBI импульсы по коровам</a><br>
                         <a href="https://functions.yandexcloud.net/d4eks53mf45uqn38bvn1">Последние сообщения с
                             устройств</a><br>
-                        <a href="{{ route('exportBladeBasic') }}" class="btn btn-success">exportBladeBasic</a><br>
                     </div>
                 </div>
             </div>

@@ -107,7 +107,7 @@ class ReportGenerator
         $generator->fillDevicesAndCows();
         $generator->getAndParseJSON();
         $generator->fillDatesAndDatesForHead();
-        $generator->getLitersByDeviceBody();
+        $generator->getImpulsesByCowBody();
 
         return $generator->result;
     }

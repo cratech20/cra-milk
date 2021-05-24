@@ -70,22 +70,31 @@ class ReportController extends Controller
         $result = ReportGenerator::getLitersByCow();
 
         if ($request->input('download')) {
-            return Excel::download(new ExportReport($result), 'report-liters-' . date('H-i_d-m-y') . '.xlsx');
+            return Excel::download(new ExportReport($result), 'report-liter-cow-' . date('H-i_d-m-y') . '.xlsx');
         }
 
-        return view('reports.bi', ['data' => $result, 'groupColumn' => 2, 'downloadRoute' => 'reports.liters']);
+        return view('reports.bi', ['data' => $result, 'groupColumn' => 3, 'downloadRoute' => 'reports.liters']);
     }
 
-    public function litersByDevice()
+    public function litersByDevice(Request $request)
     {
         $result = ReportGenerator::getLitersByDevice();
 
-        return view('reports.bi', ['data' => $result]);
+        if ($request->input('download')) {
+            return Excel::download(new ExportReport($result), 'report-liter-device-' . date('H-i_d-m-y') . '.xlsx');
+        }
+
+        return view('reports.bi', ['data' => $result, 'downloadRoute' => 'reports.liters.device']);
     }
 
-    public function impulse()
+    public function impulse(Request $request)
     {
         $result = ReportGenerator::getImpulsesByCow();
-        return view('reports.bi', ['data' => $result]);
+
+        if ($request->input('download')) {
+            return Excel::download(new ExportReport($result), 'report-impulse-cow-' . date('H-i_d-m-y') . '.xlsx');
+        }
+
+        return view('reports.bi', ['data' => $result, 'groupColumn' => 3, 'downloadRoute' => 'reports.impulse']);
     }
 }

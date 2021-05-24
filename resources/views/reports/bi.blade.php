@@ -28,6 +28,7 @@
                         <table id="example" class="display bg-white" style="width:100%">
                             <thead>
                             <tr>
+                                <th></th>
                                 @foreach($data['head'] as $th)
                                     <th>{{ $th }}</th>
                                 @endforeach
@@ -36,6 +37,7 @@
                             <tbody>
                             @foreach($data['body'] as $cowRow)
                                 <tr>
+                                    <td></td>
                                     @foreach($cowRow as $td)
                                         <td>{{ $td }}</td>
                                     @endforeach
@@ -95,6 +97,15 @@
                                         table.order([groupColumn, 'asc']).draw();
                                     }
                                 });
+
+                                table.on('order.dt search.dt', function () {
+                                    table.column(0, {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    }).nodes().each(function (cell, i) {
+                                        cell.innerHTML = i + 1;
+                                    });
+                                }).draw();
                             });
                         </script>
                     </div>
