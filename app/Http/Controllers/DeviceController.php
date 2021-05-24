@@ -89,7 +89,7 @@ class DeviceController extends Controller
     public
     function edit(Device $device)
     {
-        //
+        return view('devices.edit', compact('device'));
     }
 
     /**
@@ -102,7 +102,8 @@ class DeviceController extends Controller
     public
     function update(Request $request, Device $device)
     {
-        //
+        $device->fill($request->input())->save();
+        return back();
     }
 
     /**

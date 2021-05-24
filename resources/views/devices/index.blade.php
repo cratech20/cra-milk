@@ -68,8 +68,8 @@
                                                 <ul class="ul-links">
                                                     <li><a href="{{ route('devices.messages', $device) }}">Смотреть
                                                             сообщения</a></li>
-                                                    <li><a href="#">Показать пароль</a></li>
-                                                    <li><a href="#">Редактировать</a></li>
+                                                    <li><a href="{{ route('devices.edit', $device) }}">Редактировать</a>
+                                                    </li>
                                                     <li><a href="{{ route('devices.destroy', $device) }}">Удалить</a>
                                                     </li>
                                                 </ul>
