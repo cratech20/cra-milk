@@ -1,3 +1,7 @@
+@php
+    $stickyCol = $stickyCol ?? 0;
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -6,6 +10,15 @@
         tr.group,
         tr.group:hover {
             background-color: #ddd !important;
+        }
+
+        .sticky-column {
+            position: sticky;
+            position: -webkit-sticky;
+            left: 0;
+            z-index: 1;
+            background: #f9f9f9;
+            width: 100px; /* How can I make this dynamic? */
         }
     </style>
 
@@ -38,8 +51,8 @@
                             @foreach($data['body'] as $cowRow)
                                 <tr>
                                     <td></td>
-                                    @foreach($cowRow as $td)
-                                        <td>{{ $td }}</td>
+                                    @foreach($cowRow as $key => $td)
+                                        <td class="{{ $key === $stickyCol ? 'sticky-column' : '' }}">{{ $td }}</td>
                                     @endforeach
                                 </tr>
                             @endforeach

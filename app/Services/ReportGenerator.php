@@ -110,6 +110,8 @@ class ReportGenerator
             $currentDay = $currentDay->addHours($diffHours);
         }
 
+        krsort($dates);
+
         $this->dates = $dates;
     }
 
@@ -195,7 +197,7 @@ class ReportGenerator
         //     ['10:00', '11:59'],
         //     ['12:00', '23:59'],
         // ];
-        
+
         $generator->periods = $periods;
         $generator->fillDefaultPeriod();
         $generator->fillDevicesAndCows();

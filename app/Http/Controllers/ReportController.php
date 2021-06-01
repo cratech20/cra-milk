@@ -81,7 +81,7 @@ class ReportController extends Controller
             return Excel::download(new ExportReport($result), 'report-lit-cow-h-' . date('H-i_d-m-y') . '.xlsx');
         }
 
-        return view('reports.bi', ['data' => $result, 'groupColumn' => 3, 'downloadRoute' => 'reports.liters']);
+        return view('reports.bi', ['data' => $result, 'groupColumn' => 3, 'downloadRoute' => 'reports.liters', 'stickyCol' => 1]);
     }
 
     public function litersByDevice(Request $request)
