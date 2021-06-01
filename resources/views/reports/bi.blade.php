@@ -71,7 +71,7 @@
 
                                 var settings = {
                                     "order": [[orderColumn, 'asc']],
-                                    "displayLength": 50,
+                                    "displayLength": 300,
                                     "drawCallback": function (settings) {
                                         var api = this.api();
                                         var rows = api.rows({page: 'current'}).nodes();
