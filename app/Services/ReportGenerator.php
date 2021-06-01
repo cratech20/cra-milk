@@ -20,6 +20,10 @@ class ReportGenerator
     private $result;
     private $dates;
     private $datesForHead;
+    /**
+     * @var array
+     */
+    public $periods;
 
     public function setPeriod($start, $end)
     {
@@ -29,8 +33,8 @@ class ReportGenerator
 
     public function fillDefaultPeriod()
     {
-        $startPeriod = Carbon::now();
-        $endPeriod = Carbon::now()->subDays(30);
+        $startPeriod = Carbon::now()->subDays(30)->startOfDay();
+        $endPeriod = Carbon::now()->startOfDay();
         $this->setPeriod($startPeriod, $endPeriod);
     }
 
@@ -60,16 +64,53 @@ class ReportGenerator
         $dates = [];
         $datesForHead = [];
 
-        while ($this->endPeriod->lessThanOrEqualTo($currentDay)) {
+        while ($currentDay->lessThanOrEqualTo($this->endPeriod)) {
             $date = $currentDay->format('d.m.y');
             $dateKey = $currentDay->format('Ymd');
             $dates[$dateKey] = $date;
             $datesForHead[] = $date;
-            $currentDay = $currentDay->subDay();
+            $currentDay = $currentDay->addDay();
         }
 
         $this->dates = $dates;
         $this->datesForHead = $datesForHead;
+    }
+
+    public function fillDatesByHour()
+    {
+        $currentDay = clone $this->startPeriod;
+
+        // заполняются даты для шапки
+        $dates = [];
+
+        while ($currentDay->lessThanOrEqualTo($this->endPeriod)) {
+
+            $hour = $currentDay->format('H');
+
+            $periodKey = null;
+            $diffHours = 1;
+
+            foreach ($this->periods as $key => $period) {
+                $startHour = explode(':', $period[0])[0];
+                $endHour = explode(':', $period[1])[0];
+                if ($hour >= $startHour && $hour < $endHour) {
+                    $periodKey = $key;
+                    $diffHours = abs($endHour - $startHour);
+                    break;
+                }
+            }
+
+            if ($periodKey !== null) {
+                $date = $currentDay->format('d.m.y') . ' с ' . $this->periods[$periodKey][0] . ' до ' . $this->periods[$periodKey][1];
+                $dateKey = $currentDay->format('Ymd') . $periodKey;
+
+                $dates[$dateKey] = $date;
+            }
+
+            $currentDay = $currentDay->addHours($diffHours);
+        }
+
+        $this->dates = $dates;
     }
 
     private function getCalculatedLiters($deviceId, $liters, $impulses, $date)
@@ -139,6 +180,40 @@ class ReportGenerator
 
         return $generator->result;
     }
+
+    public static function getLitersByHour()
+    {
+        $generator = new self();
+
+        $periods = [
+            ['00:00', '11:59'],
+            ['12:00', '23:59'],
+        ];
+
+        // $periods = [
+        //     ['00:00', '09:59'],
+        //     ['10:00', '11:59'],
+        //     ['12:00', '23:59'],
+        // ];
+        
+        $generator->periods = $periods;
+        $generator->fillDefaultPeriod();
+        $generator->fillDevicesAndCows();
+        $generator->getAndParseJSON();
+        $generator->fillDatesByHour();
+
+        foreach ($generator->dates as $key => $date) {
+            $generator->datesForHead[] = $date;
+        }
+
+        $generator->getLitersByHourBody();
+
+        return $generator->result;
+    }
+
+    /**
+     * Bodies
+     */
 
     public function getLitersByCowBody()
     {
@@ -312,6 +387,68 @@ class ReportGenerator
 
             foreach ($this->dates as $dateKey => $trash) {
                 $body[$deviceId][] = $volumes[$dateKey] ?? 0;
+            }
+
+            $result['body'] = $body;
+        }
+
+        $this->result = $result;
+    }
+
+    public function getLitersByHourBody()
+    {
+        $cows = $this->cows;
+        $devices = $this->devices;
+        $this->deviceByCow = [];
+        $result = [];
+
+        $head = ['Устройство', 'Корова', 'Группа'];
+        $result['head'] = array_merge($head, $this->datesForHead);
+
+        // заполняются литры в день по коровам!
+
+        $litersByDay = [];
+        foreach ($this->data as $rowDirty) {
+            $row = $rowDirty[3];
+
+            if (!isset($row['y'], $row['c'], $row['i'], $row['t'])) {
+                continue;
+            }
+
+            $carbonDate = Carbon::parse((int)$row['t']);
+
+            $hour = $carbonDate->format('h');
+
+            $periodKey = null;
+
+            foreach ($this->periods as $key => $period) {
+                $startHour = explode(':', $period[0])[0];
+                $endHour = explode(':', $period[1])[0];
+                if ($hour >= $startHour && $hour < $endHour) {
+                    $periodKey = $key;
+                    break;
+                }
+            }
+
+            $dateKey = $carbonDate->format('Ymd') . $periodKey;
+            $deviceId = $row['l'];
+            $cowId = $row['c'];
+            $liters = $this->getCalculatedLiters($deviceId, $row['y'], $row['i'], $carbonDate);
+            $litersByDay[$cowId][$dateKey] = ($litersByDay[$cowId][$dateKey] ?? 0) + $liters;
+            $deviceByCow[$cowId] = $deviceId;
+        }
+
+        $body = [];
+
+        foreach ($litersByDay as $cowId => $volumes) {
+            $deviceId = $deviceByCow[$cowId];
+            $deviceName = $devices[$deviceId]->name ?? $deviceId;
+            $cowName = $cows[$cowId]->calculated_name ?? $cowId;
+            $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
+            $body[$cowId] = [$deviceName, $cowName, $group];
+
+            foreach ($this->dates as $dateKey => $trash) {
+                $body[$cowId][] = $volumes[$dateKey] ?? 0;
             }
 
             $result['body'] = $body;

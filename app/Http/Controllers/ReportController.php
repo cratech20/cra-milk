@@ -73,6 +73,17 @@ class ReportController extends Controller
         return view('reports.bi', ['data' => $result, 'groupColumn' => 3, 'downloadRoute' => 'reports.liters']);
     }
 
+    public function litersByHour(Request $request)
+    {
+        $result = ReportGenerator::getLitersByHour();
+
+        if ($request->input('download')) {
+            return Excel::download(new ExportReport($result), 'report-lit-cow-h-' . date('H-i_d-m-y') . '.xlsx');
+        }
+
+        return view('reports.bi', ['data' => $result, 'groupColumn' => 3, 'downloadRoute' => 'reports.liters']);
+    }
+
     public function litersByDevice(Request $request)
     {
         $result = ReportGenerator::getLitersByDevice();
