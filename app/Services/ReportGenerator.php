@@ -193,8 +193,8 @@ class ReportGenerator
         ];
 
         // $periods = [
-        //     ['00:00', '09:59'],
-        //     ['10:00', '11:59'],
+        //     ['00:00', '04:59'],
+        //     ['05:00', '11:59'],
         //     ['12:00', '23:59'],
         // ];
 
@@ -419,7 +419,7 @@ class ReportGenerator
 
             $carbonDate = Carbon::parse((int)$row['t']);
 
-            $hour = $carbonDate->format('h');
+            $hour = $carbonDate->format('H');
 
             $periodKey = null;
 
