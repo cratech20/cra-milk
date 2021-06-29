@@ -47,7 +47,13 @@ class ReportGenerator
 
     public function getAndParseJSON()
     {
-        $this->data = DB::connection('pgsql')->table('iot_events')->get();
+        $this->data = DB::connection('pgsql')->table('iot_events')
+            ->whereNotNull('payload->c')
+            ->whereNotNull('payload->i')
+            ->whereNotNull('payload->l')
+            ->whereNotNull('payload->t')
+            ->whereNotNull('payload->y')
+            ->get();
     }
 
     public function fillDatesAndDatesForHead()
@@ -227,9 +233,9 @@ class ReportGenerator
         foreach ($this->data as $rowDB) {
             $row = json_decode($rowDB->payload, 1, 512, JSON_THROW_ON_ERROR);
 
-            if (!isset($row['y'], $row['c'], $row['i'], $row['t'])) {
-                continue;
-            }
+            // if (!isset($row['y'], $row['c'], $row['i'], $row['t'], $row['l'])) {
+            //     continue;
+            // }
 
             $carbonDate = Carbon::parse((int)$row['t']);
             $date = $carbonDate->format('Ymd');
