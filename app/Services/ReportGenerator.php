@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Cow;
 use App\Models\Device;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ReportGenerator
@@ -49,7 +50,9 @@ class ReportGenerator
         if (env('APP_ENV') === 'local') {
             $json = Storage::get('milk-bi.json');
         } else {
-            $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
+            $this->data = DB::connection('pgsql')->table('iot_events')
+                // ->whereJsonContains('payload->id', $device->device_id)
+                ->get();
         }
 
         $json = preg_replace('|\\\\u0003|', '', $json);
