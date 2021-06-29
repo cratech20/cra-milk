@@ -47,16 +47,7 @@ class ReportGenerator
 
     public function getAndParseJSON()
     {
-        if (env('APP_ENV') === 'local') {
-            $json = Storage::get('milk-bi.json');
-        } else {
-            $this->data = DB::connection('pgsql')->table('iot_events')
-                // ->whereJsonContains('payload->id', $device->device_id)
-                ->get();
-        }
-
-        $json = preg_replace('|\\\\u0003|', '', $json);
-        $this->data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->data = DB::connection('pgsql')->table('iot_events')->get();
     }
 
     public function fillDatesAndDatesForHead()
@@ -233,8 +224,8 @@ class ReportGenerator
         // заполняются литры в день по коровам!
 
         $litersByDay = [];
-        foreach ($this->data as $rowDirty) {
-            $row = $rowDirty[3];
+        foreach ($this->data as $rowDB) {
+            $row = json_decode($rowDB->payload, 1, 512, JSON_THROW_ON_ERROR);
 
             if (!isset($row['y'], $row['c'], $row['i'], $row['t'])) {
                 continue;
