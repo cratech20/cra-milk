@@ -231,11 +231,7 @@ class ReportGenerator
 
         $litersByDay = [];
         foreach ($this->data as $rowDB) {
-            $row = json_decode($rowDB->payload, 1, 512, JSON_THROW_ON_ERROR);
-
-            // if (!isset($row['y'], $row['c'], $row['i'], $row['t'], $row['l'])) {
-            //     continue;
-            // }
+            $row = self::getRow($rowDB);
 
             $carbonDate = Carbon::parse((int)$row['t']);
             $date = $carbonDate->format('Ymd');
@@ -279,12 +275,8 @@ class ReportGenerator
         // заполняются литры в день по коровам!
 
         $litersByDay = [];
-        foreach ($this->data as $rowDirty) {
-            $row = $rowDirty[3];
-
-            if (!isset($row['y'], $row['c'], $row['i'], $row['t'])) {
-                continue;
-            }
+        foreach ($this->data as $rowDB) {
+            $row = self::getRow($rowDB);
 
             $carbonDate = Carbon::parse((int)$row['t']);
             $date = $carbonDate->format('Ymd');
@@ -322,12 +314,8 @@ class ReportGenerator
         // заполняются литры в день по коровам!
 
         $litersByDay = [];
-        foreach ($this->data as $rowDirty) {
-            $row = $rowDirty[3];
-
-            if (!isset($row['y'], $row['c'], $row['t'])) {
-                continue;
-            }
+        foreach ($this->data as $rowDB) {
+            $row = self::getRow($rowDB);
 
             $date = Carbon::parse((int)$row['t'])->format('Ymd');
             $deviceId = $row['l'];
@@ -369,12 +357,8 @@ class ReportGenerator
         // заполняются литры в день по коровам!
 
         $litersByDay = [];
-        foreach ($this->data as $rowDirty) {
-            $row = $rowDirty[3];
-
-            if (!isset($row['c'], $row['i'], $row['t'])) {
-                continue;
-            }
+        foreach ($this->data as $rowDB) {
+            $row = self::getRow($rowDB);
 
             $date = Carbon::parse((int)$row['t'])->format('Ymd');
             $deviceId = $row['l'];
@@ -410,12 +394,8 @@ class ReportGenerator
         // заполняются литры в день по коровам!
 
         $litersByDay = [];
-        foreach ($this->data as $rowDirty) {
-            $row = $rowDirty[3];
-
-            if (!isset($row['y'], $row['c'], $row['i'], $row['t'])) {
-                continue;
-            }
+        foreach ($this->data as $rowDB) {
+            $row = self::getRow($rowDB);
 
             $carbonDate = Carbon::parse((int)$row['t']);
 
@@ -457,6 +437,12 @@ class ReportGenerator
         }
 
         $this->result = $result;
+    }
+
+    public static function getRow($rowDB)
+    {
+        $row = json_decode($rowDB->payload, 1, 512, JSON_THROW_ON_ERROR);
+        return $row;
     }
 
 }
