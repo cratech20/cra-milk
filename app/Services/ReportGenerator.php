@@ -26,11 +26,6 @@ class ReportGenerator
      * @var array
      */
     public $periods;
-    /**
-     * @var array
-     */
-    private $hourPeriods;
-    private $fullHourPeriods;
 
     public function setPeriod($start, $end)
     {
@@ -80,74 +75,6 @@ class ReportGenerator
 
         $this->dates = $dates;
         $this->datesForHead = $datesForHead;
-    }
-
-    public function fillDatesByHour()
-    {
-        $currentDay = clone $this->startPeriod;
-
-        // заполняются даты для шапки
-        $dates = [];
-
-        while ($currentDay->lessThanOrEqualTo($this->endPeriod)) {
-
-            foreach ($this->hourPeriods as $hourPeriod) {
-                $currentDate = $currentDay->format('Y-m-d');
-                $fullHourPeriod = $currentDate . ' ' . $hourPeriod;
-                $this->fullHourPeriods[$currentDate][] = $fullHourPeriod;
-            }
-
-            $currentDay->addDay();
-        }
-    }
-
-    public function fillDatesByHourOld()
-    {
-        $currentDay = clone $this->startPeriod;
-
-        // заполняются даты для шапки
-        $dates = [];
-
-        while ($currentDay->lessThanOrEqualTo($this->endPeriod)) {
-
-            $hour = $currentDay->format('H');
-
-            $periodKey = null;
-            $diffHours = 1;
-
-            foreach ($this->periods as $key => $period) {
-                $startHour = explode(':', $period[0])[0];
-                $endHour = explode(':', $period[1])[0];
-
-                // если текущее дата-время входит в нужный период
-                if ($hour >= $startHour && $hour < $endHour) {
-                    $periodKey = $key;
-                    $diffHours = abs($endHour - $startHour);
-                    break;
-                }
-            }
-
-            if ($periodKey !== null) {
-                $date = $currentDay->format('d.m.y') . ' с ' . $this->periods[$periodKey][0] . ' до ' . $this->periods[$periodKey][1];
-                $dateKey = $currentDay->format('Ymd') . $periodKey;
-
-                $dates[$dateKey] = $date;
-            }
-
-            // если при прибавке разницы в часах в периоде произошел переход на след день,
-            // то обнуляем часы нового дня, иначе часы неправильно будут копиться
-            $nextDate = clone $currentDay;
-            $nextDate = $nextDate->addHours($diffHours);
-            if ($nextDate->format('Ymd') > $currentDay->format('Ymd')) {
-                $currentDay = $nextDate->startOfDay();
-            } else {
-                $currentDay = $nextDate;
-            }
-        }
-
-        krsort($dates);
-
-        $this->dates = $dates;
     }
 
     private function getCalculatedLiters($deviceId, $liters, $impulses, $date)
@@ -221,31 +148,6 @@ class ReportGenerator
     public static function getLitersByHour()
     {
         return LitersByHourPeriodsGenerator::process();
-    }
-
-    public static function getLitersByHourOld()
-    {
-        $generator = new self();
-
-        // TODO переделать остальные отчеты
-        $generator->hourPeriods = self::generateHourPeriods(
-            [
-                '12:00:00',
-            ]
-        );
-
-        $generator->fillDefaultPeriod();
-        $generator->fillDevicesAndCows();
-        $generator->getAndParseJSON();
-        $generator->fillDatesByHour();
-
-        foreach ($generator->dates as $key => $date) {
-            $generator->datesForHead[] = $date;
-        }
-
-        $generator->getLitersByHourBody();
-
-        return $generator->result;
     }
 
     /**
@@ -408,64 +310,6 @@ class ReportGenerator
 
             foreach ($this->dates as $dateKey => $trash) {
                 $body[$deviceId][] = $volumes[$dateKey] ?? 0;
-            }
-
-            $result['body'] = $body;
-        }
-
-        $this->result = $result;
-    }
-
-    public function getLitersByHourBody()
-    {
-        $cows = $this->cows;
-        $devices = $this->devices;
-        $this->deviceByCow = [];
-        $result = [];
-
-        $head = ['Устройство', 'Корова', 'Группа'];
-        $result['head'] = array_merge($head, $this->datesForHead);
-
-        // заполняются литры в день по коровам!
-
-        $litersByDay = [];
-        foreach ($this->data as $rowDB) {
-            $row = self::getRow($rowDB);
-
-            $carbonDate = Carbon::parse((int)$row['t']);
-
-            $hour = $carbonDate->format('H');
-
-            $periodKey = null;
-
-            foreach ($this->periods as $key => $period) {
-                $startHour = explode(':', $period[0])[0];
-                $endHour = explode(':', $period[1])[0];
-                if ($hour >= $startHour && $hour < $endHour) {
-                    $periodKey = $key;
-                    break;
-                }
-            }
-
-            $dateKey = $carbonDate->format('Ymd') . $periodKey;
-            $deviceId = $row['l'];
-            $cowId = $row['c'];
-            $liters = $this->getCalculatedLiters($deviceId, $row['y'], $row['i'], $carbonDate);
-            $litersByDay[$cowId][$dateKey] = ($litersByDay[$cowId][$dateKey] ?? 0) + $liters;
-            $deviceByCow[$cowId] = $deviceId;
-        }
-
-        $body = [];
-
-        foreach ($litersByDay as $cowId => $volumes) {
-            $deviceId = $deviceByCow[$cowId];
-            $deviceName = $devices[$deviceId]->name ?? $deviceId;
-            $cowName = $cows[$cowId]->calculated_name ?? $cowId;
-            $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
-            $body[$cowId] = [$deviceName, $cowName, $group];
-
-            foreach ($this->dates as $dateKey => $trash) {
-                $body[$cowId][] = $volumes[$dateKey] ?? 0;
             }
 
             $result['body'] = $body;
