@@ -29,6 +29,7 @@ trait GeneratorTrait
     public function getAndParseJSON()
     {
         $this->parsedData = DB::connection('pgsql')->table('iot_events')
+            ->where('event_datetime', '>=', $this->startPeriod)
             ->whereNotNull('payload->c')
             ->whereNotNull('payload->i')
             ->whereNotNull('payload->l')

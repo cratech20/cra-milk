@@ -117,6 +117,11 @@ class LitersByHourPeriodsGenerator
 
             $periodKey = null;
 
+            // пропускаем, если дата не входит в заданный период дат
+            if (!isset($this->fullHourPeriods[$date])) {
+                continue;
+            }
+
             foreach ($this->fullHourPeriods[$date] as $key => $period) {
                 if ($period[0] <= $carbonDateString && $carbonDateString < $period[1]) {
                     $periodKey = $key;
