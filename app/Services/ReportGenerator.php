@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Cow;
 use App\Models\Device;
+use App\Services\Reports\Generators\LitersByHourPeriodsGenerator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -25,6 +26,11 @@ class ReportGenerator
      * @var array
      */
     public $periods;
+    /**
+     * @var array
+     */
+    private $hourPeriods;
+    private $fullHourPeriods;
 
     public function setPeriod($start, $end)
     {
@@ -85,6 +91,25 @@ class ReportGenerator
 
         while ($currentDay->lessThanOrEqualTo($this->endPeriod)) {
 
+            foreach ($this->hourPeriods as $hourPeriod) {
+                $currentDate = $currentDay->format('Y-m-d');
+                $fullHourPeriod = $currentDate . ' ' . $hourPeriod;
+                $this->fullHourPeriods[$currentDate][] = $fullHourPeriod;
+            }
+
+            $currentDay->addDay();
+        }
+    }
+
+    public function fillDatesByHourOld()
+    {
+        $currentDay = clone $this->startPeriod;
+
+        // заполняются даты для шапки
+        $dates = [];
+
+        while ($currentDay->lessThanOrEqualTo($this->endPeriod)) {
+
             $hour = $currentDay->format('H');
 
             $periodKey = null;
@@ -93,6 +118,8 @@ class ReportGenerator
             foreach ($this->periods as $key => $period) {
                 $startHour = explode(':', $period[0])[0];
                 $endHour = explode(':', $period[1])[0];
+
+                // если текущее дата-время входит в нужный период
                 if ($hour >= $startHour && $hour < $endHour) {
                     $periodKey = $key;
                     $diffHours = abs($endHour - $startHour);
@@ -107,7 +134,15 @@ class ReportGenerator
                 $dates[$dateKey] = $date;
             }
 
-            $currentDay = $currentDay->addHours($diffHours);
+            // если при прибавке разницы в часах в периоде произошел переход на след день,
+            // то обнуляем часы нового дня, иначе часы неправильно будут копиться
+            $nextDate = clone $currentDay;
+            $nextDate = $nextDate->addHours($diffHours);
+            if ($nextDate->format('Ymd') > $currentDay->format('Ymd')) {
+                $currentDay = $nextDate->startOfDay();
+            } else {
+                $currentDay = $nextDate;
+            }
         }
 
         krsort($dates);
@@ -185,20 +220,20 @@ class ReportGenerator
 
     public static function getLitersByHour()
     {
+        return LitersByHourPeriodsGenerator::process();
+    }
+
+    public static function getLitersByHourOld()
+    {
         $generator = new self();
 
-        $periods = [
-            ['00:00', '11:59'],
-            ['12:00', '23:59'],
-        ];
+        // TODO переделать остальные отчеты
+        $generator->hourPeriods = self::generateHourPeriods(
+            [
+                '12:00:00',
+            ]
+        );
 
-        // $periods = [
-        //     ['00:00', '04:59'],
-        //     ['05:00', '11:59'],
-        //     ['12:00', '23:59'],
-        // ];
-
-        $generator->periods = $periods;
         $generator->fillDefaultPeriod();
         $generator->fillDevicesAndCows();
         $generator->getAndParseJSON();
