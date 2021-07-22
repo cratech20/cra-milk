@@ -126,11 +126,12 @@ class ReportController extends Controller
 
         $deviceNames = $user->devices->pluck('device_id');
 
-        $yesterday = Carbon::yesterday();
+        $yesterdayStart = Carbon::yesterday()->startOfDay();
+        $yesterdayEnd = Carbon::yesterday()->endOfDay();
         $today = Carbon::now();
 
         $data = DB::connection('pgsql')->table('iot_events')
-            ->whereBetween('event_datetime', [$yesterday, $today])
+            ->whereBetween('event_datetime', [$yesterdayStart, $yesterdayEnd])
             ->whereNotNull('payload->c')
             ->whereNotNull('payload->i')
             ->whereNotNull('payload->l')
