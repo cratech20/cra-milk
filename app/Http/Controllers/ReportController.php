@@ -129,7 +129,7 @@ class ReportController extends Controller
         $yesterday = Carbon::yesterday();
         $today = Carbon::now();
 
-        $data = $this->data = DB::connection('pgsql')->table('iot_events')
+        $data = DB::connection('pgsql')->table('iot_events')
             ->whereBetween('event_datetime', [$yesterday, $today])
             ->whereNotNull('payload->c')
             ->whereNotNull('payload->i')
@@ -141,35 +141,34 @@ class ReportController extends Controller
 
         $result = '';
 
-        // преобразовать дату во время 235714 $row[4]
-        // считать время с первой дойки $row[0]
-        $db = [
-            [5, "8A20064B40", 3, 5.6, 235714],
-            [13, "8A20064B41", 3, 8.2, 235806],
-            [13, "6A20064B40", 3, 8.2, 235806],
-        ];
+        foreach ($data as $key => $rowDB) {
+            $row = json_decode($rowDB->payload, true);
+            $cowId = hexdec(strrev($row['c'])) % 100000;
 
-        $cowIdNew = hexdec(strrev($row[1])) % 100000;
+            // TODO считать время с первой дойки
+            $date = Carbon::parse((int)$row['t']);
+            $time = $date->format('His');
+            $stopTime = $time;
 
-        foreach ($db as $row) {
-            $startTime = str_pad($row[0], 6, '0', STR_PAD_LEFT);
-            $cowId = str_pad($cowIdNew, 7, ' ', STR_PAD_LEFT);
-            $groupId = str_pad($row[2], 4, ' ', STR_PAD_LEFT);
+            $stopTimeStr = str_pad($stopTime, 6, '0', STR_PAD_LEFT);
+            $cowIdStr = str_pad($cowId, 7, ' ', STR_PAD_LEFT);
+            $groupId = str_pad(111, 4, ' ', STR_PAD_LEFT);
             $stall = str_pad(0, 5, ' ', STR_PAD_LEFT);
-            $yieldValue = str_pad($row[3], 7, ' ', STR_PAD_LEFT);
+            $yieldValue = str_pad(round($row['y'], 1), 7, ' ', STR_PAD_LEFT);
             $yieldDuration = str_pad(0, 6, ' ', STR_PAD_LEFT);
-            $identTime = str_pad($row[4], 8, ' ', STR_PAD_LEFT);
-            $yieldTime = str_pad($row[4], 7, ' ', STR_PAD_LEFT);
+            $identTime = str_pad($time, 8, ' ', STR_PAD_LEFT);
+            $yieldTime = str_pad($time, 7, ' ', STR_PAD_LEFT);
             $flow = str_pad(0, 6, ' ', STR_PAD_LEFT);
             $electricalConductivity = str_pad(0, 5, ' ', STR_PAD_LEFT);
             $transponderNumber = str_pad(0, 9, ' ', STR_PAD_LEFT);
             $endLine = " 0 ???????? 000000\n";
-            echo $startTime . $cowId . $groupId . $stall . $yieldValue . $yieldDuration . $identTime
-                . $yieldTime . $flow . $electricalConductivity . $transponderNumber . $endLine;
+            $result .= $stopTimeStr . $cowIdStr . $groupId . $stall . $yieldValue
+                . $yieldDuration . $identTime . $yieldTime . $flow
+                . $electricalConductivity . $transponderNumber . $endLine;
         }
 
         return response()->streamDownload(function () use ($result) {
             echo $result;
-        }, '220721.mlk');
+        }, $today->format('dmy') . '.mlk');
     }
 }
