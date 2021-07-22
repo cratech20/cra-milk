@@ -67,6 +67,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/impulse-device', [ReportController::class, 'impulseByDevice'])
             ->name('reports.impulse.device');
+
+        Route::get('/mlk', [ReportController::class, 'mlk'])
+            ->name('reports.mlk');
     });
 
     Route::prefix('users')->group(function () {
