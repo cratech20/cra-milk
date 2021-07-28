@@ -3,17 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ExportReport;
-use App\Models\Device;
 use App\Models\User;
 use App\Services\ReportGenerator;
 use App\Services\Reports\Generators\LitersByHourPeriodsGenerator;
-use App\Services\Reports\LitersByDay;
-use App\Services\Reports\LitersByHourPeriods;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller

@@ -44,8 +44,6 @@ class LitersByHourPeriodsReport
         $this->fillFullHourPeriods();
         $this->datesSortDesc();
         $this->fillDatesForHead();
-
-        // TODO Не учитывается инфа отправленная на время 23:59:59
         $this->fillHeadAndBody();
 
         return $this->getResultArray();
