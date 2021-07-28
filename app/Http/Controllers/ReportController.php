@@ -6,6 +6,7 @@ use App\Exports\ExportReport;
 use App\Models\Device;
 use App\Models\User;
 use App\Services\ReportGenerator;
+use App\Services\Reports\Generators\LitersByHourPeriodsGenerator;
 use App\Services\Reports\LitersByDay;
 use App\Services\Reports\LitersByHourPeriods;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ class ReportController extends Controller
 {
     public function liters(Request $request)
     {
-        $result = LitersByDay::process(auth()->user(), auth()->user()->hasRole('client'));
+        $result = LitersByHourPeriodsGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'));
 
         if ($request->input('download')) {
             return Excel::download(new ExportReport($result), 'report-liter-cow-' . date('H-i_d-m-y') . '.xlsx');
@@ -30,7 +31,11 @@ class ReportController extends Controller
 
     public function litersByHour(Request $request)
     {
-        $result = LitersByHourPeriods::process(auth()->user(), auth()->user()->hasRole('client'));
+        $hourPeriods = [
+            '12:00:00',
+        ];
+
+        $result = LitersByHourPeriodsGenerator::process([], $hourPeriods, auth()->user(), !auth()->user()->hasRole('client'));
 
         if ($request->input('download')) {
             return Excel::download(new ExportReport($result), 'report-lit-cow-h-' . date('H-i_d-m-y') . '.xlsx');
