@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->hasMany(Device::class);
     }
 
+    public function cows()
+    {
+        return $this->hasMany(Cow::class);
+    }
+
     public function divisions()
     {
         return $this->hasMany(Division::class);

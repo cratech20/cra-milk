@@ -14,8 +14,9 @@ class AddIndexToDeviceMessagesTable extends Migration
     public function up()
     {
         Schema::table('device_messages', function (Blueprint $table) {
-            $table->index('device_login');
+            $table->index('device_created_at');
             $table->index('cow_code');
+            $table->index('device_login');
         });
     }
 
@@ -27,8 +28,9 @@ class AddIndexToDeviceMessagesTable extends Migration
     public function down()
     {
         Schema::table('device_messages', function (Blueprint $table) {
-            $table->dropIndex(['device_login']);
+            $table->dropIndex(['device_created_at']);
             $table->dropIndex(['cow_code']);
+            $table->dropIndex(['device_login']);
         });
     }
 }

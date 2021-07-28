@@ -3,6 +3,7 @@
 
 namespace App\Services\Reports\Generators;
 
+use App\Models\User;
 use Carbon\Carbon;
 
 class LitersByHourPeriodsGenerator
@@ -10,22 +11,29 @@ class LitersByHourPeriodsGenerator
     use GeneratorTrait;
 
     private $hourPeriods;
-    public $fullHourPeriods;
+    private $fullHourPeriods;
 
-    public static function process()
+    /**
+     * Возвращает массив с данными для View или Excel
+     * @param array $hourPeriods границы для деления отчета по часам
+     * @param User $user
+     * @param bool $isAdmin если true, то не обращаем внимания на $cowCodes
+     * @return mixed
+     */
+    public function process(array $hourPeriods, User $user = null, bool $isAdmin = false)
     {
-        $generator = new self();
+        $generator = $this;
 
-        $hourPeriods = [
-            '12:00:00',
-        ];
+        $generator->isAdmin = $isAdmin;
+        $cowCodes = ($user && $user->cows->isEmpty()) ? [] : $user->cows->pluck('cow_id');
+        $generator->cowCodes = $cowCodes;
 
         $generator->hourPeriods = self::generateHourPeriods($hourPeriods);
 
         // по дефолту отчет за последние 30 дней
         $generator->fillDefaultDatePeriod();
         $generator->fillDevicesAndCows();
-        $generator->getAndParseJSON();
+        $generator->getData();
 
         $generator->fillFullHourPeriods();
 
@@ -39,12 +47,12 @@ class LitersByHourPeriodsGenerator
         return $generator->getResult();
     }
 
-    public function datesSortDesc()
+    private function datesSortDesc()
     {
         krsort($this->fullHourPeriods);
     }
 
-    public function fillDatesForHead()
+    private function fillDatesForHead()
     {
         $datesForHead = [];
 
@@ -60,7 +68,7 @@ class LitersByHourPeriodsGenerator
         $this->datesForHead = $datesForHead;
     }
 
-    public function fillFullHourPeriods()
+    private function fillFullHourPeriods()
     {
         $currentDay = clone $this->startPeriod;
         $fullHourPeriods = [];
@@ -93,7 +101,7 @@ class LitersByHourPeriodsGenerator
         $this->fullHourPeriods = $fullHourPeriods;
     }
 
-    public function fillHeadAndBody()
+    private function fillHeadAndBody()
     {
         $cows = $this->cows;
         $devices = $this->devices;
@@ -106,13 +114,11 @@ class LitersByHourPeriodsGenerator
         // заполняются литры в день по коровам!
 
         $litersByDay = [];
-        foreach ($this->parsedData as $rowDB) {
-            $row = self::getRow($rowDB);
+        foreach ($this->parsedData as $row) {
 
-            $carbonDate = Carbon::parse((int)$row['t']);
+            $carbonDate = Carbon::parse($row->device_created_at);
             $carbonDateString = $carbonDate->format('Y-m-d H:i:s');
 
-            $hour = $carbonDate->format('H');
             $date = $carbonDate->format('Y-m-d');
 
             $periodKey = null;
@@ -130,9 +136,9 @@ class LitersByHourPeriodsGenerator
             }
 
             $dateKey = $carbonDate->format('Y-m-d') . $periodKey;
-            $deviceId = $row['l'];
-            $cowId = $row['c'];
-            $liters = $this->getCalculatedLiters($deviceId, $row['y'], $row['i'], $carbonDate);
+            $deviceId = $row->device_login;
+            $cowId = $row->cow_code;
+            $liters = $this->getCalculatedLiters($deviceId, $row->yield, $row->impulses, $carbonDate);
             $litersByDay[$cowId][$dateKey] = ($litersByDay[$cowId][$dateKey] ?? 0) + $liters;
             $deviceByCow[$cowId] = $deviceId;
         }

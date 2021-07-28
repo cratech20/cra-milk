@@ -6,64 +6,68 @@ namespace App\Services\Reports\Generators;
 
 use App\Models\Cow;
 use App\Models\Device;
+use App\Models\DeviceMessage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 trait GeneratorTrait
 {
+    private $isAdmin = false;
     private $startPeriod;
     private $endPeriod;
     private $devices;
     private $cows;
+    private $cowCodes = [];
     private $parsedData;
     private $datesForHead;
     private $result;
 
-    public function fillDefaultDatePeriod()
+    private function fillDefaultDatePeriod()
     {
         $startPeriod = Carbon::now()->subDays(30)->startOfDay();
         $endPeriod = Carbon::now()->startOfDay();
         $this->setPeriod($startPeriod, $endPeriod);
     }
 
-    public function getAndParseJSON()
+    private function getData()
     {
-        $this->parsedData = DB::connection('pgsql')->table('iot_events')
-            ->where('event_datetime', '>=', $this->startPeriod)
-            ->whereNotNull('payload->c')
-            ->whereNotNull('payload->i')
-            ->whereNotNull('payload->l')
-            ->whereNotNull('payload->t')
-            ->whereNotNull('payload->y')
+        $cowCodes = $this->cowCodes;
+        $this->parsedData = DeviceMessage::whereBetween('device_created_at', [$this->startPeriod, $this->endPeriod])
+            ->when(!$this->isAdmin, function ($query) use ($cowCodes) {
+                return $query->whereIn('cow_code', $cowCodes);
+            })
             ->get();
     }
 
-    public function fillDevicesAndCows()
+    private function fillDevicesAndCows()
     {
         $this->devices = Device::all()->keyBy('device_id');
-        $this->cows = Cow::all()->keyBy('cow_id');
+        $cowCodes = $this->cowCodes;
+        $cows = Cow::when(!$this->isAdmin, function ($query) use ($cowCodes) {
+            return $query->whereIn('cow_id', $cowCodes);
+        })->get()->keyBy('cow_id');
+
+        if ($cows->isEmpty()) {
+            die('Коровы не добавлены в аккаунт');
+        }
+
+        $this->cows = $cows;
     }
 
-    public function setPeriod($start, $end)
+    private function setPeriod($start, $end)
     {
         $this->startPeriod = $start;
         $this->endPeriod = $end;
     }
 
-    public static function getRow($rowDB)
-    {
-        $row = json_decode($rowDB->payload, 1, 512, JSON_THROW_ON_ERROR);
-        return $row;
-    }
-
-    public static function generateHourPeriods($oldPeriods)
+    private static function generateHourPeriods($oldPeriods)
     {
         array_unshift($oldPeriods, '00:00:00');
         $oldPeriods[] = '23:59:59';
         return $oldPeriods;
     }
 
-    public function getResult()
+    private function getResult()
     {
         return $this->result;
     }

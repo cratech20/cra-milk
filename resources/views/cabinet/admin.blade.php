@@ -8,9 +8,12 @@
                     <div class="card-header">Личный кабинет</div>
 
                     <div class="card-body">
-                        <a href="{{ route('reports.liters') }}">Отчёт PowerBI литры по коровам</a><br>
-                        <a href="{{ route('reports.liters.hour') }}">Отчёт PowerBI литры по коровам 2 раза в
-                            день</a><br>
+                        <strong>Правильные данные</strong><br>
+                        <a href="{{ route('reports.liters') }}">Отчёт "Литры по коровам 1 раз в
+                            день"</a><br>
+                        <a href="{{ route('reports.liters.hour') }}">Отчёт "Литры по коровам 2 раза в
+                            день"</a><br>
+                        <strong>Неправильные данные</strong><br>
                         <a href="{{ route('reports.liters.device') }}">Отчёт PowerBI литры по устройствам</a><br>
                         <a href="{{ route('reports.impulse') }}">Отчёт PowerBI импульсы по коровам</a><br>
                         <a href="{{ route('reports.impulse.device') }}">Отчёт PowerBI импульсы по устройствам</a><br>

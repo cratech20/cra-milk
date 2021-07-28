@@ -1,5 +1,6 @@
 @php
     $stickyCol = $stickyCol ?? 0;
+    $downloadRoute = Illuminate\Support\Facades\Route::currentRouteName();
 @endphp
 
 @extends('layouts.app')
