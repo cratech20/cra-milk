@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Cow;
 use App\Models\Device;
+use App\Models\DeviceMessage;
+use App\Models\DeviceOwnerChange;
 use App\Models\Farm;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -24,27 +26,37 @@ class CowController extends Controller
 
     public function linking()
     {
-        // TODO Postgres
-        $json = file_get_contents('https://functions.yandexcloud.net/d4e4jl13h6mqnbcm64qj');
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        $devices = Device::all()->pluck('user_id', 'device_id');
+        $devices = Device::get(['user_id', 'device_id'])->keyBy('device_id');
+        $deviceIds = $devices->pluck('device_id');
+
+        $clientChanges = DeviceOwnerChange::whereIn('device_login', $deviceIds)
+            ->get(['device_login', 'new_client_id', 'changed_at'])
+            ->keyBy('device_login');
+
+        $lastChanges = $clientChanges->map(function ($el) {
+            return $el->last();
+        });
+
+        $data = DeviceMessage::query()->distinct()
+            ->whereIn('device_login', $deviceIds)
+            ->get(['cow_code', 'device_login', 'device_created_at']);
 
         foreach ($data as $message) {
-            if (!isset($message[3]['c'])) {
+            $cowId = $message->cow_code;
+            $deviceId = $message->device_login;
+            $messageDate = $message->device_created_at;
+
+            $device = $devices[$deviceId];
+
+            if ($clientChanges[$deviceId]->isEmpty()) {
+                $userId = $device->user_id;
+            } else if ($messageDate >= $lastChanges[$deviceId]->changed_at) {
+                $userId = $lastChanges[$deviceId]->new_client_id;
+            } else {
                 continue;
             }
 
-            $cell = $message[3];
-            $cowId = $cell['c'];
-            $deviceId = $cell['l'];
-
-            if (!isset($devices[$deviceId])) {
-                continue;
-            }
-
-            $userId = $devices[$deviceId];
-            Cow::firstOrCreate(['cow_id' => $cowId, 'user_id' => $userId]);
-
+            Cow::updateOrCreate(['cow_id' => $cowId], ['user_id' => $userId]);
         }
 
         return back()->with([

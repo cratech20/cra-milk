@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Device;
+use App\Models\DeviceOwnerChange;
 use App\Models\Division;
 use App\Models\Farm;
 use App\Models\User;
@@ -127,7 +128,13 @@ class DeviceController extends Controller
 
         if ($data['action'] === 'change_client') {
             foreach ($data['devices'] as $deviceId) {
-                Device::where('id', $deviceId)->update(['user_id' => $data['user_id']]);
+                $newUserId = $data['user_id'];
+                $device = Device::find($deviceId);
+                DeviceOwnerChange::create([
+                    'old_client_id' => $device->user_id,
+                    'new_client_id' => $newUserId
+                ]);
+                $device->update(['user_id' => $newUserId]);
             }
 
             return back()
