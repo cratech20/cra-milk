@@ -50,9 +50,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('reports')->group(function () {
 
-        Route::get('/', [ReportController::class, 'index'])
-            ->name('reports.index');
-
         Route::get('/liters', [ReportController::class, 'liters'])
             ->name('reports.liters');
 

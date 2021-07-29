@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ExportReport;
 use App\Models\User;
 use App\Services\ReportGenerator;
+use App\Services\Reports\Generators\LitersByHourPeriodsDeviceGenerator;
 use App\Services\Reports\Generators\LitersByHourPeriodsGenerator;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ class ReportController extends Controller
 
     public function litersByDevice(Request $request)
     {
-        $result = ReportGenerator::getLitersByDevice();
+        $result = LitersByHourPeriodsDeviceGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'));
 
         if ($request->input('download')) {
             return Excel::download(new ExportReport($result), 'report-liter-device-' . date('H-i_d-m-y') . '.xlsx');

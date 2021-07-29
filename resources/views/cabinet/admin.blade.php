@@ -9,12 +9,12 @@
 
                     <div class="card-body">
                         <strong>Правильные данные</strong><br>
-                        <a href="{{ route('reports.liters') }}">Отчёт "Литры по коровам 1 раз в
+                        <a href="{{ route('reports.liters') }}">Отчёт "Литры по коровам в
                             день"</a><br>
                         <a href="{{ route('reports.liters.hour') }}">Отчёт "Литры по коровам 2 раза в
                             день"</a><br>
+                        <a href="{{ route('reports.liters.device') }}">Отчёт "Литры по устройствам в день"</a><br>
                         <strong>Неправильные данные</strong><br>
-                        <a href="{{ route('reports.liters.device') }}">Отчёт PowerBI литры по устройствам</a><br>
                         <a href="{{ route('reports.impulse') }}">Отчёт PowerBI импульсы по коровам</a><br>
                         <a href="{{ route('reports.impulse.device') }}">Отчёт PowerBI импульсы по устройствам</a><br>
                         <a href="{{ route('reports.mlk') }}">.mlk скачать</a><br>
