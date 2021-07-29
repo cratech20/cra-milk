@@ -82,7 +82,7 @@ class LitersByHourPeriodsDeviceDataFiller
     private function fillDefaultDatePeriod()
     {
         $startPeriod = Carbon::now()->subDays(30)->startOfDay();
-        $endPeriod = Carbon::now()->startOfDay();
+        $endPeriod = Carbon::now()->endOfDay();
         $this->setPeriod($startPeriod, $endPeriod);
     }
 
