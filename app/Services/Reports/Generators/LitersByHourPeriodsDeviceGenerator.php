@@ -4,14 +4,14 @@
 namespace App\Services\Reports\Generators;
 
 use App\Models\User;
-use App\Services\Reports\DataFillers\LitersByHourPeriodsDataFiller;
-use App\Services\Reports\LitersByHourPeriodsReport;
+use App\Services\Reports\DataFillers\LitersByHourPeriodsDeviceDataFiller;
+use App\Services\Reports\LitersByHourPeriodsDeviceReport;
 
 class LitersByHourPeriodsDeviceGenerator
 {
     public static function process($datePeriod, $hourPeriods, User $user, $isAdmin = false)
     {
-        $dataFiller = new LitersByHourPeriodsDataFiller($datePeriod, $hourPeriods, $user, $isAdmin, new LitersByHourPeriodsReport());
+        $dataFiller = new LitersByHourPeriodsDeviceDataFiller($datePeriod, $hourPeriods, $user, $isAdmin, new LitersByHourPeriodsDeviceReport());
         $report = $dataFiller->process();
         return $report->getResult();
     }

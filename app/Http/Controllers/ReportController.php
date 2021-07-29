@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ExportReport;
+use App\Models\DeviceMessage;
 use App\Models\User;
 use App\Services\ReportGenerator;
 use App\Services\Reports\Generators\LitersByHourPeriodsDeviceGenerator;
@@ -14,6 +15,12 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
+    public function index()
+    {
+        // echo 'Тут будут все отчеты, но пока они на главной ЛК';
+        return back();
+    }
+
     public function liters(Request $request)
     {
         $result = LitersByHourPeriodsGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'));
@@ -75,32 +82,25 @@ class ReportController extends Controller
 
     public function mlk()
     {
-        $user = User::find(4);
+        $user = User::find(3);
 
-        $deviceNames = $user->devices->pluck('device_id');
+        $cowCodes = $user->cows->pluck('cow_id');
 
         $yesterdayStart = Carbon::yesterday()->startOfDay();
         $yesterdayEnd = Carbon::yesterday()->endOfDay();
         $today = Carbon::now();
 
-        $data = DB::connection('pgsql')->table('iot_events')
-            ->whereBetween('event_datetime', [$yesterdayStart, $yesterdayEnd])
-            ->whereNotNull('payload->c')
-            ->whereNotNull('payload->i')
-            ->whereNotNull('payload->l')
-            ->whereNotNull('payload->t')
-            ->whereNotNull('payload->y')
-            ->whereIn('payload->l', $deviceNames)
+        $data = DeviceMessage::whereBetween('device_created_at', [$yesterdayStart, $yesterdayEnd])
+            ->whereIn('cow_code', $cowCodes)
             ->get();
 
         $result = '';
 
-        foreach ($data as $key => $rowDB) {
-            $row = json_decode($rowDB->payload, true);
-            $cowId = hexdec(strrev($row['c'])) % 100000;
+        foreach ($data as $row) {
+            $cowId = hexdec(strrev($row->cow_code)) % 100000;
 
             // TODO считать время с первой дойки
-            $date = Carbon::parse((int)$row['t']);
+            $date = Carbon::parse($row->device_created_at);
             $time = $date->format('His');
             $stopTime = $time;
 
@@ -108,7 +108,7 @@ class ReportController extends Controller
             $cowIdStr = str_pad($cowId, 7, ' ', STR_PAD_LEFT);
             $groupId = str_pad(111, 4, ' ', STR_PAD_LEFT);
             $stall = str_pad(0, 5, ' ', STR_PAD_LEFT);
-            $yieldValue = str_pad(round($row['y'], 1), 7, ' ', STR_PAD_LEFT);
+            $yieldValue = str_pad(round($row->yield, 1), 7, ' ', STR_PAD_LEFT);
             $yieldDuration = str_pad(0, 6, ' ', STR_PAD_LEFT);
             $identTime = str_pad($time, 8, ' ', STR_PAD_LEFT);
             $yieldTime = str_pad($time, 7, ' ', STR_PAD_LEFT);

@@ -108,12 +108,10 @@ class LitersByHourPeriodsDeviceReport extends \App\Services\Reports\LitersByHour
     private
     function fillHeadAndBody()
     {
-        $cows = $this->cows;
         $devices = $this->devices;
-        $deviceByCow = [];
         $result = [];
 
-        $head = ['Устройство', 'Корова', 'Группа'];
+        $head = ['Устройство'];
         $result['head'] = array_merge($head, $this->datesForHead);
 
         // заполняются литры в день по коровам!
@@ -142,25 +140,20 @@ class LitersByHourPeriodsDeviceReport extends \App\Services\Reports\LitersByHour
 
             $dateKey = $carbonDate->format('Y-m-d') . $periodKey;
             $deviceId = $row->device_login;
-            $cowId = $row->cow_code;
             $liters = $this->getCalculatedLiters($deviceId, $row->yield, $row->impulses, $carbonDate);
-            $litersByDay[$cowId][$dateKey] = ($litersByDay[$cowId][$dateKey] ?? 0) + $liters;
-            $deviceByCow[$cowId] = $deviceId;
+            $litersByDay[$deviceId][$dateKey] = ($litersByDay[$deviceId][$dateKey] ?? 0) + $liters;
         }
 
         $body = [];
 
-        foreach ($litersByDay as $cowId => $volumes) {
-            $deviceId = $deviceByCow[$cowId];
+        foreach ($litersByDay as $deviceId => $volumes) {
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
-            $cowName = $cows[$cowId]->calculated_name ?? $cowId;
-            $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
-            $body[$cowId] = [$deviceName, $cowName, $group];
+            $body[$deviceId] = [$deviceName];
 
             foreach ($this->fullHourPeriods as $date => $dayPeriods) {
                 foreach ($dayPeriods as $periodKey => $trash) {
                     $dateKey = $date . $periodKey;
-                    $body[$cowId][] = $volumes[$dateKey] ?? 0;
+                    $body[$deviceId][] = $volumes[$dateKey] ?? 0;
                 }
             }
 
