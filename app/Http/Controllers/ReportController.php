@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ExportReport;
+use App\Models\Cow;
 use App\Models\DeviceMessage;
 use App\Models\User;
 use App\Services\ReportGenerator;
@@ -97,7 +98,7 @@ class ReportController extends Controller
         $result = '';
 
         foreach ($data as $row) {
-            $cowId = hexdec(strrev($row->cow_code)) % 100000;
+            $cowId = Cow::getNumberByCode($row->cow_code);
 
             // TODO считать время с первой дойки
             $date = Carbon::parse($row->device_created_at);
@@ -123,6 +124,6 @@ class ReportController extends Controller
 
         return response()->streamDownload(function () use ($result) {
             echo $result;
-        }, $today->format('dmy') . '.mlk');
+        }, $yesterdayStart->format('dmy') . '.mlk');
     }
 }

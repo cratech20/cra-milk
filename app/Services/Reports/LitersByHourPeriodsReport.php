@@ -4,6 +4,7 @@
 namespace App\Services\Reports;
 
 
+use App\Models\Cow;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -113,7 +114,7 @@ class LitersByHourPeriodsReport
         $deviceByCow = [];
         $result = [];
 
-        $head = ['Устройство', 'Корова', 'Группа'];
+        $head = ['Устройство', 'Корова', 'Группа', '№ коровы'];
         $result['head'] = array_merge($head, $this->datesForHead);
 
         // заполняются литры в день по коровам!
@@ -154,13 +155,14 @@ class LitersByHourPeriodsReport
             $deviceId = $deviceByCow[$cowId];
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;
+            $cowNum = Cow::getNumberByCode($cowId);
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
-            $body[$cowId] = [$deviceName, $cowName, $group];
+            $body[$cowId] = [$deviceName, $cowName, $group, $cowNum];
 
             foreach ($this->fullHourPeriods as $date => $dayPeriods) {
                 foreach ($dayPeriods as $periodKey => $trash) {
                     $dateKey = $date . $periodKey;
-                    $body[$cowId][] = $volumes[$dateKey] ?? 0;
+                    $body[$cowId][] = round($volumes[$dateKey] ?? 0, 3);
                 }
             }
 
