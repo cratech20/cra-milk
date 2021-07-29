@@ -15,8 +15,8 @@ class CreateDeviceMessagesTable extends Migration
     {
         Schema::create('device_messages', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('server_created_at');
-            $table->timestamp('device_created_at');
+            $table->timestamp('server_created_at')->nullable();
+            $table->timestamp('device_created_at')->nullable();
             $table->string('device_login');
             $table->string('cow_code');
             $table->integer('yield')->unsigned();
