@@ -14,6 +14,8 @@ use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/json/device-messages', [HomeController::class, 'deviceMessages']);
+
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', function () {
@@ -26,8 +28,6 @@ Route::middleware(['auth'])->group(function () {
 
         }
     });
-
-    Route::get('/json/device-messages', [HomeController::class, 'deviceMessages']);
 
     Route::get('/test', [HomeController::class, 'testJSON']);
 
