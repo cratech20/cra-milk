@@ -80,6 +80,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [UserController::class, 'index'])
             ->name('users.index');
 
+        Route::get('/change/password/{user}', [UserController::class, 'changePasswordForm'])
+            ->name('users.change.password');
+
+        Route::post('/change/password/{user}', [UserController::class, 'changePassword'])
+            ->name('users.change.password.save');
+
         Route::get('/create/inn', [UserController::class, 'inn'])
             ->name('users.registration.inn');
 

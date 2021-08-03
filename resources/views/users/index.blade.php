@@ -33,6 +33,8 @@
                                             {{ $user->name }} ({{ $user->email }})
                                         </td>
                                         <td>
+                                            <a href="{{ route('users.change.password', $user) }}"
+                                               class="btn btn-outline-primary">Сменить пароль</a>
                                             <a href="#" class="btn btn-outline-danger">Заблокировать</a>
                                             <a href="#" class="btn btn-outline-danger">Удалить</a>
                                         </td>

@@ -57,4 +57,26 @@ class UserController extends Controller
 
         return redirect()->route('users.roles.index');
     }
+
+    public function changePasswordForm(User $user)
+    {
+        echo 'Смена пароля для ' . $user->name . '<br>';
+        echo '<form action="' . route('users.change.password.save', $user) . '" method="POST">'
+            . csrf_field() .
+            '<input type="text" name="password">
+            <input type="submit" value="Сохранить">
+            </form>';
+    }
+
+    public function changePassword(Request $request, User $user)
+    {
+        if ($request->input('password')) {
+            $user->password = Hash::make($request->input('password'));
+            $user->save();
+            echo 'Успешно обновлено';
+            die();
+        }
+
+        echo 'Ошибка';
+    }
 }
