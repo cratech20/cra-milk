@@ -10,4 +10,9 @@ class DeviceMessage extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function getLitersAttribute()
+    {
+        return $this->yield / 1000;
+    }
 }

@@ -31,7 +31,7 @@ class CowController extends Controller
 
         $clientChanges = DeviceOwnerChange::whereIn('device_login', $deviceIds)
             ->get(['device_login', 'new_client_id', 'changed_at'])
-            ->keyBy('device_login');
+            ->groupBy('device_login');
 
         $lastChanges = $clientChanges->map(function ($el) {
             return $el->last();
@@ -48,7 +48,7 @@ class CowController extends Controller
 
             $device = $devices[$deviceId];
 
-            if ($clientChanges[$deviceId]->isEmpty()) {
+            if (!isset($clientChanges[$deviceId])) {
                 $userId = $device->user_id;
             } else if ($messageDate >= $lastChanges[$deviceId]->changed_at) {
                 $userId = $lastChanges[$deviceId]->new_client_id;
@@ -56,7 +56,7 @@ class CowController extends Controller
                 continue;
             }
 
-            Cow::updateOrCreate(['cow_id' => $cowId], ['user_id' => $userId]);
+            Cow::updateOrCreate(['cow_id' => $cowId], ['user_id' => $userId, 'group_id' => null]);
         }
 
         return back()->with([

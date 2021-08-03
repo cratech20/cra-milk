@@ -140,7 +140,7 @@ class LitersByHourPeriodsDeviceReport extends \App\Services\Reports\LitersByHour
 
             $dateKey = $carbonDate->format('Y-m-d') . $periodKey;
             $deviceId = $row->device_login;
-            $liters = $this->getCalculatedLiters($deviceId, $row->yield, $row->impulses, $carbonDate);
+            $liters = $this->getCalculatedLiters($deviceId, $row->liters, $row->impulses, $carbonDate);
             $litersByDay[$deviceId][$dateKey] = ($litersByDay[$deviceId][$dateKey] ?? 0) + $liters;
         }
 

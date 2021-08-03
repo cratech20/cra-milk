@@ -7,6 +7,7 @@ use App\Models\DeviceOwnerChange;
 use App\Models\Division;
 use App\Models\Farm;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
@@ -132,7 +133,9 @@ class DeviceController extends Controller
                 $device = Device::find($deviceId);
                 DeviceOwnerChange::create([
                     'old_client_id' => $device->user_id,
-                    'new_client_id' => $newUserId
+                    'new_client_id' => $newUserId,
+                    'device_login' => $device->device_id,
+                    'changed_at' => Carbon::now()
                 ]);
                 $device->update(['user_id' => $newUserId]);
             }

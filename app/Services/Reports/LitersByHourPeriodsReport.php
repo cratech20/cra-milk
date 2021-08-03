@@ -144,7 +144,7 @@ class LitersByHourPeriodsReport
             $dateKey = $carbonDate->format('Y-m-d') . $periodKey;
             $deviceId = $row->device_login;
             $cowId = $row->cow_code;
-            $liters = $this->getCalculatedLiters($deviceId, $row->yield, $row->impulses, $carbonDate);
+            $liters = $this->getCalculatedLiters($deviceId, $row->liters, $row->impulses, $carbonDate);
             $litersByDay[$cowId][$dateKey] = ($litersByDay[$cowId][$dateKey] ?? 0) + $liters;
             $deviceByCow[$cowId] = $deviceId;
         }
