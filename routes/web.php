@@ -6,6 +6,7 @@ use App\Http\Controllers\CowGroupController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\FarmController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
@@ -26,7 +27,9 @@ Route::middleware(['auth'])->group(function () {
         }
     });
 
-    Route::get('/test', [\App\Http\Controllers\HomeController::class, 'testJSON']);
+    Route::get('/json/device-messages', [HomeController::class, 'deviceMessages']);
+
+    Route::get('/test', [HomeController::class, 'testJSON']);
 
     // Device
 

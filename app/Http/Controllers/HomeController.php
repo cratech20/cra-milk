@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DeviceMessage;
 use App\Services\DI\YaCloud;
 use App\Services\IoTMessageTransporter;
+use App\Services\LitersByImpulsesCalculator;
 use App\Services\YaCloud\Device;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
@@ -22,55 +24,31 @@ use MoveMoveIo\DaData\Facades\DaDataCompany;
 
 class HomeController extends Controller
 {
-    /**
-     * Show the application dashboard.
-     *
-     * @param YaCloud $yaCloud
-     * @return void
-     */
-    public function testCreateDevice(YaCloud $yaCloud)
+    public function deviceMessages()
     {
-        // $data = [
-        //     'registryId' => 'arerbdnuk54prrjanos2',
-        // ];
-        //
-        // $device = new Device($yaCloud);
-        // dd($device->list($data));
+        $devices = \App\Models\Device::all()->keyBy('device_id');
+        $messages = DeviceMessage::all();
+        $litersByImpulsesCalculator = new LitersByImpulsesCalculator($devices);
 
-        $data = [
-            'registryId' => 'arerbdnuk54prrjanos2',
-            "name" => "obj_id_2",
-            "description" => "auto register from milk.cra",
-            // "password" => "Obj_id_1_Obj_id_1_Obj_id_1_Obj_id_1_",
-        ];
+        $messagesWithLiters = $messages->map(static function ($message) use ($litersByImpulsesCalculator) {
+            $calculatedLiters = $litersByImpulsesCalculator->calc(
+                $message->device_login, $message->liters, $message->impulses, Carbon::parse($message->device_created_at)
+            );
 
-        $device = new Device($yaCloud);
-        dd($device->create($data));
-    }
+            return [
+                'l' => $message->device_login,
+                'c' => $message->cow_code,
+                'y' => $message->yield,
+                'i' => $message->impulses,
+                'li' => $calculatedLiters,
+                'b' => $message->battery,
+                'e' => $message->error,
+                'n' => $message->message_num,
+                'st' => $message->server_created_at,
+                'dt' => $message->device_created_at,
+            ];
+        });
 
-    public function testINN()
-    {
-        $dadata = DaDataCompany::id('4312145337', 1, null, BranchType::MAIN, CompanyType::LEGAL);
-
-        $result = $dadata['suggestions'][0]['data'] ?? null;
-        dd($result);
-        /**
-         * [
-         * 'inn' => $data['inn'],
-         * 'district_id' => $data['district_id'],
-         * 'phone' => $data['phone'],
-         * 'name' => $innInfo['value'],
-         * 'kpp' => $innInfo['data']['kpp'] ?? 0,
-         * 'ogrn' => $innInfo['data']['ogrn'],
-         * 'full_with_opf' => $innInfo['data']['name']['full_with_opf'],
-         * 'management_name' => $innInfo['data']['management']['name'] ?? '',
-         * 'management_post' => $innInfo['data']['management']['post'] ?? '',
-         * ]
-         */
-    }
-
-    public function testJSON()
-    {
-        IoTMessageTransporter::run();
+        return response()->json($messagesWithLiters);
     }
 }

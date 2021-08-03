@@ -6,6 +6,7 @@ namespace App\Services\Reports;
 
 use App\Models\Cow;
 use App\Models\User;
+use App\Services\LitersByImpulsesCalculator;
 use Carbon\Carbon;
 
 class LitersByHourPeriodsReport
@@ -19,6 +20,7 @@ class LitersByHourPeriodsReport
     private $endPeriod;
     private $result;
     private $fullHourPeriods;
+    private LitersByImpulsesCalculator $litersByImpulsesCalculator;
 
     public function setHourPeriods($humanHourPeriods)
     {
@@ -42,6 +44,7 @@ class LitersByHourPeriodsReport
 
     public function getResult()
     {
+        $this->litersByImpulsesCalculator = new LitersByImpulsesCalculator($this->devices);
         $this->fillFullHourPeriods();
         $this->datesSortDesc();
         $this->fillDatesForHead();
@@ -193,17 +196,6 @@ class LitersByHourPeriodsReport
 
     private function getCalculatedLiters($deviceId, $liters, $impulses, $date)
     {
-        if ($impulses === 0 || !isset($this->devices[$deviceId])) {
-            return $liters;
-        }
-
-        $weight = $this->devices[$deviceId]->weight;
-        $weightSetDate = Carbon::parse($this->devices[$deviceId]->weight_set_at);
-
-        if ($weight === null || $weightSetDate === null || $date->lte($weightSetDate)) {
-            return $liters;
-        }
-
-        return $impulses * $weight;
+        return $this->litersByImpulsesCalculator->calc($deviceId, $liters, $impulses, $date);
     }
 }

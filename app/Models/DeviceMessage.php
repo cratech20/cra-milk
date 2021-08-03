@@ -11,6 +11,10 @@ class DeviceMessage extends Model
 
     protected $guarded = ['id'];
 
+    /**
+     * yield to liters
+     * @return float|int
+     */
     public function getLitersAttribute()
     {
         return $this->yield / 1000;
