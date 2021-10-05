@@ -160,7 +160,7 @@ class LitersByHourPeriodsReport
         $body = [];
 
         foreach ($litersByDay as $cowId => $volumes) {
-            dd(is_null(Cow::where('cow_id', $cowId)->first()['internal_id']));
+            dd(is_null(Cow::where('cow_id', $cowId)->first()['internal_id']) ? '' : Cow::where('cow_id', $cowId)->first()['internal_id']);
             $deviceId = $deviceByCow[$cowId];
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;
