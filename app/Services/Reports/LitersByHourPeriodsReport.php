@@ -178,7 +178,7 @@ class LitersByHourPeriodsReport
             $result['body'] = $body;
         }
 
-        dd($cows);
+        dd(Cow::find($cowId));
         $this->result = $result;
     }
 
