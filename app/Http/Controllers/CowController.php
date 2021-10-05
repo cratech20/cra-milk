@@ -124,7 +124,13 @@ class CowController extends Controller
     public function update(Request $request, $cow_id)
     {
         $cow = Cow::find($cow_id);
-        dd($request->all());
+        $cow->internal_id = $request->internal_id;
+        $cow->save();
+
+        return back()->with([
+            'message' => 'Обновлено успешно',
+            'alert-class' => 'alert-success'
+        ]);
     }
 
     /**
