@@ -160,12 +160,11 @@ class LitersByHourPeriodsReport
         $body = [];
 
         foreach ($litersByDay as $cowId => $volumes) {
-            dd(Cow::where('cow_id', $cowId)->first()['internal_id']);
             $deviceId = $deviceByCow[$cowId];
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;
             $cowNum = Cow::getNumberByCode($cowId);
-            // $cowInternalId = Cow::where('cow_id', $cowId)->first()->internal_id;
+            $cowInternalId = Cow::where('cow_id', $cowId)->first()['internal_id'];
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
             $body[$cowId] = [$deviceName, $cowName, $group, $cowNum, $cowInternalId];
 
@@ -179,7 +178,6 @@ class LitersByHourPeriodsReport
             $result['body'] = $body;
         }
 
-        // dd(Cow::where('cow_id', $cowId)->first());
         $this->result = $result;
     }
 
