@@ -93,14 +93,14 @@ class CowController extends Controller
      * @param \App\Models\Cow $cow
      * @return \Illuminate\Http\Response
      */
-    public function show($client, $cow_id)
+    public function show($cow_id)
     {
         $cow = Cow::find($cow_id);
         if (!$cow) {
             return response()->json(['error' => 'Корова не найдена']);
         }
 
-        return view('clients.cows.edit', ['cows' => $cows, 'client' => $client]);
+        return view('clients.cows.edit', ['cows' => $cows]);
     }
 
     /**
@@ -123,7 +123,7 @@ class CowController extends Controller
      */
     public function update(Request $request, Cow $cow)
     {
-        //
+        dd($cow);
     }
 
     /**
