@@ -162,7 +162,7 @@ class LitersPeriodsReport
         foreach ($litersByDay as $cowId => $volumes) {
             $cow = Cow::where('cow_id', $cowId)->get();
             echo "<pre>";
-            print_r($cow[0]->internal_code);
+            print_r($cow[0]);
             echo "</pre>";
             $deviceId = $deviceByCow[$cowId];
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
