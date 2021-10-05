@@ -66,7 +66,7 @@
                                             {{ $item->calculated_name }}
                                         </td>
                                         <td>
-                                            {{ $item->internal_id }}
+                                            {{ $item->internal_code }}
                                         </td>
                                         <td>
                                             <a href="{{ route('clients.cows.edit', $item->id) }}" class="btn btn-primary">Редактировать</a>
