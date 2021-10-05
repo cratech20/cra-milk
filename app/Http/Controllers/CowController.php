@@ -121,9 +121,10 @@ class CowController extends Controller
      * @param \App\Models\Cow $cow
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Cow $cow)
+    public function update(Request $request, $cow_id)
     {
-        dd($cow);
+        $cow = Cow::find($cow_id);
+        dd($request->all());
     }
 
     /**
