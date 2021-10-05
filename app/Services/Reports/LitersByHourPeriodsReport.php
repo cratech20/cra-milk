@@ -128,6 +128,7 @@ class LitersByHourPeriodsReport
         // заполняются литры в день по коровам!
 
         $litersByDay = [];
+        dd($this->parsedData);
         foreach ($this->parsedData as $row) {
 
             $carbonDate = Carbon::parse($row->device_created_at);
@@ -159,7 +160,6 @@ class LitersByHourPeriodsReport
 
         $body = [];
 
-        dd($litersByDay);
         foreach ($litersByDay as $cowId => $volumes) {
             $deviceId = $deviceByCow[$cowId];
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
