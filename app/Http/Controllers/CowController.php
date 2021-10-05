@@ -20,6 +20,7 @@ class CowController extends Controller
     public function index(User $client)
     {
         $cows = Cow::where('user_id', $client->id)->get();
+        // dd($cows);
 
         return view('clients.cows.index', ['cows' => $cows, 'client' => $client]);
     }

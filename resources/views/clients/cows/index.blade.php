@@ -47,6 +47,7 @@
                                     <th>Группа</th>
                                     <th>ID</th>
                                     <th>Название</th>
+                                    <th>Внутренний номер</th>
                                     <th>Действия</th>
                                 </tr>
                                 </thead>
@@ -65,11 +66,14 @@
                                             {{ $item->calculated_name }}
                                         </td>
                                         <td>
+                                            {{ $item->internal_id }}
+                                        </td>
+                                        <td>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3">
+                                        <td colspan="7">
                                             Коров не найдено. Нажмите обновить.
                                         </td>
                                     </tr>
