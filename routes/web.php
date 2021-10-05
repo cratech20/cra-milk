@@ -126,6 +126,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('{client}/cows', [CowController::class, 'index'])
             ->name('clients.cows.index');
 
+        Route::get('{client}/cows/{id}', [CowController::class, 'show'])
+            ->name('clients.cows.edit');
+
         Route::get('/cows/linking', [CowController::class, 'linking'])
             ->name('clients.cows.linking');
 

@@ -69,6 +69,7 @@
                                             {{ $item->internal_id }}
                                         </td>
                                         <td>
+                                            <a href="" class="btn btn-primary">Редактировать</a>
                                         </td>
                                     </tr>
                                 @empty

@@ -93,9 +93,14 @@ class CowController extends Controller
      * @param \App\Models\Cow $cow
      * @return \Illuminate\Http\Response
      */
-    public function show(Cow $cow)
+    public function show($client, $cow_id)
     {
-        //
+        $cow = Cow::find($cow_id);
+        if (!$cow) {
+            return response()->json(['error' => 'Корова не найдена']);
+        }
+
+        return view('clients.cows.edit', ['cows' => $cows, 'client' => $client]);
     }
 
     /**
