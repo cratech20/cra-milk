@@ -7,7 +7,7 @@ namespace App\Services\Reports\DataFillers;
 use App\Models\Cow;
 use App\Models\Device;
 use App\Models\DeviceMessage;
-use App\Services\Reports\LitersPeriodsReport;
+use App\Services\Reports\LitersByHourReport;
 use Carbon\Carbon;
 
 class LitersByHourPeriodsDataFiller3
