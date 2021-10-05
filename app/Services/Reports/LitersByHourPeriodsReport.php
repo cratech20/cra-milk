@@ -159,6 +159,7 @@ class LitersByHourPeriodsReport
 
         $body = [];
 
+        dd($litersByDay);
         foreach ($litersByDay as $cowId => $volumes) {
             $deviceId = $deviceByCow[$cowId];
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
