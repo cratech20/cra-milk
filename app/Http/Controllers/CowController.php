@@ -100,7 +100,7 @@ class CowController extends Controller
             return response()->json(['error' => 'Корова не найдена']);
         }
 
-        return view('clients.cows.edit', ['cows' => $cows]);
+        return view('clients.cows.edit', ['cows' => $cow]);
     }
 
     /**
