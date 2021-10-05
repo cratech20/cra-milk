@@ -37,6 +37,8 @@
 
                             <a href="{{ route($downloadRoute, ['download' => true]) }}" class="btn btn-success">Скачать
                                 отчет</a>
+
+                            <a href="/" class="btn btn-success">Назад</a>
                         </p>
 
                         <table id="example" class="display bg-white" style="width:100%">
