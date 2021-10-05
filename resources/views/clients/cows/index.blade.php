@@ -69,7 +69,7 @@
                                             {{ $item->internal_id }}
                                         </td>
                                         <td>
-                                            <a href="route('clients.cows.edit', $item->id)" class="btn btn-primary">Редактировать</a>
+                                            <a href="{{ route('clients.cows.edit', $item->id) }}" class="btn btn-primary">Редактировать</a>
                                         </td>
                                     </tr>
                                 @empty
