@@ -167,6 +167,7 @@ class LitersByHourReport
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;
             $cowNum = Cow::getNumberByCode($cowId);
+            $cowInternalId = '';
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
             $body[$cowId] = [$deviceName, $cowName, $group, $cowNum];
 
