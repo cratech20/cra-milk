@@ -125,7 +125,7 @@ class LitersByHourReport
         $deviceByCow = [];
         $result = [];
 
-        $head = ['Устройство', 'Корова', 'Группа', '№ коровы'];
+        $head = ['Устройство', 'Корова', 'Группа', '№ коровы', 'Внутренний номер'];
         $result['head'] = array_merge($head, $this->datesForHead);
 
         // заполняются литры в день по коровам!
