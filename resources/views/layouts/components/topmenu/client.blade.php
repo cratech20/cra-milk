@@ -1,7 +1,7 @@
 <li class="nav-item">
     <a class="nav-link" href="{{ route('reports.index') }}">Отчеты</a>
 </li>
-<li class="nav-item">
+<!-- <li class="nav-item">
     <a class="nav-link" href="{{ route('users.index') }}">Уведомления</a>
 </li>
 <li class="nav-item">
@@ -18,4 +18,4 @@
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{{ route('users.index') }}">Решение проблем</a>
-</li>
+</li> -->
