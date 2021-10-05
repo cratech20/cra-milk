@@ -13,6 +13,8 @@
                             день"</a><br>
                         <a href="{{ route('reports.liters.hour') }}">Отчёт "Литры по коровам 2 раза в
                             день"</a><br>
+                        <a href="{{ route('reports.liters.hour2') }}">Отчёт "Литры по коровам 3 раза в
+                            день"</a><br>
                         <a href="{{ route('reports.liters.device') }}">Отчёт "Литры по устройствам в день"</a><br>
                         <strong>Неправильные данные</strong><br>
                         <a href="{{ route('reports.impulse') }}">Отчёт PowerBI импульсы по коровам</a><br>

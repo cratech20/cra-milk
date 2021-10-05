@@ -62,6 +62,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/liters-hour', [ReportController::class, 'litersByHour'])
             ->name('reports.liters.hour');
 
+        Route::get('/liters-hour2', [ReportController::class, 'litersByHour2'])
+            ->name('reports.liters.hour2');
+
         Route::get('/liters-device', [ReportController::class, 'litersByDevice'])
             ->name('reports.liters.device');
 

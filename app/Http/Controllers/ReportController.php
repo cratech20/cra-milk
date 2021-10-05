@@ -48,6 +48,21 @@ class ReportController extends Controller
         return view('reports.bi', ['data' => $result, 'groupColumn' => 3, 'stickyCol' => 1]);
     }
 
+    public function litersByHour2(Request $request)
+    {
+        $hourPeriods = [
+            '12:00:00',
+        ];
+
+        $result = LitersByHourPeriodsGenerator::process([], $hourPeriods, auth()->user(), !auth()->user()->hasRole('client'));
+
+        if ($request->input('download')) {
+            return Excel::download(new ExportReport($result), 'report-lit-cow-h-' . date('H-i_d-m-y') . '.xlsx');
+        }
+
+        return view('reports.bi', ['data' => $result, 'groupColumn' => 3, 'stickyCol' => 1]);
+    }
+
     public function litersByDevice(Request $request)
     {
         $result = LitersByHourPeriodsDeviceGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'), 'liters');
