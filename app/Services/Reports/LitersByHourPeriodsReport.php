@@ -130,7 +130,6 @@ class LitersByHourPeriodsReport
         $litersByDay = [];
 
         foreach ($this->parsedData as $row) {
-            dd($row);
             $carbonDate = Carbon::parse($row->device_created_at);
             $carbonDateString = $carbonDate->format('Y-m-d H:i:s');
 
