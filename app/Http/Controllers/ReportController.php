@@ -54,7 +54,7 @@ class ReportController extends Controller
             '12:00:00',
         ];
 
-        $result = LitersByHourPeriodsGenerator::process([], $hourPeriods, auth()->user(), !auth()->user()->hasRole('client'));
+        $result = LitersByHourPeriodsGenerator::process([], $hourPeriods, auth()->user(), !auth()->user()->hasRole('client'), 'hour');
 
         if ($request->input('download')) {
             return Excel::download(new ExportReport($result), 'report-lit-cow-h-' . date('H-i_d-m-y') . '.xlsx');

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\Reports\DataFillers\LitersByHourPeriodsDataFiller;
 use App\Services\Reports\DataFillers\LitersByHourPeriodsDataFiller2;
 use App\Services\Reports\LitersByHourPeriodsReport;
+use App\Services\Reports\LitersByHourReport;
 use App\Services\Reports\LitersPeriodsReport;
 
 class LitersByHourPeriodsGenerator
@@ -18,6 +19,10 @@ class LitersByHourPeriodsGenerator
             $report = $dataFiller->process();
         } else {
             $dataFiller = new LitersByHourPeriodsDataFiller2($datePeriod, $hourPeriods, $user, $isAdmin, new LitersPeriodsReport());
+            $report = $dataFiller->process();
+        }
+        if ($report == 'hour') {
+            $dataFiller = new LitersByHourPeriodsDataFiller($datePeriod, $hourPeriods, $user, $isAdmin, new LitersByHourReport());
             $report = $dataFiller->process();
         }
         
