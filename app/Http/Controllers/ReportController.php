@@ -51,7 +51,8 @@ class ReportController extends Controller
     public function litersByHour2(Request $request)
     {
         $hourPeriods = [
-            '12:00:00',
+            '10:00:00',
+            '15:00:00',
         ];
 
         $result = LitersByHourPeriodsGenerator::process([], $hourPeriods, auth()->user(), !auth()->user()->hasRole('client'), 'hour');

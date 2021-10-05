@@ -57,7 +57,6 @@ class LitersByHourReport
     {
         $currentDay = clone $this->startPeriod;
         $fullHourPeriods = [];
-
         while ($currentDay->lessThanOrEqualTo($this->endPeriod)) {
             $fullHourPeriodsByDay = [];
 
@@ -96,17 +95,19 @@ class LitersByHourReport
                 // TODO вместо Carbon создавать через $date и $this->hourPeriods
                 $from = Carbon::parse($dayPeriod[0]);
                 
-                if ($from->format('H:i') > "00:00" && $from->format('H:i') <= "10:00") {
-                    $datesForHead[] = $from->format('d.m.y') . ' вечер';
-                } elseif ($from->format('H:i') > "10:00" && $from->format('H:i') <= "15:00") {
+                if ($from->format('H:i') >= "00:00" && $from->format('H:i') < "10:00") {
+                    $datesForHead[] = $from->format('d.m.y') . ' утро';
+                } 
+                elseif ($from->format('H:i') >= "10:00" && $from->format('H:i') < "15:00") {
                     $datesForHead[] = $from->format('d.m.y') . ' день';
-                } else {
-                    $datesForHead[] = $from->format('d.m.y') . ' вечер';
+                } 
+                elseif ($from->format('H:i') >= "15:00" && $from->format('H:i') <= "24:00") {
+                $datesForHead[] = $from->format('d.m.y') . ' вечер';
                 }
                 
             }
         }
-
+        
         $this->datesForHead = $datesForHead;
     }
 
@@ -195,9 +196,10 @@ class LitersByHourReport
         return $humanHourPeriods;
     }
 
-    public function setPeriod($start, $end)
+    public function setPeriod($start, $period, $end)
     {
         $this->startPeriod = $start;
+        $this->period = $period;
         $this->endPeriod = $end;
     }
 

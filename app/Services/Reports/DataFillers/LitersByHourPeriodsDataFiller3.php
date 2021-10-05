@@ -19,6 +19,7 @@ class LitersByHourPeriodsDataFiller3
     private $isAdmin;
     private LitersByHourReport $report;
     private $startPeriod;
+    private $period;
     private $endPeriod;
 
     public function __construct($datePeriod, $hourPeriods, $user, $isAdmin, LitersByHourReport $report)
@@ -42,7 +43,7 @@ class LitersByHourPeriodsDataFiller3
 
         $cows = $this->getCows();
 
-        $report->setPeriod($this->startPeriod, $this->endPeriod);
+        $report->setPeriod($this->startPeriod, $this->period, $this->endPeriod);
         $report->setHourPeriods($this->hourPeriods);
         $report->setDevices($this->getDevices());
         $report->setCows($cows);
@@ -83,13 +84,15 @@ class LitersByHourPeriodsDataFiller3
     private function fillDefaultDatePeriod()
     {
         $startPeriod = Carbon::now()->subDays(30)->startOfDay();
+        $period = Carbon::now()->addHours(1);
         $endPeriod = Carbon::now()->endOfDay();
-        $this->setPeriod($startPeriod, $endPeriod);
+        $this->setPeriod($startPeriod, $period, $endPeriod);
     }
 
-    private function setPeriod($start, $end)
+    private function setPeriod($start, $period, $end)
     {
         $this->startPeriod = $start;
+        $this->period = $period;
         $this->endPeriod = $end;
     }
 }
