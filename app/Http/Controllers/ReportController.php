@@ -24,7 +24,7 @@ class ReportController extends Controller
 
     public function liters(Request $request)
     {
-        $result = LitersByHourPeriodsGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'));
+        $result = LitersByHourPeriodsGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'), 'liters');
 
         if ($request->input('download')) {
             return Excel::download(new ExportReport($result), 'report-liter-cow-' . date('H-i_d-m-y') . '.xlsx');
