@@ -128,9 +128,9 @@ class LitersByHourPeriodsReport
         // заполняются литры в день по коровам!
 
         $litersByDay = [];
-        dd($this->parsedData);
-        foreach ($this->parsedData as $row) {
 
+        foreach ($this->parsedData as $row) {
+            dd($row);
             $carbonDate = Carbon::parse($row->device_created_at);
             $carbonDateString = $carbonDate->format('Y-m-d H:i:s');
 
