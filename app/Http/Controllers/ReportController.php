@@ -50,7 +50,7 @@ class ReportController extends Controller
 
     public function litersByDevice(Request $request)
     {
-        $result = LitersByHourPeriodsDeviceGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'));
+        $result = LitersByHourPeriodsDeviceGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'), 'liters');
 
         if ($request->input('download')) {
             return Excel::download(new ExportReport($result), 'report-liter-device-' . date('H-i_d-m-y') . '.xlsx');
