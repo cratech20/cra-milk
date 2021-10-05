@@ -54,7 +54,7 @@
                                 <tbody>
                                 @forelse($cows as $item)
                                     <tr>
-                                        <td><input type="checkbox" name="devices[]" value="{{ $item->id }}"></td>
+                                        <td><input type="checkbox" name="cows[]" value="{{ $item->id }}"></td>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
                                             {{ $item->group->calculated_name ?? '' }}
@@ -69,7 +69,7 @@
                                             {{ $item->internal_id }}
                                         </td>
                                         <td>
-                                            <a href="" class="btn btn-primary">Редактировать</a>
+                                            <a href="route('clients.cows.edit', $item->id)" class="btn btn-primary">Редактировать</a>
                                         </td>
                                     </tr>
                                 @empty
