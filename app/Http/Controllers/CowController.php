@@ -124,7 +124,7 @@ class CowController extends Controller
     public function update(Request $request, $cow_id)
     {
         $cow = Cow::find($cow_id);
-        $cow->internal_id = $request->internal_id;
+        $cow->internal_code = $request->internal_code;
         $cow->save();
 
         return back()->with([

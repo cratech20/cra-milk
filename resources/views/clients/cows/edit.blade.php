@@ -13,8 +13,8 @@
                             @method('PATCH')
                             <div class="form-group">
                                 <label for="x">Внутренний номер</label>
-                                <input type="number" class="form-control" name="internal_id" step="0.0001"
-                                       value="{{ $cows->internal_id }}">
+                                <input type="number" class="form-control" name="internal_code" step="0.0001"
+                                       value="{{ $cows->internal_code }}">
                             </div>
                            
                             <button type="submit" class="btn btn-success">Сохранить</button>
