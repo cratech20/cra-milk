@@ -17,12 +17,11 @@ class LitersByHourPeriodsGenerator
         if ($report == '') {
             $dataFiller = new LitersByHourPeriodsDataFiller($datePeriod, $hourPeriods, $user, $isAdmin, new LitersByHourPeriodsReport());
             $report = $dataFiller->process();
+        } elseif ($report == 'hour') {
+            $dataFiller = new LitersByHourPeriodsDataFiller($datePeriod, $hourPeriods, $user, $isAdmin, new LitersByHourReport());
+            $report = $dataFiller->process();
         } else {
             $dataFiller = new LitersByHourPeriodsDataFiller2($datePeriod, $hourPeriods, $user, $isAdmin, new LitersPeriodsReport());
-            $report = $dataFiller->process();
-        }
-        if ($report == 'hour') {
-            $dataFiller = new LitersByHourPeriodsDataFiller($datePeriod, $hourPeriods, $user, $isAdmin, new LitersByHourReport());
             $report = $dataFiller->process();
         }
         
