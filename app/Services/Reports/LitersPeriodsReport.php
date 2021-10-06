@@ -169,7 +169,7 @@ class LitersPeriodsReport
                 // $cowInternalId = $cow['internal_code'];
                 $cowInternalId = '456';
             } else {
-                $cowInternalId = '<td>123</td>';
+                $cowInternalId = '<td>12345678</td>';
             }
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
             $body[$cowId] = [$deviceName, $cowName, $group, $cowNum];
