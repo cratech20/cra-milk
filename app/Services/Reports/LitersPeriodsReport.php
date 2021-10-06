@@ -166,7 +166,8 @@ class LitersPeriodsReport
             $cowNum = Cow::getNumberByCode($cowId);
             $cow = Cow::where('cow_id', $cowId)->first();
             if ($cow) {
-                $cowInternalId = $cow['internal_code'];
+                // $cowInternalId = $cow['internal_code'];
+                $cowInternalId = '456';
             } else {
                 $cowInternalId = '<td>123</td>';
             }
