@@ -160,11 +160,11 @@ class LitersPeriodsReport
         $body = [];
 
         foreach ($litersByDay as $cowId => $volumes) {
-            $cow = Cow::where('cow_id', $cowId)->first();
             $deviceId = $deviceByCow[$cowId];
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;
             $cowNum = Cow::getNumberByCode($cowId);
+            $cow = Cow::where('cow_id', $cowId)->first();
             if ($cow) {
                 $cowInternalId = $cow['internal_id'];
             } else {

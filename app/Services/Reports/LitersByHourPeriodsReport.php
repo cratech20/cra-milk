@@ -164,7 +164,12 @@ class LitersByHourPeriodsReport
             $deviceName = $devices[$deviceId]->name ?? $deviceId;
             $cowName = $cows[$cowId]->calculated_name ?? $cowId;
             $cowNum = Cow::getNumberByCode($cowId);
-            $cowInternalId = Cow::where('cow_id', $cowId)->first()['internal_code'];
+            $cow = Cow::where('cow_id', $cowId)->first();
+            if ($cow) {
+                $cowInternalId = $cow['internal_id'];
+            } else {
+                $cowInternalId = '';
+            }
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
             $body[$cowId] = [$deviceName, $cowName, $group, $cowNum, $cowInternalId];
 
