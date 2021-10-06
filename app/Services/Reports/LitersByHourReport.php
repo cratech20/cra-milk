@@ -171,7 +171,7 @@ class LitersByHourReport
             if ($cow) {
                 $cowInternalId = $cow['internal_code'];
             } else {
-                $cowInternalId = '123';
+                $cowInternalId = '123456';
             }
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
             $body[$cowId] = [$deviceName, $cowName, $group, $cowNum];
