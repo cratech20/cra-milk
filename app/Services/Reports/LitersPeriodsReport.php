@@ -166,10 +166,9 @@ class LitersPeriodsReport
             $cowNum = Cow::getNumberByCode($cowId);
             $cow = Cow::where('cow_id', $cowId)->first();
             if ($cow) {
-                // $cowInternalId = $cow['internal_code'];
-                $cowInternalId = '456';
+                $cowInternalId = $cow['internal_code'];
             } else {
-                $cowInternalId = '<td>12345678</td>';
+                $cowInternalId = '0';
             }
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
             $body[$cowId] = [$deviceName, $cowName, $group, $cowNum];
