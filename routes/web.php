@@ -18,16 +18,7 @@ Route::get('/json/device-messages', [HomeController::class, 'deviceMessages']);
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/', function () {
-        $user = auth()->user();
-        if ($user->hasRole('client')) {
-            return view('cabinet.client');
-        } else if ($user->hasRole('employee')) {
-            return view('cabinet.admin');
-        } else {
-
-        }
-    });
+    Route::get('/', [HomeController::class, 'index']);
 
     Route::get('/test', [HomeController::class, 'testJSON']);
 
@@ -80,14 +71,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('users')->group(function () {
 
-        Route::get('/', [UserController::class, 'index'])
-            ->name('users.index');
+        Route::get('/', [HomeController::class, 'index']);
+        Route::get('/getall', [UserController::class, 'getAllUsers']);
+        Route::get('/delete/{id}', [UserController::class, 'delUser']);
+        Route::post('/change-password', [UserController::class, 'changePassword']);
+        Route::post('/create', [UserController::class, 'store']);
+        Route::get('/roles', [UserRoleController::class, 'index']);
 
         Route::get('/change/password/{user}', [UserController::class, 'changePasswordForm'])
             ->name('users.change.password');
 
-        Route::post('/change/password/{user}', [UserController::class, 'changePassword'])
-            ->name('users.change.password.save');
+        
 
         Route::get('/create/inn', [UserController::class, 'inn'])
             ->name('users.registration.inn');
@@ -98,8 +92,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/', [UserController::class, 'store'])
             ->name('users.store');
 
-        Route::get('/roles', [UserRoleController::class, 'index'])
-            ->name('users.roles.index');
+        
 
         Route::post('/roles', [UserRoleController::class, 'update'])
             ->name('users.roles.update');

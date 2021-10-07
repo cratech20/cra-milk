@@ -24,6 +24,11 @@ use MoveMoveIo\DaData\Facades\DaDataCompany;
 
 class HomeController extends Controller
 {
+    public function index()
+    {
+        return view('spa');
+    }
+
     public function deviceMessages()
     {
         $devices = \App\Models\Device::all()->keyBy('device_id');
