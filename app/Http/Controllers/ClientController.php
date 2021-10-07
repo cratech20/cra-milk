@@ -11,6 +11,6 @@ class ClientController extends Controller
     {
         $clients = User::role('client')->get();
 
-        return view('clients.index', ['clients' => $clients]);
+        return response()->json(['clients' => $clients]);
     }
 }

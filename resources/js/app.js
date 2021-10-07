@@ -25,12 +25,14 @@ window.Toast = Toast;
 
 import Home from './components/Home'
 import User from './components/User'
+import Client from './components/Client'
 
 const router = new VueRouter({
   mode: 'history',
   routes: [
     { path: '/', name: 'home',  component: Home },
     { path: '/users', name: 'user',  component: User },
+    { path: '/clients', name: 'client',  component: Client },
   ]
 });
 

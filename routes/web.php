@@ -100,9 +100,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('clients')->group(function () {
-
-        Route::get('/', [ClientController::class, 'index'])
-            ->name('clients.index');
+        Route::get('/', [HomeController::class, 'index']);
+        Route::get('/get-all', [ClientController::class, 'index']);
 
         Route::get('{client}/divisions', [DivisionController::class, 'index'])
             ->name('clients.divisions.index');
