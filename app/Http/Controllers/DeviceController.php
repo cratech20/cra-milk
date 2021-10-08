@@ -9,6 +9,7 @@ use App\Models\Farm;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use DB;
 
 class DeviceController extends Controller
 {
@@ -25,6 +26,18 @@ class DeviceController extends Controller
         return view('devices.index', [
             'devices' => $devices, 'title' => $title, 'clients' => User::role('client')->get()
         ]);
+    }
+
+    public function getAllDevices()
+    {
+        $devices = DB::select('select d.*, u.name as u_name
+            from devices d
+            left join users u on u.id = d.user_id
+            left join model_has_roles m on m.model_id = u.id
+            where m.role_id = 1 and
+            d.deleted_at IS NULL');
+
+        return response()->json(['devices' => $devices]);
     }
 
     public function summaryTable(User $client = null)
@@ -65,9 +78,9 @@ class DeviceController extends Controller
             'serial_number' => 'required',
         ]);
 
-        Device::create($request->input());
+        $device = Device::create($request->input());
 
-        return redirect()->route('devices.index');
+        return $this->sendResponse($device, 'Устройство успешно добавлено');
     }
 
     /**

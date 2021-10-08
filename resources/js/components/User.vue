@@ -57,7 +57,7 @@
 
             <!-- <form @submit.prevent="editRight"> -->
             <form @submit.prevent="updateRight()">
-                <div class="modal-body table-responsive p-0">
+                <div class="modal-body table-responsive p-10">
                   <p>
                     * - админ - admin<br>
                     * - производство - production<br>

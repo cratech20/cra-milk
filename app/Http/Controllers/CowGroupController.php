@@ -19,7 +19,7 @@ class CowGroupController extends Controller
     {
         $cowGroups = CowGroup::where('user_id', $client->id)->get();
 
-        return view('clients.cows.groups.index', ['cowGroups' => $cowGroups, 'client' => $client]);
+        return response()->json(['cowGroups' => $cowGroups]);
     }
 
     /**
@@ -40,13 +40,12 @@ class CowGroupController extends Controller
      */
     public function store(Request $request)
     {
-        $item = CowGroup::create($request->input());
+        $item = CowGroup::create([
+            'user_id' => $request->id,
+            'name' => $request->newCowGroup
+        ]);
 
-        return back()
-            ->with([
-                'message' => 'Группа коров ' . $item->name . ' успешно создана',
-                'alert-class' => 'alert-success'
-            ]);
+        return $this->sendResponse($item, 'Группа успешно добавлена');
     }
 
     /**
@@ -89,9 +88,12 @@ class CowGroupController extends Controller
      * @param \App\Models\CowGroup $cowGroup
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CowGroup $cowGroup)
+    public function delete(Request $request)
     {
-        //
+        $group = CowGroup::find($request->id);
+        $group->delete();
+
+        return $this->sendResponse($group, 'Группа успешно удалена');
     }
 
     public function change(Request $request)

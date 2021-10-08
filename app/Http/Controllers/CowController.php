@@ -17,12 +17,11 @@ class CowController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $client)
+    public function index($id)
     {
-        $cows = Cow::where('user_id', $client->id)->get();
-        // dd($cows);
+        $cows = Cow::where('user_id', $id)->get();
 
-        return view('clients.cows.index', ['cows' => $cows, 'client' => $client]);
+        return response()->json(['cows' => $cows]);
     }
 
     public function linking()

@@ -51,13 +51,12 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-        $inn = $request->input('inn');
+        $inn = $request['inn'];
 
         $data = null;
 
         if ($inn !== null) {
             $data = User::getDataByInn($inn);
-
             if ($data === null) {
                 return back()->withErrors(['ИНН с ошибкой']);
             }

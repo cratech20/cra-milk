@@ -26,6 +26,8 @@ window.Toast = Toast;
 import Home from './components/Home'
 import User from './components/User'
 import Client from './components/Client'
+import Device from './components/Device'
+import Cow from './components/Cow'
 
 const router = new VueRouter({
   mode: 'history',
@@ -33,6 +35,8 @@ const router = new VueRouter({
     { path: '/', name: 'home',  component: Home },
     { path: '/users', name: 'user',  component: User },
     { path: '/clients', name: 'client',  component: Client },
+    { path: '/devices', name: 'device',  component: Device },
+    { path: '/clients/:id/cows', name: 'cow',  component: Cow },
   ]
 });
 
