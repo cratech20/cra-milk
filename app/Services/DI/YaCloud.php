@@ -141,6 +141,8 @@ class YaCloud
             'name' => 'new'
         ];
 
+        dd($this->token);
+
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, "https://iot-devices.api.cloud.yandex.net/iot-devices/v1/devices");

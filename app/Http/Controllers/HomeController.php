@@ -84,12 +84,14 @@ class HomeController extends Controller
         $result = curl_exec($curl); // результат POST запроса 
 
         $iamToken = json_decode($result);
+        // dd($iamToken);
         return $iamToken->iamToken;
     }
 
     public function testJSON()
     {
         $iamToken = $this->auth();
+        $time = time();
         $url = 'https://iot-devices.api.cloud.yandex.net/iot-devices/v1/registries/arerbdnuk54prrjanos2/publish';
 
         $headers = [
@@ -98,7 +100,8 @@ class HomeController extends Controller
         ]; // заголовки нашего запроса
 
         $post_data = [ // поля нашего запроса
-            "topic" => "arerbdnuk54prrjanos2"
+            "topic" => '$devices/arein49ukcajcgulva8c/commands',
+            'data' =>  base64_encode('{"com": "update", "a": "48:3F:DA:5C:89:FF"}')
         ];
 
         $data_json = json_encode($post_data); // переводим поля в формат JSON
