@@ -9,12 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
-    function show(Device $device)
+    function show($device_id)
     {
         $json = DB::connection('pgsql')->table('iot_events')
-            ->whereJsonContains('payload->id', $device->device_id)->get();
+            ->whereJsonContains('payload->id', $device_id)->get();
 
         $decoded = json_decode($json, 1);
+        dd($json);
 
         return view('devices.messages.show', compact('device', 'decoded', 'json'));
     }

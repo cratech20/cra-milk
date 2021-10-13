@@ -97,15 +97,14 @@ class HomeController extends Controller
         $headers = [
             'Content-Type: application/json',
             'Authorization: Bearer '.$iamToken
-        ]; // заголовки нашего запроса
+        ];
 
-        $post_data = [ // поля нашего запроса
+        $post_data = [
             "topic" => '$devices/arein49ukcajcgulva8c/commands',
             'data' =>  base64_encode('{"com": "update", "a": "48:3F:DA:5C:89:FF"}')
         ];
 
-        $data_json = json_encode($post_data); // переводим поля в формат JSON
-        // dd($data_json);
+        $data_json = json_encode($post_data);
 
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);

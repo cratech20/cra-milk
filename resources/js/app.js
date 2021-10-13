@@ -7,6 +7,8 @@ import { Form, HasError, AlertError } from 'vform';
 window.Form = Form;
 
 import Swal from 'sweetalert2';
+import JwPagination from 'jw-vue-pagination';
+Vue.component('jw-pagination', JwPagination);
 
 
 const Toast = Swal.mixin({
@@ -28,6 +30,7 @@ import User from './components/User'
 import Client from './components/Client'
 import Device from './components/Device'
 import Cow from './components/Cow'
+import ClientDevices from './components/ClientDevice'
 
 const router = new VueRouter({
   mode: 'history',
@@ -37,6 +40,7 @@ const router = new VueRouter({
     { path: '/clients', name: 'client',  component: Client },
     { path: '/devices', name: 'device',  component: Device },
     { path: '/clients/:id/cows', name: 'cow',  component: Cow },
+    { path: '/clients/:id/devices', name: 'clients-devices',  component: ClientDevices },
   ]
 });
 

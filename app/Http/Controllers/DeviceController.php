@@ -40,16 +40,10 @@ class DeviceController extends Controller
         return response()->json(['devices' => $devices]);
     }
 
-    public function summaryTable(User $client = null)
+    public function summaryTable($client_id)
     {
-        $title = 'Итоговая таблица по устройствам клиента ' . $client->name;
-        $devices = $client->devices;
-
-        return view('devices.summary', [
-            'devices' => $devices,
-            'title' => $title,
-            'client' => $client
-        ]);
+        $client = User::find($client_id);
+        return response()->json(['devices' => $client->devices]);
     }
 
     /**

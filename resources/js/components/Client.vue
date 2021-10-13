@@ -33,7 +33,7 @@
 	                    <br />
 	                    <router-link :to="'/clients/'+item.id+'/cows'" class="btn btn-sm btn-outline-primary">Перейти к коровам</router-link>
 	                    <br />
-	                    <button class="btn btn-sm btn-outline-primary">Перейти к итоговой таблице по устройствам</button>
+	                    <router-link :to="'/clients/'+item.id+'/devices'" class="btn btn-sm btn-outline-primary">Перейти к итоговой таблице по устройствам</router-link>
 	                  </td>
 	                </tr>
 	              </tbody>

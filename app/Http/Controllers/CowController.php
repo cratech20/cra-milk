@@ -120,16 +120,14 @@ class CowController extends Controller
      * @param \App\Models\Cow $cow
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $cow_id)
+    public function update(Request $request)
     {
-        $cow = Cow::find($cow_id);
-        $cow->internal_code = $request->internal_code;
+        $data = $request->data;
+        $cow = Cow::find($data['id']);
+        $cow->internal_code = $data['internal_code'];
         $cow->save();
 
-        return back()->with([
-            'message' => 'Обновлено успешно',
-            'alert-class' => 'alert-success'
-        ]);
+        return $this->sendResponse($cow, 'Номер успешно обновлен');
     }
 
     /**

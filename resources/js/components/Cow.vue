@@ -43,7 +43,36 @@
 	        <!-- /.card -->
 	      </div>
 	    </div>
-	    
+	    <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+	        <div class="modal-dialog" role="document">
+	            <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">Редактирование</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+
+	            <!-- <form @submit.prevent="editRight"> -->
+	            <form @submit.prevent="save()">
+	                <div class="modal-body table-responsive p-10">
+	                  <div class="form-group">
+		                    <label>Внутренний номер</label>
+		                    <input v-model="form.internal_code" type="number" name="internal_code"
+		                        class="form-control" required :class="{ 'is-invalid': form.errors.has('internal_code') }">
+		                    <has-error :form="form" field="internal_code"></has-error>
+		                </div>
+	                </div>
+	                    
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+	                    <button type="submit" class="btn btn-success">Сохранить</button>
+	                </div>
+	              </form>
+	            
+	            </div>
+	        </div>
+        </div>
 	</div><!-- /.container-fluid -->
 </template>
 
@@ -56,7 +85,11 @@
 		          .getAttribute("content"),
 		        client: [],
 		        id: this.$route.params.id,
-		        cows: []
+		        cows: [],
+		        form: new Form({
+		        	id: '',
+		        	internal_code: '',
+		        }),
 			}
 		},
 		created() {
@@ -75,7 +108,22 @@
 				});
 			},
 			edit(item) {
+		        this.form.reset();
+		        $('#edit').modal('show');
+		        this.form.fill(item);
+			},
+			save() {
+				axios.post("/clients/cows/edit", {'data': this.form}).then((response) => {
+					this.getCow()
+					$('#edit').modal('hide');
 
+		            Toast.fire({
+		                  icon: 'success',
+		                  title: response.data.message
+		            });
+
+		            this.$Progress.finish();
+				});
 			}
 		}
 	}

@@ -40,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/get-all', [DeviceController::class, 'getAllDevices']);
         Route::post('/save', [DeviceController::class, 'store']);
 
-        Route::get('{device}/messages', [MessageController::class, 'show'])
+        Route::get('{id}/messages', [MessageController::class, 'show'])
             ->name('devices.messages');
 
     });
@@ -118,12 +118,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/get/{id}', [ClientController::class, 'getClientById']);
         Route::get('{client}/cows', [HomeController::class, 'index']);
         Route::get('{id}/get-cows', [CowController::class, 'index']);
+        Route::post('/cows/edit', [CowController::class, 'update']);
+        Route::get('{id}/devices', [HomeController::class, 'index']);
+        Route::get('{id}/all-devices', [DeviceController::class, 'summaryTable']);
 
         Route::get('/cows/{id}', [CowController::class, 'show'])
             ->name('clients.cows.edit');
 
-        Route::patch('/cows/{id}', [CowController::class, 'update'])
-            ->name('clients.cows.edit');
+        
 
         
 
