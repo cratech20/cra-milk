@@ -11,6 +11,11 @@ class ClientController extends Controller
     {
         $clients = User::role('client')->get();
 
-        return view('clients.index', ['clients' => $clients]);
+        return response()->json(['clients' => $clients]);
+    }
+
+    public function getClientById($id)
+    {
+        return response()->json(['client' => User::find($id)]);
     }
 }

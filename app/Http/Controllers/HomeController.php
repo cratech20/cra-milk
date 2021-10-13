@@ -21,9 +21,16 @@ use Jose\Component\Signature\Serializer\CompactSerializer;
 use MoveMoveIo\DaData\Enums\BranchType;
 use MoveMoveIo\DaData\Enums\CompanyType;
 use MoveMoveIo\DaData\Facades\DaDataCompany;
+use App\Models\Device as DM;
+use DB;
 
 class HomeController extends Controller
 {
+    public function index()
+    {
+        return view('spa');
+    }
+
     public function deviceMessages()
     {
         $devices = \App\Models\Device::all()->keyBy('device_id');
@@ -50,5 +57,65 @@ class HomeController extends Controller
         });
 
         return response()->json($messagesWithLiters);
+    }
+
+    public function auth()
+    {
+        $url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
+
+        $headers = [
+            'Content-Type: application/json',
+        ]; // заголовки нашего запроса
+
+        $post_data = [ // поля нашего запроса
+            "yandexPassportOauthToken" => "AQAAAAAJnHzYAATuwd-2FmZNs0MIsNF2Ne3jj98"
+        ];
+
+        $data_json = json_encode($post_data); // переводим поля в формат JSON
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_json);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_POST, true);
+
+        $result = curl_exec($curl); // результат POST запроса 
+
+        $iamToken = json_decode($result);
+        // dd($iamToken);
+        return $iamToken->iamToken;
+    }
+
+    public function testJSON()
+    {
+        $iamToken = $this->auth();
+        $time = time();
+        $url = 'https://iot-devices.api.cloud.yandex.net/iot-devices/v1/registries/arerbdnuk54prrjanos2/publish';
+
+        $headers = [
+            'Content-Type: application/json',
+            'Authorization: Bearer '.$iamToken
+        ];
+
+        $post_data = [
+            "topic" => '$devices/arein49ukcajcgulva8c/commands',
+            'data' =>  base64_encode('{"com": "update", "a": "48:3F:DA:5C:89:FF"}')
+        ];
+
+        $data_json = json_encode($post_data);
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_json);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_POST, true);
+
+        $result = curl_exec($curl); // результат POST запроса 
+
+        dd($result);
     }
 }

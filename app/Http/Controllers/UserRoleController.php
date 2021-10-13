@@ -10,8 +10,12 @@ class UserRoleController extends Controller
 {
     public function index()
     {
-        return view('users.roles.index', [
-            'users' => User::all(),
+        $users = User::all();
+        foreach ($users as $key => $user) {
+            $users[$key]['roles'] = $user->hasAllRoles(Role::all());
+        }
+        return response()->json([
+            'users' => $users,
             'roles' => Role::all(),
         ]);
     }

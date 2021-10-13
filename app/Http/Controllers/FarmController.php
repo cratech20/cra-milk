@@ -14,11 +14,11 @@ class FarmController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $client)
+    public function index($client_id)
     {
-        $farm = Farm::where('user_id', $client->id)->get();
+        $farm = Farm::where('user_id', $client_id)->get();
 
-        return view('clients.farms.index', ['farms' => $farm, 'client' => $client]);
+        return response()->json(['farms' => $farm]);
     }
 
     /**
@@ -39,13 +39,12 @@ class FarmController extends Controller
      */
     public function store(Request $request)
     {
-        $item = Farm::create($request->input());
+        $item = Farm::create([
+            'user_id' => $request->id,
+            'name' => $request->newFarm
+        ]);
 
-        return back()
-            ->with([
-                'message' => 'Ферма ' . $item->name . ' успешно создана',
-                'alert-class' => 'alert-success'
-            ]);
+        return $this->sendResponse($item, 'Ферма успешно добавлена');
     }
 
     /**
@@ -88,8 +87,11 @@ class FarmController extends Controller
      * @param \App\Models\Farm $farm
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Farm $farm)
+    public function delete(Request $request)
     {
-        //
+        $farm = Farm::find($request->id);
+        $farm->delete();
+
+        return $this->sendResponse($farm, 'Ферма успешно удалена');
     }
 }

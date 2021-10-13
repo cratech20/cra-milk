@@ -8,12 +8,40 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\Controller;
+use Spatie\Permission\Models\Role;
+use DB;
 
 class UserController extends Controller
 {
-    public function index()
+    public function getAllUsers()
     {
-        return view('users.index', ['users' => User::all()]);
+        $users = User::all();
+        foreach ($users as $key => $user) {
+            $roles = [];
+            foreach ($user->roles as $role) {
+                $roles[] = [
+                    'name' => $role['name'],
+                    'code' => $role['id']
+                ];
+            }
+            $users[$key]['role'] = $roles;
+        }
+        return response()->json(['users' => $users]);
+    }
+
+    public function delUser($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => "User not found"]);
+        }
+        // $roles = $user->getRoleNames();
+        // foreach ($roles as $role) {
+        //     $user->removeRole($role);
+        // }
+        $user->delete();
+        return redirect()->back();
     }
 
     public function inn()
@@ -23,13 +51,12 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-        $inn = $request->input('inn');
+        $inn = $request['inn'];
 
         $data = null;
 
         if ($inn !== null) {
             $data = User::getDataByInn($inn);
-
             if ($data === null) {
                 return back()->withErrors(['ИНН с ошибкой']);
             }
@@ -55,7 +82,7 @@ class UserController extends Controller
             $user->assignRole('employee');
         }
 
-        return redirect()->route('users.roles.index');
+        return $this->sendResponse($user, 'Пользователь успешно добавлен');
     }
 
     public function changePasswordForm(User $user)
@@ -68,15 +95,34 @@ class UserController extends Controller
             </form>';
     }
 
-    public function changePassword(Request $request, User $user)
+    public function changePassword(Request $request)
     {
-        if ($request->input('password')) {
-            $user->password = Hash::make($request->input('password'));
-            $user->save();
-            echo 'Успешно обновлено';
-            die();
+        if ($request['password']) {
+            $user = DB::transaction(function () use ($request) {
+                $user = User::find($request['id']);
+                if (!$user) {
+                    return response()->json(['error' => "Пользователь не найден"]);
+                }
+                $user->name = $request['name'];
+                $user->email = $request['email'];
+                $user->password = Hash::make($request['password']);
+                $user->save();
+                return $user;
+            });
+        } else {
+            $user = DB::transaction(function () use ($request) {
+                $user = User::find($request['id']);
+                if (!$user) {
+                    return response()->json(['error' => "Пользователь не найден"]);
+                }
+                $user->name = $request['name'];
+                $user->email = $request['email'];
+                $user->save();
+                return $user;
+            });
         }
+        
 
-        echo 'Ошибка';
+        return $this->sendResponse($user, 'Пользователь успешно обновлен');
     }
 }

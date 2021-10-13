@@ -13,11 +13,11 @@ class DivisionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $client)
+    public function index($client_id)
     {
-        $divisions = Division::where('user_id', $client->id)->get();
+        $divisions = Division::where('user_id', $client_id)->get();
 
-        return view('clients.divisions.index', ['divisions' => $divisions, 'client' => $client]);
+        return response()->json(['divisions' => $divisions]);
     }
 
     /**
@@ -34,13 +34,12 @@ class DivisionController extends Controller
      */
     public function store(Request $request)
     {
-        $division = Division::create($request->input());
+        $division = Division::create([
+            'user_id' => $request->id,
+            'name' => $request->newDevision
+        ]);
 
-        return back()
-            ->with([
-                'message' => 'Подразделение ' . $division->name . ' успешно создано',
-                'alert-class' => 'alert-success'
-            ]);
+        return $this->sendResponse($division, 'Подразделение успешно добавлено');
     }
 
     /**
@@ -83,8 +82,11 @@ class DivisionController extends Controller
      * @param \App\Models\Division $division
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Division $division)
+    public function delete(Request $request)
     {
-        //
+        $division = Division::find($request->id);
+        $division->delete();
+
+        return $this->sendResponse($division, 'Подразделение успешно удалено');
     }
 }
