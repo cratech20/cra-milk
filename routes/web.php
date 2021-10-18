@@ -21,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'index']);
 
     Route::get('/test', [HomeController::class, 'testJSON']);
+    Route::get('/run', [HomeController::class, 'run']);
 
     // Device
 
@@ -39,6 +40,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [HomeController::class, 'index']);
         Route::get('/get-all', [DeviceController::class, 'getAllDevices']);
         Route::post('/save', [DeviceController::class, 'store']);
+        Route::post('/update', [DeviceController::class, 'update']);
+        Route::post('/command', [DeviceController::class, 'command']);
 
         Route::get('{id}/messages', [MessageController::class, 'show'])
             ->name('devices.messages');

@@ -84,21 +84,21 @@
 	                    </div>
 	                    <div class="form-group">
 	                        <label>ID в Я.Облако *</label>
-	                        <input v-model="form.ya_id" type="text" name="ya_id"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('ya_id') }">
-	                        <has-error :form="form" field="ya_id"></has-error>
+	                        <input v-model="form.device_id" type="text" name="device_id"
+	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('device_id') }">
+	                        <has-error :form="form" field="device_id"></has-error>
 	                    </div>
 	                    <div class="form-group">
 	                        <label>Пароль в Я.Облако</label>
-	                        <input v-model="form.ya_password" type="text" name="ya_password"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('ya_password') }">
-	                        <has-error :form="form" field="ya_password"></has-error>
+	                        <input v-model="form.password" type="text" name="password"
+	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('assword') }">
+	                        <has-error :form="form" field="password"></has-error>
 	                    </div>
 	                    <div class="form-group">
 	                        <label>Серийный номер *</label>
-	                        <input v-model="form.ya_number" type="text" name="ya_number"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('ya_number') }">
-	                        <has-error :form="form" field="ya_number"></has-error>
+	                        <input v-model="form.serial_number" type="text" name="serial_number"
+	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('serial_number') }">
+	                        <has-error :form="form" field="serial_number"></has-error>
 	                    </div>
 	                </div>
 	                <div class="modal-footer">
@@ -106,7 +106,7 @@
 	                    <button v-show="!editmode" type="submit" class="btn btn-primary">Добавить</button>
 	                </div>
 	              </form>
-	            
+
 	            </div>
 	        </div>
 	    </div>
@@ -122,7 +122,7 @@
 	            </div>
 
 	            <!-- <form @submit.prevent="createUser"> -->
-	            <form @submit.prevent="editmode ? updateClient() : createDevice()">
+	            <form @submit.prevent="updateClient()">
 	                <div class="modal-body">
 	                    <div class="form-group">
 	                        <label>Название</label>
@@ -132,21 +132,21 @@
 	                    </div>
 	                    <div class="form-group">
 	                        <label>ID в Я.Облако *</label>
-	                        <input v-model="editForm.ya_id" type="text" name="ya_id"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('ya_id') }">
-	                        <has-error :form="form" field="ya_id"></has-error>
+	                        <input v-model="editForm.device_id" type="text" name="device_id"
+	                            class="form-control" required :class="{ 'is-invalid': editForm.errors.has('device_id') }">
+	                        <has-error :form="editForm" field="device_id"></has-error>
 	                    </div>
 	                    <div class="form-group">
 	                        <label>Пароль в Я.Облако</label>
-	                        <input v-model="editForm.ya_password" type="text" name="ya_password"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('ya_password') }">
-	                        <has-error :form="form" field="ya_password"></has-error>
+	                        <input v-model="editForm.password" type="text" name="password"
+	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('password') }">
+	                        <has-error :form="form" field="password"></has-error>
 	                    </div>
 	                    <div class="form-group">
 	                        <label>Серийный номер *</label>
-	                        <input v-model="editForm.ya_number" type="text" name="ya_number"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('ya_number') }">
-	                        <has-error :form="form" field="ya_number"></has-error>
+	                        <input v-model="editForm.serial_number" type="text" name="serial_number"
+	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('serial_number') }">
+	                        <has-error :form="form" field="serial_number"></has-error>
 	                    </div>
 	                </div>
 	                <div class="modal-footer">
@@ -154,7 +154,7 @@
 	                    <button v-show="!editmode" type="submit" class="btn btn-primary">Сохранить</button>
 	                </div>
 	              </form>
-	            
+
 	            </div>
 	        </div>
 	    </div>
@@ -174,7 +174,13 @@
 	                <div class="modal-body">
 	                    <div class="form-group">
 	                        <label>Сообщения</label>
-	                        <textarea disabled>123</textarea>
+                                <div class="form-control" style="height: calc(20em + 0.75rem + 2px); overflow-y: auto;">
+                                    <p v-for="(item, index) in message">
+
+                                        {{ item.payload }}
+
+                                    </p>
+                                </div>
 	                        <has-error :form="form" field="name"></has-error>
 	                    </div>
 	                </div>
@@ -182,7 +188,7 @@
 	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
 	                </div>
 	              </form>
-	            
+
 	            </div>
 	        </div>
 	    </div>
@@ -204,15 +210,15 @@
 		        editmode: false,
 		        form: new Form({
 		          name: '',
-		          ya_id: '',
-		          ya_password: '',
-		          ya_number: ''
+		          device_id: '',
+		          password: '',
+		          serial_number: ''
 		        }),
 		        editForm: new Form({
 		          name: '',
-		          ya_id: '',
-		          ya_password: '',
-		          ya_number: ''
+		          device_id: '',
+		          password: '',
+		          serial_number: ''
 		        }),
 		        messageForm: new Form({
 		          name: '',
@@ -235,7 +241,8 @@
 		        	'num': null,
 		        	'cal': null
 		        },
-		        time: new Date()
+		        time: new Date(),
+		        message: []
 			}
 		},
 		created() {
@@ -258,7 +265,14 @@
 		        $('#edit').modal('show');
 		        this.editForm.fill(item);
 			},
+			getDeviceMessage(item) {
+				axios.get("/devices/"+item.device_id+"/messages").then((response) => {
+					//this.devices = response.data.devices
+					this.message = response.data.json
+				});
+			},
 			showMessage(item) {
+				this.getDeviceMessage(item);
 				this.editmode = false;
 		        this.messageForm.reset();
 		        $('#message').modal('show');
@@ -278,15 +292,29 @@
 		            this.$Progress.finish();
 				});
 			},
+			updateClient() {
+				axios.post("/devices/update", this.editForm)
+		    	.then((response) => {
+					this.getDevices();
+		            $('#edit').modal('hide');
+
+		            Toast.fire({
+		                  icon: 'success',
+		                  title: response.data.message
+		            });
+
+		            this.$Progress.finish();
+				});
+			},
 			run() {
 				let data = {
 					'checked': this.checked,
 					'selectedManagment': this.selectedManagment
 				}
 
-				axios.post("/devices/save", data)
+				axios.post("/devices/command", data)
 		    	.then((response) => {
-					
+
 				});
 			},
 			onChange(event) {

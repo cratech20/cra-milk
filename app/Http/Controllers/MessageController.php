@@ -12,11 +12,15 @@ class MessageController extends Controller
     function show($device_id)
     {
         $json = DB::connection('pgsql')->table('iot_events')
-            ->whereJsonContains('payload->id', $device_id)->get();
+            ->whereJsonContains('payload->l', $device_id)->get();
 
         $decoded = json_decode($json, 1);
-        dd($json);
 
-        return view('devices.messages.show', compact('device', 'decoded', 'json'));
+        return response()->json([
+            'decoded' => $decoded,
+            'json' => $json
+        ]);
+
+        // return view('devices.messages.show', compact('device', 'decoded', 'json'));
     }
 }

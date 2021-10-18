@@ -30,12 +30,14 @@ class DeviceController extends Controller
 
     public function getAllDevices()
     {
-        $devices = DB::select('select d.*, u.name as u_name
-            from devices d
-            left join users u on u.id = d.user_id
-            left join model_has_roles m on m.model_id = u.id
-            where m.role_id = 1 and
-            d.deleted_at IS NULL');
+        $devices = Device::all();
+        foreach($devices as $k => $d) {
+            if (!$d->user) {
+                $devices[$k]['u_name'] = '';
+            } else {
+                $devices[$k]['u_name'] = $d->user['name'];
+            }
+        }
 
         return response()->json(['devices' => $devices]);
     }
@@ -112,7 +114,7 @@ class DeviceController extends Controller
     function update(Request $request, Device $device)
     {
         $device->fill($request->input())->save();
-        return back();
+        return $this->sendResponse($device, 'Устройство успешно обновлено');
     }
 
     /**
@@ -177,5 +179,94 @@ class DeviceController extends Controller
                     'alert-class' => 'alert-success'
                 ]);
         }
+    }
+
+    public function auth()
+    {
+        $url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
+
+        $headers = [
+            'Content-Type: application/json',
+        ]; // заголовки нашего запроса
+
+        $post_data = [ // поля нашего запроса
+            "yandexPassportOauthToken" => "AQAAAAAJnHzYAATuwd-2FmZNs0MIsNF2Ne3jj98"
+        ];
+
+        $data_json = json_encode($post_data); // переводим поля в формат JSON
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_json);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_POST, true);
+
+        $result = curl_exec($curl); // результат POST запроса
+
+        $iamToken = json_decode($result);
+        // dd($iamToken);
+        return $iamToken->iamToken;
+    }
+
+    public function getRegistry($client_id, $iamToken)
+    {
+        $url = 'https://iot-devices.api.cloud.yandex.net/iot-devices/v1/devices/'.$client_id;
+
+        $headers = [
+            'Content-Type: application/json',
+            'Authorization: Bearer '.$iamToken
+        ];
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        curl_setopt($curl, CURLOPT_URL, $url);
+
+        $result = curl_exec($curl); // результат POST запроса
+        $res = json_decode($result);
+
+        return $res->registryId;
+    }
+
+    public function command(Request $request)
+    {
+        $iamToken = $this->auth();
+        foreach ($request->checked as $item) {
+            $registry = $this->getRegistry($item['device_id'], $iamToken);
+            $time = time();
+            $url = 'https://iot-devices.api.cloud.yandex.net/iot-devices/v1/registries/'.$registry.'/publish';
+
+            $headers = [
+                'Content-Type: application/json',
+                'Authorization: Bearer '.$iamToken
+            ];
+
+            $json = DB::connection('pgsql')->table('iot_events')
+                ->whereJsonContains('payload->l', $item['device_id'])->first();
+
+            dd($json);
+
+            $post_data = [
+                "topic" => '$devices/'.$item['device_id'].'/commands',
+                'data' =>  base64_encode('{"com": "update", "a": "48:3F:DA:5C:89:FF"}')
+            ];
+
+            $data_json = json_encode($post_data);
+
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_VERBOSE, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data_json);
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_POST, true);
+
+            $result = curl_exec($curl); // результат POST запроса
+
+            dd($result);
+        };
     }
 }

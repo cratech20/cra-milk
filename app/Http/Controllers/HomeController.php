@@ -44,6 +44,7 @@ class HomeController extends Controller
 
             return [
                 'l' => $message->device_login,
+                'mac' => $message->mac,
                 'c' => $message->cow_code,
                 'y' => $message->yield,
                 'i' => $message->impulses,
@@ -81,7 +82,7 @@ class HomeController extends Controller
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_POST, true);
 
-        $result = curl_exec($curl); // результат POST запроса 
+        $result = curl_exec($curl); // результат POST запроса
 
         $iamToken = json_decode($result);
         // dd($iamToken);
@@ -114,8 +115,78 @@ class HomeController extends Controller
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_POST, true);
 
-        $result = curl_exec($curl); // результат POST запроса 
+        $result = curl_exec($curl); // результат POST запроса
 
         dd($result);
+    }
+
+    public function run()
+    {
+        // $lastMessage = DeviceMessage::orderBy('id', 'desc')->get()->first();
+
+        // $postgreRows = DB::connection('pgsql')->table('iot_events')
+        //     ->when(isset($lastMessage), function ($query) use ($lastMessage) {
+        //         return $query->where('event_datetime', '>=', $lastMessage->device_created_at);
+        //     })
+        //     ->whereNotNull('payload->c')
+        //     ->whereNotNull('payload->i')
+        //     ->whereNotNull('payload->l')
+        //     ->whereNotNull('payload->t')
+        //     ->whereNotNull('payload->y')
+        //     ->get();
+
+        // $postgreRows2 = DB::connection('pgsql')->table('iot_events')->get();
+
+        // // dd($postgreRows[2]);
+
+        // foreach ($postgreRows as $postgreRow) {
+        //     $json = $postgreRow->payload;
+        //     $payload = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+        //     $server_created_at = Carbon::parse($postgreRow->event_datetime);
+        //     $device_created_at = Carbon::parse((int)$payload['t']);
+        //     $yield = (int)$payload['y'];
+
+        //     // искать за последние 2 недели server_created_at
+        //     $whereData = [
+        //         ['device_created_at', $device_created_at],
+        //         ['device_login', $payload['l']],
+        //         ['cow_code', $payload['c']],
+        //         ['yield', $yield],
+        //         ['impulses', $payload['i']],
+        //         ['battery', $payload['b']],
+        //         ['error', $payload['e']],
+        //         ['message_num', $payload['n']],
+        //     ];
+
+        //     $messages = DeviceMessage::where($whereData)->get();
+
+        //     if ($messages->isEmpty()) {
+        //         $dataForCreate = [
+        //             'device_created_at' => $device_created_at,
+        //             'device_login' => $payload['l'],
+        //             'cow_code' => $payload['c'],
+        //             'yield' => $yield,
+        //             'impulses' => $payload['i'],
+        //             'battery' => $payload['b'],
+        //             'error' => $payload['e'],
+        //             'message_num' => $payload['n'],
+        //             'server_created_at' => $server_created_at
+        //         ];
+
+        //         DeviceMessage::insert($dataForCreate);
+        //     }
+        // }
+        // $test = DB::connection('pgsql')
+        //     ->select("select * from iot_events
+        //         where event_datetime > current_date - INTERVAL '14 days'
+        //         and payload->>l = 'areb9niqt2jf1ffodohg'
+        //         order by event_datetime DESC
+        //         limit 100000;");
+
+        $json = DB::connection('pgsql')->table('iot_events')
+                ->whereJsonContains('payload->l', 'are77vr56e5ucsqva03j')
+                ->first();
+        dd($json);
     }
 }
