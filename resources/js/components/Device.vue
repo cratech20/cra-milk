@@ -67,14 +67,14 @@
 	        <div class="modal-dialog" role="document">
 	            <div class="modal-content">
 	            <div class="modal-header">
-	                <h5 class="modal-title" v-show="!editmode">Добавление устройства</h5>
+	                <h5 class="modal-title">Добавление устройства</h5>
 	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	                    <span aria-hidden="true">&times;</span>
 	                </button>
 	            </div>
 
 	            <!-- <form @submit.prevent="createUser"> -->
-	            <form @submit.prevent="editmode ? updateClient() : createDevice()">
+	            <form @submit.prevent="createDevice()">
 	                <div class="modal-body">
 	                    <div class="form-group">
 	                        <label>Название</label>
@@ -100,10 +100,17 @@
 	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('serial_number') }">
 	                        <has-error :form="form" field="serial_number"></has-error>
 	                    </div>
+						<div class="form-group">
+	                        <label>Шлюз *</label>
+	                        <select class="form-control" v-model="form.gate_id" required>
+								<option v-for="(item, key) in gates" :value="item.id">{{ item.name }}</option>
+							</select>
+	                        <has-error :form="form" field="serial_number"></has-error>
+	                    </div>
 	                </div>
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-	                    <button v-show="!editmode" type="submit" class="btn btn-primary">Добавить</button>
+	                    <button type="submit" class="btn btn-primary">Добавить</button>
 	                </div>
 	              </form>
 
@@ -115,7 +122,7 @@
 	        <div class="modal-dialog" role="document">
 	            <div class="modal-content">
 	            <div class="modal-header">
-	                <h5 class="modal-title" v-show="!editmode">Редактирование устройства {{ editForm.name }}</h5>
+	                <h5 class="modal-title">Редактирование устройства {{ editForm.name }}</h5>
 	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	                    <span aria-hidden="true">&times;</span>
 	                </button>
@@ -148,10 +155,17 @@
 	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('serial_number') }">
 	                        <has-error :form="form" field="serial_number"></has-error>
 	                    </div>
+						<div class="form-group">
+	                        <label>Шлюз *</label>
+	                        <select class="form-control" v-model="editForm.gate_id" required>
+								<option v-for="(item, key) in gates" :value="item.id">{{ item.name }}</option>
+							</select>
+	                        <has-error :form="form" field="serial_number"></has-error>
+	                    </div>
 	                </div>
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-	                    <button v-show="!editmode" type="submit" class="btn btn-primary">Сохранить</button>
+	                    <button type="submit" class="btn btn-primary">Сохранить</button>
 	                </div>
 	              </form>
 
@@ -209,16 +223,20 @@
 		        devices: [],
 		        editmode: false,
 		        form: new Form({
+                  id: null,
 		          name: '',
 		          device_id: '',
 		          password: '',
-		          serial_number: ''
+		          serial_number: '',
+                  gate_id: null
 		        }),
 		        editForm: new Form({
+                  id: null,
 		          name: '',
 		          device_id: '',
 		          password: '',
-		          serial_number: ''
+		          serial_number: '',
+                  gate_id: null
 		        }),
 		        messageForm: new Form({
 		          name: '',
@@ -242,7 +260,9 @@
 		        	'cal': null
 		        },
 		        time: new Date(),
-		        message: []
+		        message: [],
+                gates: [],
+				selectedGate: []
 			}
 		},
 		created() {
@@ -254,13 +274,21 @@
 					this.devices = response.data.devices
 				});
 			},
+            getGates() {
+				axios.get("/devices/get-gates").then((response) => {
+					this.gates = response.data.gates
+				});
+			},
 			newModal() {
+                this.getGates()
 				this.editmode = false;
 		        this.form.reset();
 		        $('#addNew').modal('show');
 			},
 			editModal(item) {
-				this.editmode = false;
+                console.log(item)
+                this.getGates()
+				this.editmode = true;
 		        this.editForm.reset();
 		        $('#edit').modal('show');
 		        this.editForm.fill(item);
@@ -293,6 +321,7 @@
 				});
 			},
 			updateClient() {
+
 				axios.post("/devices/update", this.editForm)
 		    	.then((response) => {
 					this.getDevices();
@@ -319,6 +348,14 @@
 			},
 			onChange(event) {
 				this.selectedManagment.com = event.target.value
+			},
+			onChangeGate(event) {
+                if (this.editmode) {
+                    this.editForm.gate = event.target.value
+                } else {
+                    this.form.gate = event.target.value
+                }
+
 			}
 		}
 	}

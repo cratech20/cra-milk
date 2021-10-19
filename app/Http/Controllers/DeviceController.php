@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Device;
+use App\Models\Gate;
 use App\Models\DeviceOwnerChange;
+use App\Services\YaCloud\YaCloud;
 use App\Models\Division;
 use App\Models\Farm;
 use App\Models\User;
@@ -31,6 +33,7 @@ class DeviceController extends Controller
     public function getAllDevices()
     {
         $devices = Device::all();
+
         foreach($devices as $k => $d) {
             if (!$d->user) {
                 $devices[$k]['u_name'] = '';
@@ -107,13 +110,18 @@ class DeviceController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Device $device
      * @return \Illuminate\Http\Response
      */
     public
     function update(Request $request, Device $device)
     {
-        $device->fill($request->input())->save();
+        $device = Device::find($request->id);
+        $device->name = $request->name;
+        $device->gate_id = $request->gate_id;
+        $device->device_id = $request->device_id;
+        $device->password = $request->password;
+        $device->serial_number = $request->serial_number;
+        $device->save();
         return $this->sendResponse($device, 'Устройство успешно обновлено');
     }
 
@@ -181,92 +189,26 @@ class DeviceController extends Controller
         }
     }
 
-    public function auth()
-    {
-        $url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
-
-        $headers = [
-            'Content-Type: application/json',
-        ]; // заголовки нашего запроса
-
-        $post_data = [ // поля нашего запроса
-            "yandexPassportOauthToken" => "AQAAAAAJnHzYAATuwd-2FmZNs0MIsNF2Ne3jj98"
-        ];
-
-        $data_json = json_encode($post_data); // переводим поля в формат JSON
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_VERBOSE, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_json);
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_POST, true);
-
-        $result = curl_exec($curl); // результат POST запроса
-
-        $iamToken = json_decode($result);
-        // dd($iamToken);
-        return $iamToken->iamToken;
-    }
-
-    public function getRegistry($client_id, $iamToken)
-    {
-        $url = 'https://iot-devices.api.cloud.yandex.net/iot-devices/v1/devices/'.$client_id;
-
-        $headers = [
-            'Content-Type: application/json',
-            'Authorization: Bearer '.$iamToken
-        ];
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_VERBOSE, 1);
-        curl_setopt($curl, CURLOPT_URL, $url);
-
-        $result = curl_exec($curl); // результат POST запроса
-        $res = json_decode($result);
-
-        return $res->registryId;
-    }
-
     public function command(Request $request)
     {
-        $iamToken = $this->auth();
+        if (!$request->checked) {
+            return response()->json(['Error' => 'Нет выбранных устройств']);
+        };
+        $yacloud = new YaCloud();
         foreach ($request->checked as $item) {
-            $registry = $this->getRegistry($item['device_id'], $iamToken);
+            $registry = $yacloud->getRegistry($item['device_id']);
             $time = time();
-            $url = 'https://iot-devices.api.cloud.yandex.net/iot-devices/v1/registries/'.$registry.'/publish';
-
-            $headers = [
-                'Content-Type: application/json',
-                'Authorization: Bearer '.$iamToken
-            ];
-
             $json = DB::connection('pgsql')->table('iot_events')
-                ->whereJsonContains('payload->l', $item['device_id'])->first();
+                ->whereJsonContains('payload->l', $item['device_id'])->get();
+            $payload = json_decode($json[count($json)-1]->payload);
 
-            dd($json);
+            if (!$payload->a) {
+                return $this->sendResponse($item, 'Ошибка при выполнении команды');
+            }
 
-            $post_data = [
-                "topic" => '$devices/'.$item['device_id'].'/commands',
-                'data' =>  base64_encode('{"com": "update", "a": "48:3F:DA:5C:89:FF"}')
-            ];
+            $gate = Gate::find($item['gate_id']);
 
-            $data_json = json_encode($post_data);
-
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl, CURLOPT_VERBOSE, 1);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $data_json);
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_POST, true);
-
-            $result = curl_exec($curl); // результат POST запроса
-
-            dd($result);
+            return $yacloud->commands($registry, $request->selectedManagment, $payload->a, $gate->device_id);
         };
     }
 }

@@ -185,7 +185,7 @@ class HomeController extends Controller
         //         limit 100000;");
 
         $json = DB::connection('pgsql')->table('iot_events')
-                ->whereJsonContains('payload->l', 'are77vr56e5ucsqva03j')
+                ->whereJsonContains('payload->l', 'arerhs6djigmo6ji7pkf')
                 ->first();
         dd($json);
     }
