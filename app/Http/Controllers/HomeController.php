@@ -35,8 +35,8 @@ class HomeController extends Controller
     {
         $chartDataAr = DB::connection('pgsql')->table('iot_events')
             ->select('event_datetime')
+            ->whereNotNull('payload->c')
             ->whereNotNull('payload->ar')
-            ->whereNotNull('payload->a')
             ->orderBy('event_datetime', 'DESC')
             // ->limit(100)
             ->get();
@@ -52,14 +52,14 @@ class HomeController extends Controller
     {
         $chartDataAr = DB::connection('pgsql')->table('iot_events')
             // ->select('payload', 'event_datetime')
+            ->whereNotNull('payload->c')
             ->whereNotNull('payload->ar')
-            ->whereNotNull('payload->a')
             ->orderBy('event_datetime', 'DESC')
             ->get();
 
         foreach ($chartDataAr as $data) {
             if (Carbon::parse($data->event_datetime)->format('d.m.Y') == $request->data) {
-                $macAr[] = json_decode($data->payload)->a;
+                $macAr[] = json_decode($data->payload)->c;
             };
         }
 
@@ -70,14 +70,14 @@ class HomeController extends Controller
     {
         $chartDataAr = DB::connection('pgsql')->table('iot_events')
             // ->select('payload', 'event_datetime')
+            ->whereNotNull('payload->c')
             ->whereNotNull('payload->ar')
-            ->whereNotNull('payload->a')
             // ->orderBy('event_datetime', 'DESC')
             ->get();
 
         foreach ($chartDataAr as $data) {
             if ((Carbon::parse($data->event_datetime)->format('d.m.Y') == $request->date) &&
-            (json_decode($data->payload)->a == $request->mac)) {
+            (json_decode($data->payload)->c == $request->mac)) {
                 $macAr[Carbon::parse($data->event_datetime)->format('H:i:s')] = json_decode($data->payload)->ar;
             };
         }
