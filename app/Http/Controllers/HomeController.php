@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DeviceMessage;
+use App\Models\Cow;
 use App\Services\DI\YaCloud;
 use App\Services\IoTMessageTransporter;
 use App\Services\LitersByImpulsesCalculator;
@@ -38,7 +39,6 @@ class HomeController extends Controller
             ->whereNotNull('payload->c')
             ->whereNotNull('payload->ar')
             ->orderBy('event_datetime', 'DESC')
-            // ->limit(100)
             ->get();
 
         foreach ($chartDataAr as $date) {
@@ -51,7 +51,6 @@ class HomeController extends Controller
     public function getMac(Request $request)
     {
         $chartDataAr = DB::connection('pgsql')->table('iot_events')
-            // ->select('payload', 'event_datetime')
             ->whereNotNull('payload->c')
             ->whereNotNull('payload->ar')
             ->orderBy('event_datetime', 'DESC')
@@ -63,16 +62,31 @@ class HomeController extends Controller
             };
         }
 
-        return array_unique($macAr);
+        $ar = array_unique($macAr);
+
+        foreach ($ar as $a) {
+            $num = Cow::where('cow_id', '=', $a)->first();
+            if ($num) {
+                $cowAr[] = [
+                    'value' => $a.' ('.$num->internal_code.')',
+                    'code' => $a
+                ];
+            } else {
+                $cowAr[] = [
+                    'value' => $a.' (0)',
+                    'code' => $a
+                ];
+            };
+        }
+
+        return $cowAr;
     }
 
     public function getChartData(Request $request)
     {
         $chartDataAr = DB::connection('pgsql')->table('iot_events')
-            // ->select('payload', 'event_datetime')
             ->whereNotNull('payload->c')
             ->whereNotNull('payload->ar')
-            // ->orderBy('event_datetime', 'DESC')
             ->get();
 
         foreach ($chartDataAr as $data) {
@@ -94,7 +108,6 @@ class HomeController extends Controller
             $i = 1;
             $time[$k]['interval'][0] = $t['time'];
             while ($i < count($t['value'])) {
-                // echo $i.'<br>';
                 $time[$k]['interval'][$i] = Carbon::parse($time[$k]['interval'][$i-1])->addSeconds(10)->format('H:i:s');
                 $i++;
             }
@@ -103,7 +116,7 @@ class HomeController extends Controller
         return response()->json(['data' => [
                 'labels' => $time[0]['interval'],
                 'datasets' => array([
-                    'label' => 'Test',
+                    // 'label' => 'Test',
                     'backgroundColor' => '#007bff',
                     'data' => $time[0]['value']
                 ])

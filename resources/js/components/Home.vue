@@ -80,8 +80,8 @@
                 </select>
                 <div style="margin-top: 10px;">
                     <template v-for="item in macs">
-                        <input type="radio" name="mac" @click="changeMac($event)" :id="item" :value="item">
-                        <label :for="item">{{item}}</label><br>
+                        <input type="radio" name="mac" @click="changeMac($event)" :id="item.code" :value="item.code">
+                        <label :for="item.code">{{item.value}}</label><br>
                     </template>
                 </div>
               </div>
