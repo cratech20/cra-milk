@@ -23,6 +23,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/test', [HomeController::class, 'testJSON']);
     Route::get('/run', [HomeController::class, 'run']);
+    Route::get('/get-data', [HomeController::class, 'getData']);
+    Route::get('/get-dates', [HomeController::class, 'getDates']);
+    Route::post('/get-mac', [HomeController::class, 'getMac']);
+    Route::post('/get-chart-data', [HomeController::class, 'getChartData']);
 
     // Device
 

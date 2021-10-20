@@ -31,6 +31,118 @@ class HomeController extends Controller
         return view('spa');
     }
 
+    public function getDates()
+    {
+        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+            ->select('event_datetime')
+            ->whereNotNull('payload->ar')
+            ->whereNotNull('payload->a')
+            ->orderBy('event_datetime', 'DESC')
+            // ->limit(100)
+            ->get();
+
+        foreach ($chartDataAr as $date) {
+            $dateAr[] = Carbon::parse($date->event_datetime)->format('d.m.Y');
+        }
+
+        return array_unique($dateAr);
+    }
+
+    public function getMac(Request $request)
+    {
+        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+            // ->select('payload', 'event_datetime')
+            ->whereNotNull('payload->ar')
+            ->whereNotNull('payload->a')
+            ->orderBy('event_datetime', 'DESC')
+            ->get();
+
+        foreach ($chartDataAr as $data) {
+            if (Carbon::parse($data->event_datetime)->format('d.m.Y') == $request->data) {
+                $macAr[] = json_decode($data->payload)->a;
+            };
+        }
+
+        return array_unique($macAr);
+    }
+
+    public function getChartData(Request $request)
+    {
+        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+            // ->select('payload', 'event_datetime')
+            ->whereNotNull('payload->ar')
+            ->whereNotNull('payload->a')
+            // ->orderBy('event_datetime', 'DESC')
+            ->get();
+
+        foreach ($chartDataAr as $data) {
+            if ((Carbon::parse($data->event_datetime)->format('d.m.Y') == $request->date) &&
+            (json_decode($data->payload)->a == $request->mac)) {
+                $macAr[Carbon::parse($data->event_datetime)->format('H:i:s')] = json_decode($data->payload)->ar;
+            };
+        }
+
+        foreach ($macAr as $k => $v) {
+            $time[] = [
+                'time' => $k,
+                'value' => $v
+            ];
+        };
+
+
+        foreach ($time as $k => $t) {
+            $i = 1;
+            $time[$k]['interval'][0] = $t['time'];
+            while ($i < count($t['value'])) {
+                // echo $i.'<br>';
+                $time[$k]['interval'][$i] = Carbon::parse($time[$k]['interval'][$i-1])->addSeconds(10)->format('H:i:s');
+                $i++;
+            }
+        }
+
+        return response()->json(['data' => [
+                'labels' => $time[0]['interval'],
+                'datasets' => array([
+                    'label' => 'Test',
+                    'backgroundColor' => '#007bff',
+                    'data' => $time[0]['value']
+                ])
+            ]
+        ]);
+    }
+
+    public function getData()
+    {
+
+        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+            ->whereNotNull('payload->ar')
+            ->whereNotNull('payload->a')
+            ->orderBy('event_datetime', 'DESC')
+            ->get();
+
+        foreach ($chartDataAr as $item) {
+            $payload[] = json_decode($item->payload);
+        };
+
+        $i = 0;
+        $j = 1;
+        $time[] = Carbon::parse('9:00:00')->format('H:i:s');
+        while ($j < count($payload[0]->ar)) {
+            $time[$j] = Carbon::parse($time[$j-1])->addSeconds(10)->format('H:i:s');
+            $j++;
+        }
+
+        return response()->json(['data' => [
+                'labels' => $time,
+                'datasets' => array([
+                    'label' => $payload[0]->a,
+                    'backgroundColor' => '#007bff',
+                    'data' => $payload[0]->ar
+                ])
+            ]
+        ]);
+    }
+
     public function deviceMessages()
     {
         $devices = \App\Models\Device::all()->keyBy('device_id');

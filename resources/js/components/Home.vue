@@ -62,7 +62,87 @@
             </div>
           </div>
           <!-- ./col -->
+          <div class="col-md-3">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Фильтр</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-10">
+                <select class="form-control" v-model="selectedDate" @change="onChange($event)">
+                    <option v-for="item in dates" :value="item">{{item}}</option>
+                </select>
+                <div style="margin-top: 10px;">
+                    <template v-for="item in macs">
+                        <input type="radio" name="mac" @click="changeMac($event)" :id="item" :value="item">
+                        <label :for="item">{{item}}</label><br>
+                    </template>
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <div class="col-md-9">
+            <line-chart :chart-data="data" :height="300" :options="{responsive: true}"></line-chart>
+        </div>
         </div>
         <!-- /.row -->
       </div><!-- /.container-fluid -->
 </template>
+<script>
+    import LineChart from './LineChart.js'
+    export default {
+        components: {
+            LineChart
+        },
+        data() {
+            return {
+                data: null,
+                dates: [],
+                macs: [],
+                selectedDate: []
+            }
+        },
+        created() {
+            this.getData()
+            this.getDates()
+        },
+        methods: {
+            getData() {
+                axios.get("/get-data").then((response) => {
+                  this.data = response.data.data
+                });
+            },
+            getDates() {
+                axios.get("/get-dates").then((response) => {
+                    this.dates = response.data
+                });
+            },
+            onChange(event) {
+                axios.post("/get-mac", {'data': event.target.value}).then((response) => {
+                    this.macs = response.data
+                });
+            },
+            changeMac(event) {
+                console.log(event.target.value)
+                console.log(this.selectedDate)
+                let postData = {
+                    'mac': event.target.value,
+                    'date': this.selectedDate
+                }
+
+                axios.post("/get-chart-data", postData).then((response) => {
+                    // this.macs = response.data
+                    this.data = response.data.data
+                });
+            }
+        }
+    }
+</script>
