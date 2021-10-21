@@ -7,8 +7,14 @@
 	            <h3 class="card-title">Устройства</h3>
 
 	            <div class="card-tools">
-	              <button @click="newModal" class="btn btn-sm btn-primary">Добавить устройство</button>
-	              <button @click="() => {this.showManagment =! this.showManagment}" class="btn btn-sm btn-primary" :disabled="checked.length == 0">Управление</button>
+                    <div class="input-group" style="width: 150px; float: right; margin-left: 10px;">
+						<input type="text" v-model="search" class="form-control">
+						<div class="input-group-append">
+							<span class="input-group-text">Поиск</span>
+						</div>
+					</div>
+	                <button @click="newModal" class="btn btn-sm btn-primary">Добавить устройство</button>
+	                <button @click="() => {this.showManagment =! this.showManagment}" class="btn btn-sm btn-primary" :disabled="checked.length == 0">Управление</button>
 	            </div>
 	        </div>
 	          	<div class="card-header" v-if="showManagment">
@@ -30,27 +36,47 @@
 	                <tr>
 	                  <th></th>
 	                  <th>№</th>
-	                  <th>Клиент</th>
-	                  <th>Название</th>
-	                  <th>Серийный номер</th>
-	                  <th>ID</th>
-	                  <th>Дата добавления</th>
+	                  <th>
+						  <a href="#" @click="sortBy('u_name')" :class="{ active: sortKey === 'u_name' }">
+							Клиент
+						  </a>
+					  </th>
+	                  <th>
+						<a href="#" @click="sortBy('name')" :class="{ active: sortKey === 'name' }">
+							Название
+						</a>
+					  </th>
+	                  <th>
+						  <a href="#" @click="sortBy('serial_number')" :class="{ active: sortKey === 'serial_number' }">
+							Серийный номер
+						  </a>
+					  </th>
+	                  <th>
+						  <a href="#" @click="sortBy('device_id')" :class="{ active: sortKey === 'device_id' }">
+							ID
+						  </a>
+					  </th>
+	                  <th>
+						  <a href="#" @click="sortBy('created_at')" :class="{ active: sortKey === 'created_at' }">
+							Дата добавления
+						  </a>
+					  </th>
 	                  <th>Действие</th>
 	                </tr>
 	              </thead>
 	              <tbody>
-	                <tr v-for="(item, key) in devices">
-	                  <td><input type="checkbox" v-model="checked" :value="item"></td>
-	                  <td>{{ key + 1 }}</td>
-	                  <td>{{ item.u_name }}</td>
-	                  <td>{{ item.name }}</td>
-	                  <td>{{ item.serial_number }}</td>
-	                  <td>{{ item.device_id }}</td>
-	                  <td>{{ item.created_at }}</td>
+	                <tr v-for="(p, index) in filteredDevices" :key="index">
+	                  <td><input type="checkbox" v-model="checked" :value="p"></td>
+	                  <td>{{ index + 1 }}</td>
+	                  <td>{{ p.u_name }}</td>
+	                  <td>{{ p.name }}</td>
+	                  <td>{{ p.serial_number }}</td>
+	                  <td>{{ p.device_id }}</td>
+	                  <td>{{ p.created_at }}</td>
 	                  <td>
-	                    <button @click="showMessage(item)" class="btn btn-sm btn-outline-primary">Просмотреть сообщения</button>
+	                    <button @click="showMessage(p)" class="btn btn-sm btn-outline-primary">Просмотреть сообщения</button>
 	                    <br />
-	                    <button @click="editModal(item)" class="btn btn-sm btn-outline-primary">Редактировать</button>
+	                    <button @click="editModal(p)" class="btn btn-sm btn-outline-primary">Редактировать</button>
 	                    <br />
 	                    <button class="btn btn-sm btn-outline-danger">Удалить</button>
 	                  </td>
@@ -221,6 +247,7 @@
 		          .querySelector('meta[name="csrf-token"]')
 		          .getAttribute("content"),
 		        devices: [],
+                search: '',
 		        editmode: false,
 		        form: new Form({
                   id: null,
@@ -262,13 +289,39 @@
 		        time: new Date(),
 		        message: [],
                 gates: [],
-				selectedGate: []
+				selectedGate: [],
+				sortKey: 'name',
+				reverse: false,
 			}
 		},
+        computed: {
+			sortedDevuces() {
+				const k = this.sortKey;
+				return this.devices.sort((a, b) => {
+					return (a[k] < b[k] ? -1 : a[k] > b[k] ? 1 : 0) * [ 1, -1 ][+this.reverse];
+				});
+			},
+            filteredDevices() {
+                let obj = this.sortedDevuces;
+				let newArray = [];
+				let key = null;
+				let el = null;
+				const serach = this.search.toLowerCase();
+				for (key in obj) {
+					el = obj[key]
+					if (el.name.toLowerCase().indexOf(serach) != -1) newArray.push(el);
+				}
+				return newArray;
+            },
+        },
 		created() {
 			this.getDevices()
 		},
 		methods: {
+			sortBy(sortKey) {
+				this.reverse = (this.sortKey == sortKey) ? !this.reverse : false;
+				this.sortKey = sortKey;
+			},
 			getDevices() {
 				axios.get("/devices/get-all").then((response) => {
 					this.devices = response.data.devices
@@ -286,7 +339,6 @@
 		        $('#addNew').modal('show');
 			},
 			editModal(item) {
-                console.log(item)
                 this.getGates()
 				this.editmode = true;
 		        this.editForm.reset();
@@ -295,7 +347,6 @@
 			},
 			getDeviceMessage(item) {
 				axios.get("/devices/"+item.device_id+"/messages").then((response) => {
-					//this.devices = response.data.devices
 					this.message = response.data.json
 				});
 			},
@@ -321,7 +372,6 @@
 				});
 			},
 			updateClient() {
-
 				axios.post("/devices/update", this.editForm)
 		    	.then((response) => {
 					this.getDevices();
