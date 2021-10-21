@@ -65,7 +65,7 @@
           <div class="col-md-3">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Фильтр</h3>
+                <h3 class="card-title">Дата</h3>
 
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -78,7 +78,23 @@
                 <select class="form-control" v-model="selectedDate" @change="onChange($event)">
                     <option v-for="item in dates" :value="item">{{item}}</option>
                 </select>
-                <div style="margin-top: 10px;">
+              </div>
+              <!-- /.card-body -->
+            </div>
+
+            <div class="card" v-if="macs.length > 0">
+              <div class="card-header">
+                <h3 class="card-title">Коровы</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-10">
+                <div style="margin-top: 10px; height: 300px; overflow-y: auto;">
                     <template v-for="item in macs">
                         <input type="radio" name="mac" @click="changeMac($event)" :id="item.code" :value="item.code">
                         <label :for="item.code">{{item.value}}</label><br>
@@ -131,8 +147,6 @@
                 });
             },
             changeMac(event) {
-                console.log(event.target.value)
-                console.log(this.selectedDate)
                 let postData = {
                     'mac': event.target.value,
                     'date': this.selectedDate

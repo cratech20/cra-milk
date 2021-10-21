@@ -82,4 +82,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(CowGroup::class);
     }
+
+    public function isBlock()
+    {
+        return $this->status === 0;
+    }
 }

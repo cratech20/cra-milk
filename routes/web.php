@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/json/device-messages', [HomeController::class, 'deviceMessages']);
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'isblock'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index']);
 
@@ -82,10 +82,10 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('users')->group(function () {
-
         Route::get('/', [HomeController::class, 'index']);
         Route::get('/getall', [UserController::class, 'getAllUsers']);
         Route::get('/delete/{id}', [UserController::class, 'delUser']);
+        Route::post('/block', [UserController::class, 'blockUser']);
         Route::post('/change-password', [UserController::class, 'changePassword']);
         Route::post('/create', [UserController::class, 'store']);
         Route::get('/roles', [UserRoleController::class, 'index']);
@@ -94,17 +94,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/change/password/{user}', [UserController::class, 'changePasswordForm'])
             ->name('users.change.password');
 
-
-
         Route::get('/create/inn', [UserController::class, 'inn'])
             ->name('users.registration.inn');
 
-
-
         Route::post('/', [UserController::class, 'store'])
             ->name('users.store');
-
-
 
         Route::post('/roles', [UserRoleController::class, 'update'])
             ->name('users.roles.update');

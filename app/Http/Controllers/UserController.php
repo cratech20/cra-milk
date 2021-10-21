@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Role;
+use Carbon\Carbon;
 use DB;
 
 class UserController extends Controller
@@ -67,6 +68,10 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        if (count($request->role) == 0) {
+            return response()->json(['Error' => 'User role not found']);
+        };
+
         $data = $request->input();
 
         $user = User::create([
@@ -76,10 +81,8 @@ class UserController extends Controller
             'inn' => !empty($data['inn']) ? $data['inn'] : null,
         ]);
 
-        if (!empty($data['inn'])) {
-            $user->assignRole('client');
-        } else {
-            $user->assignRole('employee');
+        foreach ($request->role as $role) {
+            $user->assignRole($role['name']);
         }
 
         return $this->sendResponse($user, 'Пользователь успешно добавлен');
@@ -95,8 +98,18 @@ class UserController extends Controller
             </form>';
     }
 
+    public function blockUser(Request $request) {
+        $user = User::find($request->id);
+        if (!$user) {
+            return response()->json(['error' => "User not found"]);
+        }
+        $user->status = !$request->status;
+        $user->save();
+    }
+
     public function changePassword(Request $request)
     {
+        // dd($request->all());
         if ($request['password']) {
             $user = DB::transaction(function () use ($request) {
                 $user = User::find($request['id']);
@@ -107,6 +120,15 @@ class UserController extends Controller
                 $user->email = $request['email'];
                 $user->password = Hash::make($request['password']);
                 $user->save();
+
+                foreach ($user->getRoleNames() as $role) {
+                    $user->removeRole($role);
+                }
+
+                foreach ($request->role as $r) {
+                    $user->assignRole($r['name']);
+                }
+
                 return $user;
             });
         } else {
@@ -118,10 +140,19 @@ class UserController extends Controller
                 $user->name = $request['name'];
                 $user->email = $request['email'];
                 $user->save();
+
+                foreach ($user->getRoleNames() as $role) {
+                    $user->removeRole($role);
+                }
+
+                foreach ($request->role as $r) {
+                    $user->assignRole($r['name']);
+                }
+
                 return $user;
             });
         }
-        
+
 
         return $this->sendResponse($user, 'Пользователь успешно обновлен');
     }

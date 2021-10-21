@@ -7,7 +7,7 @@
 	            <h3 class="card-title">Список коров компании {{client.name}}</h3>
 
 	            <div class="card-tools">
-	              
+
 	            </div>
 	          </div>
 	          <!-- /.card-header -->
@@ -28,9 +28,10 @@
 		                  <td>{{ key + 1 }}</td>
 		                  <td>{{ item.group }}</td>
 		                  <td>{{ item.cow_id }}</td>
-		                  <td>{{ item.calculated_name }}</td>
+		                  <td v-if="item.name">{{ item.name }}</td>
+                          <td v-if="!item.name">Корова ID {{item.id}} ({{item.cow_id}})</td>
 		                  <td>{{ item.internal_code }}</td>
-		                  
+
 		                  <td>
 		                    <button @click="edit(item)" class="btn btn-sm btn-outline-primary">Редактировать</button>
 		                  </td>
@@ -63,13 +64,13 @@
 		                    <has-error :form="form" field="internal_code"></has-error>
 		                </div>
 	                </div>
-	                    
+
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
 	                    <button type="submit" class="btn btn-success">Сохранить</button>
 	                </div>
 	              </form>
-	            
+
 	            </div>
 	        </div>
         </div>
