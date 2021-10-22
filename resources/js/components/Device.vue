@@ -13,6 +13,7 @@
 							<span class="input-group-text">Поиск</span>
 						</div>
 					</div>
+                    <!-- <button @click="migrateModal('all')" class="btn btn-sm btn-primary">Перемещение</button> -->
 	                <button @click="newModal" class="btn btn-sm btn-primary">Добавить устройство</button>
 	                <button @click="() => {this.showManagment =! this.showManagment}" class="btn btn-sm btn-primary" :disabled="checked.length == 0">Управление</button>
 	            </div>
@@ -76,7 +77,9 @@
 	                  <td>
 	                    <button @click="showMessage(p)" class="btn btn-sm btn-outline-primary">Просмотреть сообщения</button>
 	                    <br />
-	                    <button @click="editModal(p)" class="btn btn-sm btn-outline-primary">Редактировать</button>
+						<button @click="migrateModal(p)" class="btn btn-sm btn-outline-primary">Перемещение</button>
+	                    <br />
+						<button @click="editModal(p)" class="btn btn-sm btn-outline-primary">Редактировать</button>
 	                    <br />
 	                    <button class="btn btn-sm btn-outline-danger">Удалить</button>
 	                  </td>
@@ -232,6 +235,52 @@
 	            </div>
 	        </div>
 	    </div>
+
+		<div class="modal fade" id="migrateModal" tabindex="-1" role="dialog" aria-labelledby="migrateModal" aria-hidden="true">
+	        <div class="modal-dialog" role="document">
+	            <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" v-show="groupMigrate">Перемещение устройств</h5>
+					<h5 class="modal-title" v-show="!groupMigrate">Перемещение устройства {{migrateForm.name}}</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+
+	            <!-- <form @submit.prevent="createUser"> -->
+	            <form @submit.prevent="groupMigrate ? migrateGroupDevice() : migrateDevice()">
+	                <div class="modal-body">
+						<div class="form-group">
+	                        <label>Клиент</label>
+	                        <select class="form-control" @change="changeClient()" v-model="migrateForm.user_id" required>
+								<option v-for="(item, index) in clients" :value="item.id">{{item.name}}</option>
+							</select>
+	                        <has-error :form="form" field="serial_number"></has-error>
+	                    </div>
+						<div class="form-group">
+	                        <label>Подразделение</label>
+	                        <select class="form-control" @change="changeDivision()" v-model="migrateForm.division_id" required>
+								<option v-for="(item, index) in divisions" :value="item.id">{{item.name}}</option>
+							</select>
+	                        <has-error :form="form" field="serial_number"></has-error>
+	                    </div>
+						<div class="form-group">
+	                        <label>Ферма</label>
+	                        <select class="form-control" @change="changeFarm()" v-model="migrateForm.farm_id" required>
+								<option v-for="(item, index) in farms" :value="item.id">{{item.name}}</option>
+							</select>
+	                        <has-error :form="form" field="serial_number"></has-error>
+	                    </div>
+	                </div>
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+	                	<button type="submit" class="btn btn-primary">Сохранить</button>
+					</div>
+	              </form>
+
+	            </div>
+	        </div>
+	    </div>
     </div>
 	</div><!-- /.container-fluid -->
 </template>
@@ -271,6 +320,13 @@
 		          ya_password: '',
 		          ya_number: ''
 		        }),
+				migrateForm: new Form({
+					id: '',
+					name: '',
+                    user_id: '',
+                    division_id: '',
+                    farm_id: ''
+				}),
 		        checked: [],
 		        showManagment: false,
 		        managmentOpt: [
@@ -292,6 +348,11 @@
 				selectedGate: [],
 				sortKey: 'name',
 				reverse: false,
+				groupMigrate: false,
+                clients: [],
+                divisions: [],
+                farms: [],
+                cowGroups: []
 			}
 		},
         computed: {
@@ -330,6 +391,77 @@
             getGates() {
 				axios.get("/devices/get-gates").then((response) => {
 					this.gates = response.data.gates
+				});
+			},
+			migrateModal(flag) {
+                this.getClients()
+				if (flag == 'all') {
+					this.groupMigrate = true
+					this.migrateForm.reset();
+		        	$('#migrateModal').modal('show');
+				} else {
+					this.groupMigrate = false
+					this.migrateForm.reset();
+					$('#migrateModal').modal('show');
+					this.migrateForm.fill(flag);
+                    this.getDevisions()
+                    this.getFarms()
+				}
+			},
+            getClients() {
+				axios.get("/clients/get-all").then((response) => {
+					this.clients = response.data.clients
+				});
+			},
+            changeClient() {
+                this.getDevisions()
+            },
+            changeDivision() {
+                this.getFarms()
+            },
+            changeFarm() {
+                this.getCowGroup()
+            },
+            getFarms() {
+				axios.get("/clients/"+this.migrateForm.user_id+"/farms").then((response) => {
+					this.farms = response.data.farms
+				});
+			},
+            getDevisions() {
+                axios.get("/clients/"+this.migrateForm.user_id+"/divisions").then((response) => {
+                    this.divisions = response.data.divisions
+                });
+			},
+			migrateGroupDevice() {
+                let data = {
+					'checked': this.checked,
+					'migrateForm': this.migrateForm
+				}
+                axios.post("/devices/migrate", data)
+		    	.then((response) => {
+                    this.getDevices();
+		            $('#migrateModal').modal('hide');
+
+		            Toast.fire({
+		                  icon: 'success',
+		                  title: response.data.message
+		            });
+
+		            this.$Progress.finish();
+				});
+			},
+            migrateDevice() {
+                axios.post("/devices/migrate", this.migrateForm)
+		    	.then((response) => {
+                    this.getDevices();
+		            $('#migrateModal').modal('hide');
+
+		            Toast.fire({
+		                  icon: 'success',
+		                  title: response.data.message
+		            });
+
+		            this.$Progress.finish();
 				});
 			},
 			newModal() {

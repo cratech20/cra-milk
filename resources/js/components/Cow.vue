@@ -20,17 +20,19 @@
                             <th>ID</th>
                             <th>Название</th>
                             <th>Внутренний номер</th>
+                            <th>Устройство</th>
 		                  	<th>Действие</th>
 		                </tr>
 		            </thead>
 		            <tbody>
 		                <tr v-for="(item, key) in cows">
 		                  <td>{{ key + 1 }}</td>
-		                  <td>{{ item.group }}</td>
+		                  <td>{{ item.g_name }}</td>
 		                  <td>{{ item.cow_id }}</td>
 		                  <td v-if="item.name">{{ item.name }}</td>
                           <td v-if="!item.name">Корова ID {{item.id}} ({{item.cow_id}})</td>
-		                  <td>{{ item.internal_code }}</td>
+                          <td>{{ item.internal_code }}</td>
+                          <td>{{ item.d_name }}</td>
 
 		                  <td>
 		                    <button @click="edit(item)" class="btn btn-sm btn-outline-primary">Редактировать</button>
@@ -63,6 +65,29 @@
 		                        class="form-control" required :class="{ 'is-invalid': form.errors.has('internal_code') }">
 		                    <has-error :form="form" field="internal_code"></has-error>
 		                </div>
+                        <div class="form-group">
+	                        <label>Группа коров</label>
+	                        <select class="form-control" v-model="form.group_id" required>
+								<option v-for="(item, index) in cowGroups" :value="item.id">{{item.name}}</option>
+							</select>
+	                        <has-error :form="form" field="serial_number"></has-error>
+	                    </div>
+                        <div class="form-group">
+                            <div style="width: 60%; float: left;">
+                                <label>Устройство</label>
+                                <select class="form-control" v-model="form.device_id" required>
+                                    <option v-for="(item, index) in devices" :value="item.id">{{item.name}}</option>
+                                </select>
+                            </div>
+
+                            <button v-show="form.device_id" class="btn btn-sm btn-outline-danger"
+                                style="width: 30%; margin-left: 5%; margin-top: 8%;"
+                                @click.prevent="detachDevice()"
+                            >
+                                Отвязать
+                            </button>
+	                        <has-error :form="form" field="serial_number"></has-error>
+	                    </div>
 	                </div>
 
 	                <div class="modal-footer">
@@ -90,12 +115,17 @@
 		        form: new Form({
 		        	id: '',
 		        	internal_code: '',
+                    group_id: '',
+                    device_id: ''
 		        }),
+                cowGroups: [],
+                devices: []
 			}
 		},
 		created() {
 			this.getClient()
 			this.getCow()
+            this.getDevices()
 		},
 		methods: {
 			getClient() {
@@ -108,11 +138,35 @@
 					this.cows = response.data.cows
 				});
 			},
+            getCowGroup() {
+				axios.get("/clients/"+this.id+"/cows/groups").then((response) => {
+					this.cowGroups = response.data.cowGroups
+				});
+			},
+            getDevices() {
+                axios.get("/clients/"+this.id+"/all-devices").then((response) => {
+					this.devices = response.data.devices
+				});
+            },
 			edit(item) {
 		        this.form.reset();
 		        $('#edit').modal('show');
 		        this.form.fill(item);
+                this.getCowGroup()
+                this.getDevices()
 			},
+            detachDevice() {
+                axios.post("/devices/detach", {'data': this.form}).then((response) => {
+					this.getDevices()
+
+		            Toast.fire({
+		                  icon: 'success',
+		                  title: response.data.message
+		            });
+
+		            this.$Progress.finish();
+				});
+            },
 			save() {
 				axios.post("/clients/cows/edit", {'data': this.form}).then((response) => {
 					this.getCow()

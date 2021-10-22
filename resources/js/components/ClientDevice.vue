@@ -7,7 +7,7 @@
 	            <h3 class="card-title">Итоговая таблица по устройствам клиента {{client.name}}</h3>
 
 	            <div class="card-tools">
-	              
+
 	            </div>
 	          </div>
 	          <!-- /.card-header -->
@@ -28,13 +28,13 @@
 		            <tbody>
 		                <tr v-for="(item, key) in devices">
 		                  <td>{{ key + 1 }}</td>
-		                  <td>{{ item.group }}</td>
-		                  <td>{{ item.cow_id }}</td>
+		                  <td>{{ item.d_name }}</td>
+		                  <td>{{ item.f_name }}</td>
 		                  <td>{{ item.name }}</td>
 		                  <td>{{ item.serial_number }}</td>
 		                  <td>{{ item.device_id }}</td>
 		                  <td>{{ item.created_at }}</td>
-		                  
+
 		                  <td>
 		                  	<button @click="message(item)" class="btn btn-sm btn-outline-primary">Сообщения</button>
 		                    <button @click="edit(item)" class="btn btn-sm btn-outline-primary">Редактировать</button>
@@ -63,13 +63,13 @@
 
 	            <!-- <form @submit.prevent="editRight"> -->
 	            <form @submit.prevent="save()">
-	                
-	                    
+
+
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
 	                </div>
 	              </form>
-	            
+
 	            </div>
 	        </div>
         </div>
@@ -99,7 +99,7 @@
 		                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
 		                </div>
 		            </form>
-	            
+
 	            </div>
 	        </div>
         </div>
@@ -123,13 +123,13 @@
 		                    <has-error :form="form" field="internal_code"></has-error>
 		                </div>
 	                </div>
-	                    
+
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
 	                    <button type="submit" class="btn btn-success">Сохранить</button>
 	                </div>
 	              </form>
-	            
+
 	            </div>
 	        </div>
         </div>

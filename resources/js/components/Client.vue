@@ -64,14 +64,14 @@
 	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('name') }">
 	                        <has-error :form="form" field="inn"></has-error>
 	                    </div>
-	                    
+
 	                </div>
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
 	                    <button v-show="!editmode" type="submit" class="btn btn-primary">Создать</button>
 	                </div>
 	              </form>
-	            
+
 	            </div>
 	        </div>
     	</div>
@@ -120,7 +120,7 @@
 					                </tr>
 					            </tbody>
 				            </table>
-		                    
+
 		       				<div class="modal-body">
 			                    <div class="form-group">
 			                        <label>Название</label>
@@ -128,7 +128,7 @@
 			                            class="form-control" :class="{ 'is-invalid': form.errors.has('newDevision') }">
 			                        <has-error :form="form" field="newDevision"></has-error>
 			                    </div>
-			                    
+
 			                </div>
 		                </div>
 		                <div class="modal-footer">
@@ -137,7 +137,7 @@
 		                </div>
 		              </form>
 	            </template>
-	            
+
 	            <template v-if="farmFlag">
 	            	<form @submit.prevent="createFarm()">
 		            	<div class="modal-body">
@@ -159,7 +159,7 @@
 					                </tr>
 					            </tbody>
 				            </table>
-		                    
+
 		       				<div class="modal-body">
 			                    <div class="form-group">
 			                        <label>Название</label>
@@ -167,7 +167,7 @@
 			                            class="form-control" :class="{ 'is-invalid': form.errors.has('newFarm') }">
 			                        <has-error :form="form" field="newFarm"></has-error>
 			                    </div>
-			                    
+
 			                </div>
 		                </div>
 		                <div class="modal-footer">
@@ -176,7 +176,7 @@
 		                </div>
 		              </form>
 	            </template>
-	                
+
 	            <template v-if="cowGroupFlag">
 	            	<form @submit.prevent="createCowGroup()">
 		            	<div class="modal-body">
@@ -199,7 +199,7 @@
 					                </tr>
 					            </tbody>
 				            </table>
-		                    
+
 		       				<div class="modal-body">
 			                    <div class="form-group">
 			                        <label>Название</label>
@@ -207,7 +207,7 @@
 			                            class="form-control" :class="{ 'is-invalid': form.errors.has('newCowGroup') }">
 			                        <has-error :form="form" field="newCowGroup"></has-error>
 			                    </div>
-			                    
+
 			                </div>
 		                </div>
 		                <div class="modal-footer">
@@ -248,8 +248,8 @@
 					                </tr>
 					            </tbody>
 				            </table>
-		                    
-		       				
+
+
 		                </div>
 		                <div class="modal-footer">
 		                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>

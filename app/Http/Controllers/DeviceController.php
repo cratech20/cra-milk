@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cow;
 use App\Models\Device;
 use App\Models\Gate;
 use App\Models\DeviceOwnerChange;
@@ -30,6 +31,16 @@ class DeviceController extends Controller
         ]);
     }
 
+    public function detach(Request $request)
+    {
+        $data = $request->data;
+        $cow = Cow::find($data['id']);
+        $cow->device_id = NULL;
+        $cow->save();
+
+        return $this->sendResponse($cow, 'Устройство отвязано');
+    }
+
     public function getAllDevices()
     {
         $devices = Device::all();
@@ -45,10 +56,30 @@ class DeviceController extends Controller
         return response()->json(['devices' => $devices]);
     }
 
-    public function summaryTable($client_id)
+    public function summaryTable($clientId)
     {
-        $client = User::find($client_id);
-        return response()->json(['devices' => $client->devices]);
+        $device = DB::table('devices')
+            ->where('devices.user_id', '=', $clientId)
+            ->leftJoin('divisions', 'divisions.user_id', '=', 'devices.user_id')
+            ->leftJoin('farms', 'farms.id', '=', 'devices.farm_id')
+            ->select('devices.*', 'farms.name as f_name', 'divisions.name as d_name')
+            ->get();
+
+        return response()->json(['devices' => $device]);
+    }
+
+    public function getEmptyDevice($clientId)
+    {
+        // dd($clientId);
+        $arr = Cow::whereNotNull('device_id')
+            // ->list('device_id')
+            ->get('device_id');
+        // dd($arr);
+        $device = Device::whereNotIn('id', $arr)
+            ->where('user_id', '=', $clientId)
+            ->get();
+
+        return response()->json(['devices' => $device]);
     }
 
     /**
@@ -60,6 +91,28 @@ class DeviceController extends Controller
     function create()
     {
         return view('devices.create');
+    }
+
+    public function migrate(Request $request)
+    {
+        if (isset($request->checked)) {
+            dd($request->all());
+            foreach ($request->checked as $item) {
+                $device = Device::find($item['id']);
+                $device->user_id = $item['user_id'];
+                $device->division_id = $item['division_id'];
+                $device->farm_id = $item['farm_id'];
+                $device->save();
+            };
+        } else {
+            $device = Device::find($request->id);
+            $device->user_id = $request->user_id;
+            $device->division_id = $request->division_id;
+            $device->farm_id = $request->farm_id;
+            $device->save();
+        };
+
+        return $this->sendResponse($device, 'Устройство успешно перемещено');
     }
 
     /**

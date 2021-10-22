@@ -9,6 +9,7 @@ use App\Models\DeviceOwnerChange;
 use App\Models\Farm;
 use App\Models\User;
 use Illuminate\Http\Request;
+use DB;
 
 class CowController extends Controller
 {
@@ -19,7 +20,12 @@ class CowController extends Controller
      */
     public function index($id)
     {
-        $cows = Cow::where('user_id', $id)->get();
+        $cows = DB::table('cows')
+            ->where('cows.user_id', '=', $id)
+            ->leftJoin('cow_groups', 'cow_groups.id', '=', 'cows.group_id')
+            ->leftJoin('devices', 'devices.id', '=', 'cows.device_id')
+            ->select('cows.*', 'cow_groups.name as g_name', 'devices.name as d_name')
+            ->get();
 
         return response()->json(['cows' => $cows]);
     }
@@ -125,9 +131,11 @@ class CowController extends Controller
         $data = $request->data;
         $cow = Cow::find($data['id']);
         $cow->internal_code = $data['internal_code'];
+        $cow->group_id = $data['group_id'];
+        $cow->device_id = $data['device_id'];
         $cow->save();
 
-        return $this->sendResponse($cow, 'Номер успешно обновлен');
+        return $this->sendResponse($cow, 'Информация успешно обновлена');
     }
 
     /**
