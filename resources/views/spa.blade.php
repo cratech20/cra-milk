@@ -95,8 +95,8 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-          
-                
+
+
           @role('admin')
             <nav class="mt-2">
               <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -126,6 +126,7 @@
                     </p>
                   </router-link>
                 </li>
+
                 <li class="nav-item">
                   <router-link :to="'/devices'" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -134,6 +135,14 @@
                     </p>
                   </router-link>
                 </li>
+                <li class="nav-item">
+                    <router-link :to="'/gates'" class="nav-link">
+                      <i class="nav-icon fas fa-th"></i>
+                      <p>
+                        Шлюзы
+                      </p>
+                    </router-link>
+                  </li>
               </ul>
             </nav>
           @endrole
@@ -152,7 +161,7 @@
                 </li>
               </ul>
             </nav>
-          @endrole      
+          @endrole
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
@@ -165,7 +174,7 @@
     <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="container-fluid">
-        
+
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->

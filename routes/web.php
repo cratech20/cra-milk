@@ -47,11 +47,18 @@ Route::middleware(['auth', 'isblock'])->group(function () {
         Route::post('/save', [DeviceController::class, 'store']);
         Route::post('/update', [DeviceController::class, 'update']);
         Route::post('/command', [DeviceController::class, 'command']);
-        Route::get('/get-gates', [GateController::class, 'getGate']);
 
         Route::get('{id}/messages', [MessageController::class, 'show'])
             ->name('devices.messages');
 
+    });
+
+    Route::prefix('gates')->group(function () {
+        Route::get('/', [HomeController::class, 'index']);
+        Route::get('/get-gates', [GateController::class, 'getGate']);
+        Route::post('/save', [GateController::class, 'create']);
+        Route::get('/del/{id}', [GateController::class, 'delete']);
+        Route::post('/update', [GateController::class, 'update']);
     });
 
     Route::prefix('reports')->group(function () {

@@ -31,6 +31,7 @@ import Client from './components/Client'
 import Device from './components/Device'
 import Cow from './components/Cow'
 import ClientDevices from './components/ClientDevice'
+import Gate from './components/Gate'
 
 const router = new VueRouter({
   mode: 'history',
@@ -41,6 +42,7 @@ const router = new VueRouter({
     { path: '/devices', name: 'device',  component: Device },
     { path: '/clients/:id/cows', name: 'cow',  component: Cow },
     { path: '/clients/:id/devices', name: 'clients-devices',  component: ClientDevices },
+    { path: '/gates', name: 'gate',  component: Gate },
   ]
 });
 
