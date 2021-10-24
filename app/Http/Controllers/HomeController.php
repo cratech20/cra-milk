@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DeviceMessage;
+use App\Models\Cow;
 use App\Services\DI\YaCloud;
 use App\Services\IoTMessageTransporter;
 use App\Services\LitersByImpulsesCalculator;
@@ -27,7 +28,7 @@ class HomeController extends Controller
     public function deviceMessages()
     {
         $devices = \App\Models\Device::all()->keyBy('device_id');
-        $messages = DeviceMessage::all();
+        $messages = DeviceMessage::get();
         $litersByImpulsesCalculator = new LitersByImpulsesCalculator($devices);
 
         $messagesWithLiters = $messages->map(static function ($message) use ($litersByImpulsesCalculator) {
@@ -49,6 +50,27 @@ class HomeController extends Controller
             ];
         });
 
-        return response()->json($messagesWithLiters);
+        // dd(hexdec(strrev('A0348319BD')) % 100000);
+        foreach ($messagesWithLiters as $k => $message) {
+            $cow = Cow::where('cow_id', $message['c'])->first();
+            if ($cow) {
+                $cowArr[] = [
+                    'c' => $message['c'],
+                    'li' => $message['li'],
+                    'dt' => Carbon::parse($message['dt'])->format("d.m.Y H:i:s"),
+                    'st' => Carbon::parse($message['st'])->format("d.m.Y H:i:s"),
+                    'code' => $cow->getNumberByCode($cow->cow_id),
+                    'internalId' => isset($cow->internal_code) ? $cow->internal_code : 0,
+                ];
+            }
+        };
+
+        // dd($cowArr[1]);
+
+        return view('devicesMessages', [
+            'messages' => $cowArr
+        ]);
+
+        // return response()->json($messagesWithLiters);
     }
 }
