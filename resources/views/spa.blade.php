@@ -111,6 +111,14 @@
                   </router-link>
                 </li>
                 <li class="nav-item">
+                    <router-link :to="'/charts'" class="nav-link">
+                      <i class="nav-icon fas fa-th"></i>
+                      <p>
+                        Графики
+                      </p>
+                    </router-link>
+                  </li>
+                <li class="nav-item">
                   <router-link :to="'/users'" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
                     <p>

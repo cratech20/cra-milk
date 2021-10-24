@@ -61,6 +61,10 @@ Route::middleware(['auth', 'isblock'])->group(function () {
         Route::post('/update', [GateController::class, 'update']);
     });
 
+    Route::prefix('charts')->group(function () {
+        Route::get('/', [HomeController::class, 'index']);
+    });
+
     Route::prefix('reports')->group(function () {
 
         Route::get('/', [ReportController::class, 'index'])
