@@ -50,6 +50,34 @@ class HomeController extends Controller
             ];
         });
 
+        return response()->json($messagesWithLiters);
+    }
+
+    public function table()
+    {
+        $devices = \App\Models\Device::all()->keyBy('device_id');
+        $messages = DeviceMessage::get();
+        $litersByImpulsesCalculator = new LitersByImpulsesCalculator($devices);
+
+        $messagesWithLiters = $messages->map(static function ($message) use ($litersByImpulsesCalculator) {
+            $calculatedLiters = $litersByImpulsesCalculator->calc(
+                $message->device_login, $message->liters, $message->impulses, Carbon::parse($message->device_created_at)
+            );
+
+            return [
+                'l' => $message->device_login,
+                'c' => $message->cow_code,
+                'y' => $message->yield,
+                'i' => $message->impulses,
+                'li' => $calculatedLiters,
+                'b' => $message->battery,
+                'e' => $message->error,
+                'n' => $message->message_num,
+                'st' => $message->server_created_at,
+                'dt' => $message->device_created_at,
+            ];
+        });
+
         // dd(hexdec(strrev('A0348319BD')) % 100000);
         foreach ($messagesWithLiters as $k => $message) {
             $cow = Cow::where('cow_id', $message['c'])->first();

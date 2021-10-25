@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/json/device-messages', [HomeController::class, 'deviceMessages']);
+Route::get('/json/table', [HomeController::class, 'table']);
 
 Route::middleware(['auth'])->group(function () {
 
