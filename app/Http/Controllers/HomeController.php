@@ -22,6 +22,7 @@ use Jose\Component\Signature\Serializer\CompactSerializer;
 use MoveMoveIo\DaData\Enums\BranchType;
 use MoveMoveIo\DaData\Enums\CompanyType;
 use MoveMoveIo\DaData\Facades\DaDataCompany;
+use DB;
 
 class HomeController extends Controller
 {
@@ -54,6 +55,57 @@ class HomeController extends Controller
     }
 
     public function table()
+    {
+        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+            ->whereNotNull('payload->ar')
+            ->whereNotNull('payload->c')
+            ->orderBy('event_datetime', 'DESC')
+            ->get();
+
+        foreach ($chartDataAr as $item) {
+            $payload = json_decode($item->payload);
+            // dd($item);
+            $cow = Cow::where('cow_id', $payload->c)->first();
+            if ($cow) {
+                $data[] = [
+                    'code' => $payload->c,
+                    'num' => $cow['internal_code'],
+                    '5num' => $cow->getNumberByCode($cow['cow_id']),
+                    'date' => Carbon::parse($item->event_datetime)->format('d.m.Y H:i:s'),
+                    'ar_count' => count($payload->ar),
+                    'ar' => $payload->ar
+                ];
+            };
+        };
+
+        // dd($data);
+
+        $i = 0;
+        while ($i < count($data)-1) {
+            if ($data[$i]['code'] == $data[$i+1]['code']) {
+                // dd($data[$i]);
+                // $dates[$data[$i]['code']]['date'][] = $data[$i]['date'];
+                $dates[$data[$i]['code']][$data[$i]['date']] = $data[$i]['ar'];
+                $arr[$data[$i]['code']] = [
+                    'num' => $data[$i]['num'],
+                    '5num' => $data[$i]['5num'],
+                    'ar_count' => $data[$i]['ar_count']
+                ];
+            }
+            $i++;
+        }
+
+        foreach ($dates as $k => $date) {
+            // foreach($date as $d) {
+            //     dd($date);
+            // };
+            $arr[$k]['data'] = $date;
+        }
+
+        return response()->json($arr);
+    }
+
+    public function table2()
     {
         $devices = \App\Models\Device::all()->keyBy('device_id');
         $messages = DeviceMessage::get();
