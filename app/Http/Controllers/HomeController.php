@@ -58,7 +58,7 @@ class HomeController extends Controller
     {
         $chartDataAr = DB::connection('pgsql')->table('iot_events')
             ->whereNotNull('payload->ar')
-            ->whereNotNull('payload->c')
+            ->where('payload->c', '=', '6E032E76F0')
             ->orderBy('event_datetime', 'DESC')
             ->get();
 
@@ -102,7 +102,8 @@ class HomeController extends Controller
             $arr[$k]['data'] = $date;
         }
 
-        return response()->json($arr);
+        // dd($chartDataAr);
+        return response()->json($data);
     }
 
     public function table2()
