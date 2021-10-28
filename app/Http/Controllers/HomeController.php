@@ -76,7 +76,8 @@ class HomeController extends Controller
                         '5num' => $cow->getNumberByCode($cow['cow_id']),
                         'date' => Carbon::parse($item->event_datetime)->format('d.m.Y'),
                         'time' => Carbon::parse($time)->addSecond(10)->format('H:i:s'),
-                        'ar' => $payload->ar[$i]
+                        'ar' => $payload->ar[$i],
+                        'interval' => $j
                     ];
                     $j = $j+10;
                     $i++;
