@@ -58,51 +58,33 @@ class HomeController extends Controller
     {
         $chartDataAr = DB::connection('pgsql')->table('iot_events')
             ->whereNotNull('payload->ar')
-            ->whereNotNull('payload->c')
+            ->where('payload->c', '=', 'B6A5D976F0')
             ->orderBy('event_datetime', 'DESC')
             ->get();
 
+        $i = 0;
+        $j = 0;
         foreach ($chartDataAr as $item) {
             $payload = json_decode($item->payload);
-            // dd($item);
             $cow = Cow::where('cow_id', $payload->c)->first();
             if ($cow) {
-                $data[] = [
-                    'code' => $payload->c,
-                    'num' => $cow['internal_code'],
-                    '5num' => $cow->getNumberByCode($cow['cow_id']),
-                    'date' => Carbon::parse($item->event_datetime)->format('d.m.Y H:i:s'),
-                    'ar_count' => count($payload->ar),
-                    'ar' => $payload->ar
-                ];
+                while ($i < count($payload->ar)) {
+                    $time = Carbon::parse($item->event_datetime)->addSecond($j)->format('H:i:s');
+                    $data[] = [
+                        'code' => $payload->c,
+                        'num' => $cow['internal_code'],
+                        '5num' => $cow->getNumberByCode($cow['cow_id']),
+                        'date' => Carbon::parse($item->event_datetime)->format('d.m.Y'),
+                        'time' => Carbon::parse($time)->addSecond(10)->format('H:i:s'),
+                        'ar' => $payload->ar[$i]
+                    ];
+                    $j = $j+10;
+                    $i++;
+                }
             };
         };
 
         // dd($data);
-
-        $i = 0;
-        while ($i < count($data)-1) {
-            if ($data[$i]['code'] == $data[$i+1]['code']) {
-                // dd($data[$i]);
-                // $dates[$data[$i]['code']]['date'][] = $data[$i]['date'];
-                $dates[$data[$i]['code']][$data[$i]['date']] = $data[$i]['ar'];
-                $arr[$data[$i]['code']] = [
-                    'num' => $data[$i]['num'],
-                    '5num' => $data[$i]['5num'],
-                    'ar_count' => $data[$i]['ar_count']
-                ];
-            }
-            $i++;
-        }
-
-        foreach ($dates as $k => $date) {
-            // foreach($date as $d) {
-            //     dd($date);
-            // };
-            $arr[$k]['data'] = $date;
-        }
-
-        // dd($chartDataAr);
         return response()->json($data);
     }
 
