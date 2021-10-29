@@ -14,6 +14,7 @@ use App\Http\Controllers\GateController;
 use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Auth;
 
 Route::get('/json/device-messages', [HomeController::class, 'deviceMessages']);
 
@@ -51,10 +52,15 @@ Route::middleware(['auth', 'isblock'])->group(function () {
         Route::get('/get-gates', [GateController::class, 'getGate']);
         Route::post('/detach', [DeviceController::class, 'detach']);
         Route::get('{client}/get-empty-device', [DeviceController::class, 'getEmptyDevice']);
+        Route::get('{id}/messages', [MessageController::class, 'show']);
+    });
 
-        Route::get('{id}/messages', [MessageController::class, 'show'])
-            ->name('devices.messages');
-
+    Route::prefix('gates')->group(function () {
+        Route::get('/', [HomeController::class, 'index']);
+        Route::get('/get-gates', [GateController::class, 'getGate']);
+        Route::post('/save', [GateController::class, 'create']);
+        Route::get('/del/{id}', [GateController::class, 'delete']);
+        Route::post('/update', [GateController::class, 'update']);
     });
 
     Route::prefix('reports')->group(function () {

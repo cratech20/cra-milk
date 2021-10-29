@@ -389,7 +389,7 @@
 				});
 			},
             getGates() {
-				axios.get("/devices/get-gates").then((response) => {
+				axios.get("/gates/get-gates").then((response) => {
 					this.gates = response.data.gates
 				});
 			},
