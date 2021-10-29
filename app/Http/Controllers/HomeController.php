@@ -58,17 +58,20 @@ class HomeController extends Controller
     {
         $chartDataAr = DB::connection('pgsql')->table('iot_events')
             ->whereNotNull('payload->ar')
-            ->where('payload->c', '=', 'B6A5D976F0')
+            ->whereNotNull('payload->c')
             ->orderBy('event_datetime', 'DESC')
             ->get();
 
-        $i = 0;
-        $j = 0;
-        foreach ($chartDataAr as $item) {
+
+        foreach ($chartDataAr as $k => $item) {
+            $i = 0;
+            $j = 0;
             $payload = json_decode($item->payload);
             $cow = Cow::where('cow_id', $payload->c)->first();
             if ($cow) {
                 while ($i < count($payload->ar)) {
+                    // dd($chartDataAr[$k]);
+                    // dd(Carbon::parse($item->event_datetime)->addDay(1)->format('d.m.Y'));
                     $time = Carbon::parse($item->event_datetime)->addSecond($j)->format('H:i:s');
                     $data[] = [
                         'code' => $payload->c,
@@ -81,11 +84,15 @@ class HomeController extends Controller
                     ];
                     $j = $j+10;
                     $i++;
+                    // if ($j == 60) {
+                    //     return;
+                    // }
+
                 }
             };
         };
 
-        // dd($data);
+        // dd($chartDataAr);
         return response()->json($data);
     }
 
