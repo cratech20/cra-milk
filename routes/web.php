@@ -14,7 +14,6 @@ use App\Http\Controllers\GateController;
 use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use Auth;
 
 Route::get('/json/device-messages', [HomeController::class, 'deviceMessages']);
 
