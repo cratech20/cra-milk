@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/json/device-messages', [HomeController::class, 'deviceMessages']);
 
-Route::middleware(['auth', 'isblock'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index']);
 
