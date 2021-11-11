@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,7 +19,11 @@ class Cow extends Model
 
     public static function getNumberByCode($code)
     {
-        return hexdec(strrev($code)) % 100000;
+        try {
+            return hexdec(strrev($code)) % 100000;
+        } catch(\Exception $e) {
+            return "";
+        }
     }
 
     /**
