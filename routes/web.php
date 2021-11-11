@@ -52,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/detach', [DeviceController::class, 'detach']);
         Route::get('{client}/get-empty-device', [DeviceController::class, 'getEmptyDevice']);
         Route::get('{id}/messages', [MessageController::class, 'show']);
+        Route::get('/get-token', [DeviceController::class, 'getToken']);
     });
 
     Route::prefix('gates')->group(function () {

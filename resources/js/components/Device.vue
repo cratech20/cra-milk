@@ -52,6 +52,11 @@
 							Серийный номер
 						  </a>
 					  </th>
+                      <th>
+						  <a href="#" @click="sortBy('token')" :class="{ active: sortKey === 'token' }">
+							Токен
+						  </a>
+					  </th>
 	                  <th>
 						  <a href="#" @click="sortBy('device_id')" :class="{ active: sortKey === 'device_id' }">
 							ID
@@ -72,6 +77,7 @@
 	                  <td>{{ p.u_name }}</td>
 	                  <td>{{ p.name }}</td>
 	                  <td>{{ p.serial_number }}</td>
+                      <td>{{ p.token }}</td>
 	                  <td>{{ p.device_id }}</td>
 	                  <td>{{ p.created_at }}</td>
 	                  <td>
@@ -112,26 +118,36 @@
 	                        <has-error :form="form" field="name"></has-error>
 	                    </div>
 	                    <div class="form-group">
-	                        <label>ID в Я.Облако *</label>
-	                        <input v-model="form.device_id" type="text" name="device_id"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('device_id') }">
-	                        <has-error :form="form" field="device_id"></has-error>
+                            <div style="width: 50%; float: right;">
+                                <label>ID в Я.Облако *</label>
+                                <input v-model="form.device_id" type="text" name="device_id"
+                                    class="form-control" required :class="{ 'is-invalid': form.errors.has('device_id') }">
+                                <has-error :form="form" field="device_id"></has-error>
+                            </div>
+	                        <div style="width: 50%; float: left;">
+                                <label>Пароль в Я.Облако</label>
+                                <input v-model="form.password" type="text" name="password"
+                                    class="form-control" required :class="{ 'is-invalid': form.errors.has('password') }">
+                                <has-error :form="form" field="password"></has-error>
+                            </div>
 	                    </div>
 	                    <div class="form-group">
-	                        <label>Пароль в Я.Облако</label>
-	                        <input v-model="form.password" type="text" name="password"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('assword') }">
-	                        <has-error :form="form" field="password"></has-error>
-	                    </div>
-	                    <div class="form-group">
-	                        <label>Серийный номер *</label>
-	                        <input v-model="form.serial_number" type="text" name="serial_number"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('serial_number') }">
-	                        <has-error :form="form" field="serial_number"></has-error>
+                            <div style="width: 50%; float: left;">
+                                <label>Серийный номер *</label>
+                                <input v-model="form.serial_number" type="text" name="serial_number"
+                                    class="form-control" required :class="{ 'is-invalid': form.errors.has('serial_number') }">
+                                <has-error :form="form" field="serial_number"></has-error>
+                            </div>
+	                        <div style="width: 50%; float: right;">
+                                <label>Токен</label>
+                                <input v-model="form.token" type="text" name="token" disabled
+                                    class="form-control" required :class="{ 'is-invalid': form.errors.has('token') }">
+                                <has-error :form="form" field="token"></has-error>
+                            </div>
 	                    </div>
 						<div class="form-group">
-	                        <label>Шлюз *</label>
-	                        <select class="form-control" v-model="form.gate_id" required>
+	                        <label for="gate">Шлюз *</label>
+	                        <select class="form-control" v-model="form.gate_id" required id="gate" name="gate">
 								<option v-for="(item, key) in gates" :value="item.id">{{ item.name }}</option>
 							</select>
 	                        <has-error :form="form" field="serial_number"></has-error>
@@ -163,33 +179,43 @@
 	                    <div class="form-group">
 	                        <label>Название</label>
 	                        <input v-model="editForm.name" type="text" name="name"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('name') }">
+	                            class="form-control" required :class="{ 'is-invalid': editForm.errors.has('name') }">
 	                        <has-error :form="form" field="name"></has-error>
 	                    </div>
 	                    <div class="form-group">
-	                        <label>ID в Я.Облако *</label>
-	                        <input v-model="editForm.device_id" type="text" name="device_id"
-	                            class="form-control" required :class="{ 'is-invalid': editForm.errors.has('device_id') }">
-	                        <has-error :form="editForm" field="device_id"></has-error>
+                            <div style="width: 50%; float: right;">
+                                <label>ID в Я.Облако *</label>
+                                <input v-model="editForm.device_id" type="text" name="device_id"
+                                    class="form-control" required :class="{ 'is-invalid': editForm.errors.has('device_id') }">
+                                <has-error :form="editForm" field="device_id"></has-error>
+                            </div>
+	                        <div style="width: 50%; float: left;">
+                                <label>Пароль в Я.Облако</label>
+                                <input v-model="editForm.password" type="text" name="password"
+                                    class="form-control" required :class="{ 'is-invalid': editForm.errors.has('password') }">
+                                <has-error :form="editForm" field="password"></has-error>
+                            </div>
 	                    </div>
 	                    <div class="form-group">
-	                        <label>Пароль в Я.Облако</label>
-	                        <input v-model="editForm.password" type="text" name="password"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('password') }">
-	                        <has-error :form="form" field="password"></has-error>
-	                    </div>
-	                    <div class="form-group">
-	                        <label>Серийный номер *</label>
-	                        <input v-model="editForm.serial_number" type="text" name="serial_number"
-	                            class="form-control" required :class="{ 'is-invalid': form.errors.has('serial_number') }">
-	                        <has-error :form="form" field="serial_number"></has-error>
+                            <div style="width: 50%; float: left;">
+                                <label>Серийный номер *</label>
+                                <input v-model="editForm.serial_number" type="text" name="serial_number"
+                                    class="form-control" required :class="{ 'is-invalid': editForm.errors.has('serial_number') }">
+                                <has-error :form="editForm" field="serial_number"></has-error>
+                            </div>
+	                        <div style="width: 50%; float: right;">
+                                <label>Токен</label>
+                                <input v-model="editForm.token" type="text" name="token" disabled
+                                    class="form-control" required :class="{ 'is-invalid': editForm.errors.has('token') }">
+                                <has-error :form="editForm" field="token"></has-error>
+                            </div>
 	                    </div>
 						<div class="form-group">
-	                        <label>Шлюз *</label>
-	                        <select class="form-control" v-model="editForm.gate_id" required>
+	                        <label for="gate">Шлюз *</label>
+	                        <select class="form-control" v-model="editForm.gate_id" required id="gate" name="gate">
 								<option v-for="(item, key) in gates" :value="item.id">{{ item.name }}</option>
 							</select>
-	                        <has-error :form="form" field="serial_number"></has-error>
+	                        <has-error :form="editForm" field="serial_number"></has-error>
 	                    </div>
 	                </div>
 	                <div class="modal-footer">
@@ -304,7 +330,8 @@
 		          device_id: '',
 		          password: '',
 		          serial_number: '',
-                  gate_id: null
+                  gate_id: null,
+                  token: ''
 		        }),
 		        editForm: new Form({
                   id: null,
@@ -312,7 +339,8 @@
 		          device_id: '',
 		          password: '',
 		          serial_number: '',
-                  gate_id: null
+                  gate_id: null,
+                  token: ''
 		        }),
 		        messageForm: new Form({
 		          name: '',
@@ -464,10 +492,16 @@
 		            this.$Progress.finish();
 				});
 			},
+            getToken() {
+                axios.get("/devices/get-token").then((response) => {
+					this.form.token = response.data
+				});
+            },
 			newModal() {
-                this.getGates()
+                this.getGates();
 				this.editmode = false;
 		        this.form.reset();
+                this.getToken();
 		        $('#addNew').modal('show');
 			},
 			editModal(item) {
