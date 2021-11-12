@@ -22,7 +22,10 @@ use Jose\Component\Signature\Serializer\CompactSerializer;
 use MoveMoveIo\DaData\Enums\BranchType;
 use MoveMoveIo\DaData\Enums\CompanyType;
 use MoveMoveIo\DaData\Facades\DaDataCompany;
+<<<<<<< HEAD
 use App\Models\Device as DM;
+=======
+>>>>>>> 4fb6af29c9a553883dd6e4cd01f382c20cb38072
 use DB;
 
 class HomeController extends Controller
@@ -159,7 +162,7 @@ class HomeController extends Controller
     public function deviceMessages()
     {
         $devices = \App\Models\Device::all()->keyBy('device_id');
-        $messages = DeviceMessage::all();
+        $messages = DeviceMessage::get();
         $litersByImpulsesCalculator = new LitersByImpulsesCalculator($devices);
 
         $messagesWithLiters = $messages->map(static function ($message) use ($litersByImpulsesCalculator) {
@@ -185,6 +188,7 @@ class HomeController extends Controller
         return response()->json($messagesWithLiters);
     }
 
+<<<<<<< HEAD
     public function auth()
     {
         $url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
@@ -313,5 +317,96 @@ class HomeController extends Controller
                 ->whereJsonContains('payload->l', 'arerhs6djigmo6ji7pkf')
                 ->first();
         dd($json);
+=======
+    public function table()
+    {
+        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+            ->whereNotNull('payload->ar')
+            ->whereNotNull('payload->c')
+            ->orderBy('event_datetime', 'DESC')
+            ->get();
+
+
+        foreach ($chartDataAr as $k => $item) {
+            $i = 0;
+            $j = 0;
+            $payload = json_decode($item->payload);
+            $cow = Cow::where('cow_id', $payload->c)->first();
+            if ($cow) {
+                while ($i < count($payload->ar)) {
+                    // dd($chartDataAr[$k]);
+                    // dd(Carbon::parse($item->event_datetime)->addDay(1)->format('d.m.Y'));
+                    $time = Carbon::parse($item->event_datetime)->addSecond($j)->format('H:i:s');
+                    $data[] = [
+                        'code' => $payload->c,
+                        'num' => $cow['internal_code'],
+                        '5num' => $cow->getNumberByCode($cow['cow_id']),
+                        'date' => Carbon::parse($item->event_datetime)->format('d.m.Y'),
+                        'time' => Carbon::parse($time)->addSecond(10)->format('H:i:s'),
+                        'ar' => $payload->ar[$i],
+                        'interval' => $j
+                    ];
+                    $j = $j+10;
+                    $i++;
+                    // if ($j == 60) {
+                    //     return;
+                    // }
+
+                }
+            };
+        };
+
+        // dd($chartDataAr);
+        return response()->json($data);
+    }
+
+    public function table2()
+    {
+        $devices = \App\Models\Device::all()->keyBy('device_id');
+        $messages = DeviceMessage::get();
+        $litersByImpulsesCalculator = new LitersByImpulsesCalculator($devices);
+
+        $messagesWithLiters = $messages->map(static function ($message) use ($litersByImpulsesCalculator) {
+            $calculatedLiters = $litersByImpulsesCalculator->calc(
+                $message->device_login, $message->liters, $message->impulses, Carbon::parse($message->device_created_at)
+            );
+
+            return [
+                'l' => $message->device_login,
+                'c' => $message->cow_code,
+                'y' => $message->yield,
+                'i' => $message->impulses,
+                'li' => $calculatedLiters,
+                'b' => $message->battery,
+                'e' => $message->error,
+                'n' => $message->message_num,
+                'st' => $message->server_created_at,
+                'dt' => $message->device_created_at,
+            ];
+        });
+
+        // dd(hexdec(strrev('A0348319BD')) % 100000);
+        foreach ($messagesWithLiters as $k => $message) {
+            $cow = Cow::where('cow_id', $message['c'])->first();
+            if ($cow) {
+                $cowArr[] = [
+                    'c' => $message['c'],
+                    'li' => $message['li'],
+                    'dt' => Carbon::parse($message['dt'])->format("d.m.Y H:i:s"),
+                    'st' => Carbon::parse($message['st'])->format("d.m.Y H:i:s"),
+                    'code' => $cow->getNumberByCode($cow->cow_id),
+                    'internalId' => isset($cow->internal_code) ? $cow->internal_code : 0,
+                ];
+            }
+        };
+
+        // dd($cowArr[1]);
+
+        return view('devicesMessages', [
+            'messages' => $cowArr
+        ]);
+
+        // return response()->json($messagesWithLiters);
+>>>>>>> 4fb6af29c9a553883dd6e4cd01f382c20cb38072
     }
 }

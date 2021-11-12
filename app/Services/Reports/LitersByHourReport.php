@@ -94,20 +94,20 @@ class LitersByHourReport
             foreach ($dayPeriods as $key => $dayPeriod) {
                 // TODO вместо Carbon создавать через $date и $this->hourPeriods
                 $from = Carbon::parse($dayPeriod[0]);
-                
+
                 if ($from->format('H:i') >= "00:00" && $from->format('H:i') < "10:00") {
                     $datesForHead[] = $from->format('d.m.y') . ' утро';
-                } 
+                }
                 elseif ($from->format('H:i') >= "10:00" && $from->format('H:i') < "15:00") {
                     $datesForHead[] = $from->format('d.m.y') . ' день';
-                } 
-                elseif ($from->format('H:i') >= "15:00" && $from->format('H:i') <= "24:00") {
-                $datesForHead[] = $from->format('d.m.y') . ' вечер';
                 }
-                
+                elseif ($from->format('H:i') >= "15:00" && $from->format('H:i') <= "24:00") {
+                    $datesForHead[] = $from->format('d.m.y') . ' вечер';
+                }
+
             }
         }
-        
+
         $this->datesForHead = $datesForHead;
     }
 
@@ -174,7 +174,7 @@ class LitersByHourReport
                 $cowInternalId = '0';
             }
             $group = $cows[$cowId]->group->calculated_name ?? 'Неизвестно';
-            $body[$cowId] = [$deviceName, $cowName, $group, $cowNum];
+            $body[$cowId] = [$deviceName, $cowName, $group, $cowNum, $cowInternalId];
 
             foreach ($this->fullHourPeriods as $date => $dayPeriods) {
                 foreach ($dayPeriods as $periodKey => $trash) {
