@@ -345,9 +345,6 @@ class HomeController extends Controller
                     ];
                     $j = $j+10;
                     $i++;
-                    // if ($j == 60) {
-                    //     return;
-                    // }
 
                 }
             };
