@@ -23,9 +23,13 @@ use MoveMoveIo\DaData\Enums\BranchType;
 use MoveMoveIo\DaData\Enums\CompanyType;
 use MoveMoveIo\DaData\Facades\DaDataCompany;
 <<<<<<< HEAD
+<<<<<<< HEAD
 use App\Models\Device as DM;
 =======
 >>>>>>> 4fb6af29c9a553883dd6e4cd01f382c20cb38072
+=======
+use App\Models\Device as DM;
+>>>>>>> a19b51fd49d8748b2104e652905c89fbc3d81500
 use DB;
 
 class HomeController extends Controller
@@ -189,6 +193,9 @@ class HomeController extends Controller
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a19b51fd49d8748b2104e652905c89fbc3d81500
     public function auth()
     {
         $url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
@@ -317,7 +324,12 @@ class HomeController extends Controller
                 ->whereJsonContains('payload->l', 'arerhs6djigmo6ji7pkf')
                 ->first();
         dd($json);
+<<<<<<< HEAD
 =======
+=======
+    }
+
+>>>>>>> a19b51fd49d8748b2104e652905c89fbc3d81500
     public function table()
     {
         $chartDataAr = DB::connection('pgsql')->table('iot_events')
@@ -348,9 +360,12 @@ class HomeController extends Controller
                     ];
                     $j = $j+10;
                     $i++;
+<<<<<<< HEAD
                     // if ($j == 60) {
                     //     return;
                     // }
+=======
+>>>>>>> a19b51fd49d8748b2104e652905c89fbc3d81500
 
                 }
             };
@@ -407,6 +422,9 @@ class HomeController extends Controller
         ]);
 
         // return response()->json($messagesWithLiters);
+<<<<<<< HEAD
 >>>>>>> 4fb6af29c9a553883dd6e4cd01f382c20cb38072
+=======
+>>>>>>> a19b51fd49d8748b2104e652905c89fbc3d81500
     }
 }
