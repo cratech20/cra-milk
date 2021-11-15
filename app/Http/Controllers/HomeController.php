@@ -34,7 +34,7 @@ class HomeController extends Controller
 
     public function getDates()
     {
-        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+        $chartDataAr = DB::connection('pgsql_milk')->table('iot_events')
             ->select('event_datetime')
             ->whereNotNull('payload->c')
             ->whereNotNull('payload->ar')
@@ -50,7 +50,7 @@ class HomeController extends Controller
 
     public function getMac(Request $request)
     {
-        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+        $chartDataAr = DB::connection('pgsql_milk')->table('iot_events')
             ->whereNotNull('payload->c')
             ->whereNotNull('payload->ar')
             ->orderBy('event_datetime', 'DESC')
@@ -84,7 +84,7 @@ class HomeController extends Controller
 
     public function getChartData(Request $request)
     {
-        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+        $chartDataAr = DB::connection('pgsql_milk')->table('iot_events')
             ->whereNotNull('payload->c')
             ->whereNotNull('payload->ar')
             ->get();
@@ -127,7 +127,7 @@ class HomeController extends Controller
     public function getData()
     {
 
-        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+        $chartDataAr = DB::connection('pgsql_milk')->table('iot_events')
             ->whereNotNull('payload->ar')
             ->whereNotNull('payload->a')
             ->orderBy('event_datetime', 'DESC')
@@ -309,7 +309,7 @@ class HomeController extends Controller
         //         order by event_datetime DESC
         //         limit 100000;");
 
-        $json = DB::connection('pgsql')->table('iot_events')
+        $json = DB::connection('pgsql_milk')->table('iot_events')
                 ->whereJsonContains('payload->l', 'arerhs6djigmo6ji7pkf')
                 ->first();
         dd($json);
@@ -317,7 +317,7 @@ class HomeController extends Controller
 
     public function table()
     {
-        $chartDataAr = DB::connection('pgsql')->table('iot_events')
+        $chartDataAr = DB::connection('pgsql_milk')->table('iot_events')
             ->whereNotNull('payload->ar')
             ->whereNotNull('payload->c')
             ->orderBy('event_datetime', 'DESC')
