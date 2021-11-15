@@ -131,12 +131,22 @@ class DeviceController extends Controller
             foreach ($data['devices'] as $deviceId) {
                 $newUserId = $data['user_id'];
                 $device = Device::find($deviceId);
-                DeviceOwnerChange::create([
-                    'old_client_id' => $device->user_id,
-                    'new_client_id' => $newUserId,
-                    'device_login' => $device->device_id,
-                    'changed_at' => Carbon::now()
-                ]);
+                if ($device->user_id) {
+                    DeviceOwnerChange::create([
+                        'old_client_id' => $device->user_id,
+                        'new_client_id' => $newUserId,
+                        'device_login' => $device->device_id,
+                        'changed_at' => Carbon::now()
+                    ]);
+                } else {
+                    DeviceOwnerChange::create([
+                        'old_client_id' => NULL,
+                        'new_client_id' => $newUserId,
+                        'device_login' => $device->device_id,
+                        'changed_at' => Carbon::now()
+                    ]);
+                }
+
                 $device->update(['user_id' => $newUserId]);
             }
 
