@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('devices')->group(function () {
         Route::get('/', [HomeController::class, 'index']);
+        Route::get('/device-mobile/{id}', [HomeController::class, 'index']);
         Route::get('/get-all', [DeviceController::class, 'getAllDevices']);
         Route::post('/save', [DeviceController::class, 'store']);
         Route::post('/update', [DeviceController::class, 'update']);

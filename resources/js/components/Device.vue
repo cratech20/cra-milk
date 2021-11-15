@@ -2,7 +2,19 @@
 	<div class="container-fluid">
 	    <div class="row">
 	      <div class="col-12">
-	        <div class="card">
+            <div class="card d-block d-sm-none" v-for="(p, index) in filteredDevices" >
+                <div class="card-header">
+                    <h3 class="card-title">{{p.name}}</h3>
+					<router-link :to="'/devices/device-mobile/'+p.id" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&#62;</span>
+	                </router-link>
+                </div>
+                <div class="card-body table-responsive">
+                    <p>Клиент: {{ p.u_name }}</p>
+                    <p>Токен: {{ p.token }}</p>
+                </div>
+            </div>
+	        <div class="d-none d-sm-block card">
 	          <div class="card-header">
 	            <h3 class="card-title">Устройства</h3>
 
@@ -307,6 +319,23 @@
 	            </div>
 	        </div>
 	    </div>
+
+        <div class="modal fade" id="menu" tabindex="-1" role="dialog" aria-labelledby="migrateModal" aria-hidden="true">
+	        <div class="modal-dialog" role="document">
+	            <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Меню</h5>
+
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                    </div>
+	            </div>
+	        </div>
+	    </div>
     </div>
 	</div><!-- /.container-fluid -->
 </template>
@@ -503,6 +532,9 @@
 		        this.form.reset();
                 this.getToken();
 		        $('#addNew').modal('show');
+			},
+            openMenu(item) {
+		        $('#menu').modal('show');
 			},
 			editModal(item) {
                 this.getGates()

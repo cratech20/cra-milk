@@ -32,6 +32,7 @@ import Device from './components/Device'
 import Cow from './components/Cow'
 import ClientDevices from './components/ClientDevice'
 import Gate from './components/Gate'
+import DeviceMobile from './components/DeviceMobile'
 
 const router = new VueRouter({
   mode: 'history',
@@ -40,6 +41,7 @@ const router = new VueRouter({
     { path: '/users', name: 'user',  component: User },
     { path: '/clients', name: 'client',  component: Client },
     { path: '/devices', name: 'device',  component: Device },
+    { path: '/devices/device-mobile/:id', name: 'device-mobile',  component: DeviceMobile },
     { path: '/clients/:id/cows', name: 'cow',  component: Cow },
     { path: '/clients/:id/devices', name: 'clients-devices',  component: ClientDevices },
     { path: '/gates', name: 'gate',  component: Gate },
