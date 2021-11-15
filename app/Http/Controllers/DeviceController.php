@@ -131,7 +131,8 @@ class DeviceController extends Controller
             foreach ($data['devices'] as $deviceId) {
                 $newUserId = $data['user_id'];
                 $device = Device::find($deviceId);
-                if ($device->user_id) {
+
+                if ($device->user_id != 'NULL') {
                     DeviceOwnerChange::create([
                         'old_client_id' => $device->user_id,
                         'new_client_id' => $newUserId,
