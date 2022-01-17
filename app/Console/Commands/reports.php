@@ -105,7 +105,6 @@ class reports extends Command
             if (count($chartDataAr) > 0) {
                 foreach ($chartDataAr as $k => $item) {
                     $payload = json_decode($item->payload);
-                    dd($payload);
                     $cow = Cow::where('cow_id', $payload->c)->first();
                     $end = Carbon::now()->subDays(7);
                     $today =  Carbon::now();
