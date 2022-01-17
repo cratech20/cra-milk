@@ -46,6 +46,11 @@ class ReportGenerator
         $this->cows = Cow::all()->keyBy('cow_id');
     }
 
+    public function fillCows()
+    {
+        $this->cows = Cow::all()->keyBy('cow_id');
+    }
+
     public function getAndParseJSON()
     {
         $this->data = DB::connection('pgsql')->table('iot_events')
@@ -114,6 +119,18 @@ class ReportGenerator
         $generator = new self();
         $generator->fillDefaultPeriod();
         $generator->fillDevicesAndCows();
+        $generator->getAndParseJSON();
+        $generator->fillDatesAndDatesForHead();
+        $generator->getImpulsesByCowBody();
+
+        return $generator->result;
+    }
+
+    public static function getImpulsesByCow2()
+    {
+        $generator = new self();
+        $generator->fillDefaultPeriod();
+        $generator->fillCows();
         $generator->getAndParseJSON();
         $generator->fillDatesAndDatesForHead();
         $generator->getImpulsesByCowBody();

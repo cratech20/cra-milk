@@ -182,7 +182,7 @@ class LitersPeriodsReport
 
             $result['body'] = $body;
         }
-
+        dd($litersByDay);
         $this->result = $result;
     }
 

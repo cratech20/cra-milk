@@ -26,7 +26,11 @@ class IoTMessageTransporter
             ->whereNotNull('payload->l')
             ->whereNotNull('payload->t')
             ->whereNotNull('payload->y')
+            ->whereNotNull('payload->e')
+            ->limit(10)
             ->get();
+
+        // dd($postgreRows);
 
         foreach ($postgreRows as $postgreRow) {
             $json = $postgreRow->payload;
@@ -44,7 +48,7 @@ class IoTMessageTransporter
                 ['yield', $yield],
                 ['impulses', $payload['i']],
                 ['battery', $payload['b']],
-                ['error', $payload['e']],
+                // ['error', $payload['e']],
                 ['message_num', $payload['n']],
             ];
 
@@ -58,7 +62,7 @@ class IoTMessageTransporter
                     'yield' => $yield,
                     'impulses' => $payload['i'],
                     'battery' => $payload['b'],
-                    'error' => $payload['e'],
+                    // 'error' => $payload['e'],
                     'message_num' => $payload['n'],
                     'server_created_at' => $server_created_at
                 ];

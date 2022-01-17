@@ -21,6 +21,9 @@ Route::get('/json/table', [HomeController::class, 'table']);
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index']);
+    Route::get('/day', [HomeController::class, 'index']);
+    Route::get('/day7', [HomeController::class, 'index']);
+    Route::get('/day30', [HomeController::class, 'index']);
 
     Route::get('/test', [HomeController::class, 'testJSON']);
     Route::get('/run', [HomeController::class, 'run']);
@@ -70,6 +73,15 @@ Route::middleware(['auth'])->group(function () {
             ->name('reports.index');
 
         Route::get('/liters', [ReportController::class, 'liters'])
+            ->name('reports.liters');
+
+        Route::get('/get-day-report', [ReportController::class, 'getDayReport'])
+            ->name('reports.liters');
+
+        Route::get('/get-day-report7', [ReportController::class, 'getDayReport7'])
+            ->name('reports.liters');
+
+        Route::get('/get-day-report30', [ReportController::class, 'getDayReport30'])
             ->name('reports.liters');
 
         Route::get('/liters-hour', [ReportController::class, 'litersByHour'])

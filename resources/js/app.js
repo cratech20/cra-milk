@@ -32,6 +32,10 @@ import Device from './components/Device'
 import Cow from './components/Cow'
 import ClientDevices from './components/ClientDevice'
 import Gate from './components/Gate'
+import Reports from './components/Reports'
+import Day from './components/Day'
+import Day7 from './components/Day7'
+import Day30 from './components/Day30'
 
 const router = new VueRouter({
   mode: 'history',
@@ -43,6 +47,10 @@ const router = new VueRouter({
     { path: '/clients/:id/cows', name: 'cow',  component: Cow },
     { path: '/clients/:id/devices', name: 'clients-devices',  component: ClientDevices },
     { path: '/gates', name: 'gate',  component: Gate },
+    { path: '/reports', name: 'reports',  component: Reports },
+    { path: '/day', name: 'day',  component: Day },
+    { path: '/day7', name: 'day7',  component: Day7 },
+    { path: '/day30', name: 'day30',  component: Day30 },
   ]
 });
 

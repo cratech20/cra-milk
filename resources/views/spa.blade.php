@@ -142,7 +142,15 @@
                         Шлюзы
                       </p>
                     </router-link>
-                  </li>
+                </li>
+                <li class="nav-item">
+                    <router-link :to="'/reports'" class="nav-link">
+                      <i class="nav-icon fas fa-th"></i>
+                      <p>
+                        Отчеты
+                      </p>
+                    </router-link>
+                </li>
               </ul>
             </nav>
           @endrole

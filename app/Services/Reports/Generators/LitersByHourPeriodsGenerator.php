@@ -22,8 +22,10 @@ class LitersByHourPeriodsGenerator
             $dataFiller = new LitersByHourPeriodsDataFiller3($datePeriod, $hourPeriods, $user, $isAdmin, new LitersByHourReport());
             $report = $dataFiller->process();
         } else {
+            // dd('Ok');
             $dataFiller = new LitersByHourPeriodsDataFiller2($datePeriod, $hourPeriods, $user, $isAdmin, new LitersPeriodsReport());
             $report = $dataFiller->process();
+            // dd("Ok4");
         }
 
         return $report->getResult();

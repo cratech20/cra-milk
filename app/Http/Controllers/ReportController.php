@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Cache;
 
 class ReportController extends Controller
 {
@@ -22,10 +23,53 @@ class ReportController extends Controller
         return back();
     }
 
+    public function getDayReport()
+    {
+        // Cache::forget('chartDataAr');
+        $value = Cache::get('chartDataAr');
+        // dd($value);
+        $data = [
+            'date' => Carbon::parse($value[0]['date2'])->format('d.m.Y'),
+            'value' => $value
+        ];
+        return response()->json($data);
+    }
+
+    public function getDayReport7()
+    {
+        $dates = 7;
+        $value = Cache::get('chartDataAr7');
+        for ($i = 0; $i <= $dates; $i++) {
+            $dateAr[] = Carbon::now()->subDays($i)->format('d.m.Y');
+        }
+        $result = LitersByHourPeriodsGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'), 'liters');
+        dd($result);
+        $data = [
+            'dates' => $dateAr,
+            'value' => $value
+        ];
+        return response()->json($data);
+    }
+
+    public function getDayReport30()
+    {
+        $dates = 30;
+        $value = Cache::get('chartDataAr7');
+        for ($i = 0; $i <= $dates; $i++) {
+            $dateAr[] = Carbon::now()->subDays($i)->format('d.m.Y');
+        }
+        $data = [
+            'dates' => $dateAr,
+            'value' => $value
+        ];
+        return response()->json($data);
+    }
+
     public function liters(Request $request)
     {
+        // dd("Ok");
         $result = LitersByHourPeriodsGenerator::process([], [], auth()->user(), !auth()->user()->hasRole('client'), 'liters');
-
+        // dd("Ok");
         if ($request->input('download')) {
             return Excel::download(new ExportReport($result), 'report-liter-cow-' . date('H-i_d-m-y') . '.xlsx');
         }

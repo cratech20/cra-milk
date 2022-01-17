@@ -19,6 +19,7 @@
         "laravel/ui": "^3.2",
         "maatwebsite/excel": "^3.1",
         "movemoveapp/laravel-dadata": "^1.0",
+        "predis/predis": "^1.1",
         "qcod/laravel-settings": "^1.0",
         "spatie/laravel-permission": "^4.0",
         "web-token/jwt-easy": "^2.2",

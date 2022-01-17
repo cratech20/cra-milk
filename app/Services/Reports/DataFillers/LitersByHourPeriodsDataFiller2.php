@@ -46,6 +46,7 @@ class LitersByHourPeriodsDataFiller2
         $report->setHourPeriods($this->hourPeriods);
         $report->setDevices($this->getDevices());
         $report->setCows($cows);
+        dd($this->getData($cows));
         $report->setData($this->getData($cows));
         return $report;
     }
