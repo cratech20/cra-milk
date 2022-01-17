@@ -27,7 +27,7 @@ class ReportController extends Controller
     {
         // Cache::forget('chartDataAr');
         $value = Cache::get('chartDataAr');
-        // dd($value);
+        dd($value);
         $data = [
             'date' => Carbon::parse($value[0]['date2'])->format('d.m.Y'),
             'value' => $value
