@@ -19,11 +19,13 @@
         "laravel/ui": "^3.2",
         "maatwebsite/excel": "^3.1",
         "movemoveapp/laravel-dadata": "^1.0",
+        "php-mqtt/client": "^1.4",
         "qcod/laravel-settings": "^1.0",
         "spatie/laravel-permission": "^4.0",
         "web-token/jwt-easy": "^2.2",
         "web-token/jwt-framework": "^2.2",
-        "web-token/jwt-signature-algorithm-rsa": "^2.2"
+        "web-token/jwt-signature-algorithm-rsa": "^2.2",
+        "ext-pcntl": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
