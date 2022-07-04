@@ -26,8 +26,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            IoTMessageTransporter::run();
+            (new IoTMessageTransporter)->run();
         })->name('IoTMessageTransporter::run')->withoutOverlapping(30)
+//            ->everyMinute();
             ->everyFiveMinutes();
     }
 
