@@ -20,8 +20,6 @@
                         <a href="{{ route('reports.impulse') }}">Отчёт PowerBI импульсы по коровам</a><br>
                         <a href="{{ route('reports.impulse.device') }}">Отчёт PowerBI импульсы по устройствам</a><br>
                         <a href="{{ route('reports.mlk') }}">.mlk скачать</a><br>
-                        <a href="https://functions.yandexcloud.net/d4eks53mf45uqn38bvn1">Последние сообщения с
-                            устройств</a><br>
                     </div>
                 </div>
             </div>

@@ -65,13 +65,13 @@ class SendFakeDeviceMessagesToMQTT extends Command
 
         $mqtt = new MqttClient($server, $port, $clientId);
         $mqtt->connect($connectionSettings);
-        $topic = sprintf('milk_device/%s/data', $username);
+        $topic = sprintf('milk_device/%s/data', 'device6');
         $faker = Factory::create();
         $b = $faker->numberBetween(1, 99);
         $data = [
-            'c' => '3DDD5146F0', // 10 - hex 16
-//            't' => Carbon::now()->format('U'),
-            't' => 1656953507,
+            'c' => '7DDD5146F0', // 10 - hex 16
+            't' => Carbon::now()->format('U'),
+//            't' => 1656953507,
             'y' => 13607,
             'i' => 8559,
             'n' => '27',
