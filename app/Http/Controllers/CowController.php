@@ -8,6 +8,7 @@ use App\Models\DeviceMessage;
 use App\Models\DeviceOwnerChange;
 use App\Models\Farm;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class CowController extends Controller
@@ -41,22 +42,22 @@ class CowController extends Controller
         $data = DeviceMessage::query()->distinct()
             ->whereIn('device_login', $deviceIds)
             ->get(['cow_code', 'device_login', 'device_created_at']);
-
         foreach ($data as $message) {
             $cowId = $message->cow_code;
             $deviceId = $message->device_login;
             $messageDate = $message->device_created_at;
-
             $device = $devices[$deviceId];
-
             if (!isset($clientChanges[$deviceId])) {
-                $userId = $device->user_id;
-            } else if ($messageDate >= $lastChanges[$deviceId]->changed_at) {
+                if ($device->user_id) {
+                    $userId = $device->user_id;
+                } else {
+                    continue;
+                }
+            } else if (Carbon::parse($messageDate) >= Carbon::parse($lastChanges[$deviceId]->changed_at)) {
                 $userId = $lastChanges[$deviceId]->new_client_id;
             } else {
                 continue;
             }
-
             Cow::updateOrCreate(['cow_id' => $cowId], ['user_id' => $userId, 'group_id' => null]);
         }
 

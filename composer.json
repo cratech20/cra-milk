@@ -11,6 +11,8 @@
         "php": "^7.3|^8.0",
         "ext-curl": "*",
         "ext-json": "*",
+        "ext-pcntl": "*",
+        "doctrine/dbal": "^3.3",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -24,8 +26,7 @@
         "spatie/laravel-permission": "^4.0",
         "web-token/jwt-easy": "^2.2",
         "web-token/jwt-framework": "^2.2",
-        "web-token/jwt-signature-algorithm-rsa": "^2.2",
-        "ext-pcntl": "*"
+        "web-token/jwt-signature-algorithm-rsa": "^2.2"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

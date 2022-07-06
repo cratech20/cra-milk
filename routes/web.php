@@ -25,8 +25,6 @@ Route::middleware(['auth'])->group(function () {
             return view('cabinet.client');
         } else if ($user->hasRole('employee')) {
             return view('cabinet.admin');
-        } else {
-
         }
     });
 
@@ -124,6 +122,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('farms', [FarmController::class, 'store'])
             ->name('clients.farms.store');
 
+        Route::get('/cows/linking', [CowController::class, 'linking'])
+            ->name('clients.cows.linking');
+
         Route::get('{client}/cows', [CowController::class, 'index'])
             ->name('clients.cows.index');
 
@@ -132,9 +133,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::patch('/cows/{id}', [CowController::class, 'update'])
             ->name('clients.cows.edit');
-
-        Route::get('/cows/linking', [CowController::class, 'linking'])
-            ->name('clients.cows.linking');
 
         Route::get('{client}/cows/groups', [CowGroupController::class, 'index'])
             ->name('clients.cows.groups.index');

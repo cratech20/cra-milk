@@ -14,13 +14,13 @@ use Carbon\Carbon;
 
                     <div class="card-body">
                         <table class="table table-bordered table-striped">
-                            @foreach ($json as $row)
+                            @foreach ($rawMessages as $rawMessage)
                                 <tr>
                                     <td>
-                                        {{ Carbon::parse($row->event_datetime)->format('H:i:s d.m.Y') }}
+                                        {{ Carbon::parse($rawMessage->created_at)->format('H:i:s d.m.Y') }}
                                     </td>
                                     <td>
-                                        {{ print_r($row->payload, 1) }}<br>
+                                        {{ print_r(json_decode($rawMessage->message, true), 1) }}<br>
                                         {{--                            {{ Carbon::parse($row['t'])->format('H:i:s d.m.Y') }}: {{ print_r($row['d'], 1) }}<br>--}}
                                     </td>
                                 </tr>

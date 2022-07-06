@@ -65,7 +65,7 @@ class SendFakeDeviceMessagesToMQTT extends Command
 
         $mqtt = new MqttClient($server, $port, $clientId);
         $mqtt->connect($connectionSettings);
-        $topic = sprintf('milk_device/%s/data', 'device6');
+        $topic = sprintf('milk_device/%s/data', 'device4');
         $faker = Factory::create();
         $b = $faker->numberBetween(1, 99);
         $data = [

@@ -98,8 +98,8 @@ class CowGroupController extends Controller
     {
         $data = $request->input();
 
-        foreach ($data['devices'] as $deviceId) {
-            Cow::where('id', $deviceId)->update(['group_id' => $data['item_id']]);
+        foreach ($data['cows'] as $cowId) {
+            Cow::where('id', $cowId)->update(['group_id' => $data['item_id']]);
         }
 
         return back()
