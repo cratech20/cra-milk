@@ -22,7 +22,7 @@ services:
         networks:
             - sail
         depends_on:
-            - mysql
+            - pgsql
 
     pgsql:
       image: 'postgres:14'
