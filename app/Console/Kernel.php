@@ -28,8 +28,8 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             (new IoTMessageTransporter)->run();
         })->name('IoTMessageTransporter::run')->withoutOverlapping(30)
-//            ->everyMinute();
-            ->everyFiveMinutes();
+            ->everyMinute();
+//            ->everyFiveMinutes();
     }
 
     /**
