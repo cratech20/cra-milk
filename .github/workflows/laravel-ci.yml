@@ -10,11 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@master
+      - name: Setup Environment
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.3'
       - name: Copy .env.example to .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: Speed up the packages installation process
+        run: composer global require hirak/prestissimo
       - name: Install composer dependencies
-        run: composer install
+        run: composer install --no-dev
       - name: Set required directory permissions
         run: chmod -R 777 storage bootstrap/cache
       - name: Generate encryption key
