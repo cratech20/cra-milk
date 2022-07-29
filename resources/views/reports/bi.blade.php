@@ -51,7 +51,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($data['body'] as $cowRow)
+                            @foreach($data['body'] ?? [] as $cowRow)
                                 <tr>
                                     <td></td>
                                     @foreach($cowRow as $key => $td)
