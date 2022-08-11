@@ -51,14 +51,14 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($data['body'] as $cowRow)
-                                <tr>
-                                    <td></td>
-                                    @foreach($cowRow as $key => $td)
-                                        <td class="{{ $key === $stickyCol ? 'sticky-column' : '' }}">{{ $td }}</td>
-                                    @endforeach
-                                </tr>
-                            @endforeach
+                                @foreach($data['body'] ?? [] as $cowRow)
+                                    <tr>
+                                        <td></td>
+                                        @foreach($cowRow as $key => $td)
+                                            <td class="{{ $key === $stickyCol ? 'sticky-column' : '' }}">{{ $td }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
 
