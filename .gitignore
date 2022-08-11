@@ -18,3 +18,4 @@ Homestead.json
 .idea
 composer.lock
 .vscode/settings.json
+.vscode/*.log
