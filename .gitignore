@@ -17,3 +17,5 @@ Homestead.json
 /.vagrant
 .idea
 composer.lock
+.vscode/settings.json
+.vscode/*.log
