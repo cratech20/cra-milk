@@ -23,7 +23,8 @@
         "spatie/laravel-permission": "^4.0",
         "web-token/jwt-easy": "^2.2",
         "web-token/jwt-framework": "^2.2",
-        "web-token/jwt-signature-algorithm-rsa": "^2.2"
+        "web-token/jwt-signature-algorithm-rsa": "^2.2",
+        "php-mqtt/client": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

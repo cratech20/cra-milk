@@ -229,7 +229,7 @@
 	    </div>
 
 	    <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="message" aria-hidden="true">
-	        <div class="modal-dialog" role="document">
+	        <div class="modal-dialog modal-lg" role="document">
 	            <div class="modal-content">
 	            <div class="modal-header">
 	                <h5 class="modal-title" v-show="!editmode">Сообщения устройства {{ messageForm.name }}</h5>
@@ -246,7 +246,7 @@
                                 <div class="form-control" style="height: calc(20em + 0.75rem + 2px); overflow-y: auto;">
                                     <p v-for="(item, index) in message">
 
-                                        {{ item.payload }}
+                                        {{ item.message }}
 
                                     </p>
                                 </div>
@@ -514,6 +514,7 @@
 			getDeviceMessage(item) {
 				axios.get("/devices/"+item.device_id+"/messages").then((response) => {
 					this.message = response.data.json
+					console.log(this.message)
 				});
 			},
 			showMessage(item) {

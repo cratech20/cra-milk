@@ -30,3 +30,9 @@ tinker:
 	@echo "For immediately raw MQTT message parsing write:"
 	@echo "(new IoTMessageTransporter)->run();"
 	./vendor/bin/sail artisan tinker
+
+npm-watch:
+	./vendor/bin/sail npm run watch
+
+npm-dev:
+	./vendor/bin/sail npm run dev
